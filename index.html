@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Скиталец · Тёмные времена — настольный помощник</title>
+<!-- Шрифты: Cinzel для заголовков, EB Garamond для текста -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+/* ============ Основа ============ */
+:root{
+  --bg:#1a1a1a;            /* основной фон */
+  --bg-deep:#141311;       /* поля ввода, углубления */
+  --panel:#201d18;         /* карточки и панели */
+  --panel-2:#26221b;       /* шапки таблиц, hover строк */
+  --line:#3a3327;          /* основные линии */
+  --line-soft:#2b2620;     /* тонкие линии */
+  --ink:#e0d5c1;           /* основной текст */
+  --ink-dim:#a89a82;       /* приглушённый текст */
+  --ink-faint:#6f6553;     /* почти незаметный текст */
+  --blood:#8b0000;         /* тёмно-красный акцент */
+  --blood-bright:#c03a2e;  /* красный для отрицательного */
+  --gold:#c9a050;          /* золотой акцент */
+  --gold-dim:#8a7038;      /* приглушённое золото */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'EB Garamond',serif;
+  font-size:18px;
+  line-height:1.55;
+  min-height:100vh;
+}
+/* Лёгкая световая виньетка — атмосфера свечи по краям экрана */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:5;
+  background:radial-gradient(ellipse at 50% 18%, transparent 55%, rgba(0,0,0,.42) 100%);
+}
+::selection{background:rgba(139,0,0,.45);color:var(--ink)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:#151312}
+::-webkit-scrollbar-thumb{background:#37301f;border:2px solid #151312}
+::-webkit-scrollbar-thumb:hover{background:#4d4227}
+.hidden{display:none!important}
+.wrap{max-width:1080px;margin:0 auto;padding:0 1.4rem 4rem;position:relative;z-index:6}
+.ic{width:1.1em;height:1.1em;flex:none}
+.diam{color:var(--gold);display:inline-flex}
+.diam .ic{width:.62em;height:.62em}
+
+/* ============ Шапка ============ */
+.site-head{display:flex;align-items:center;gap:1.3rem;padding:2.6rem 0 1.4rem}
+.emblem{width:58px;height:58px;color:var(--gold-dim);flex:none}
+.site-head h1{
+  font-family:'Cinzel',serif;font-weight:900;text-transform:uppercase;
+  letter-spacing:.2em;font-size:2rem;line-height:1.1;color:var(--ink);
+}
+.site-head h1::first-letter{color:var(--gold)}
+.site-head .sub{
+  margin-top:.35rem;font-style:italic;color:var(--ink-dim);font-size:1rem;letter-spacing:.02em;
+}
+.rule-orn{display:flex;align-items:center;gap:.8rem;margin-bottom:.4rem}
+.rule-orn::before,.rule-orn::after{content:'';flex:1;height:1px;background:var(--line)}
+
+/* ============ Вкладки ============ */
+.tabs{display:flex;gap:2.6rem;border-bottom:1px solid var(--line);margin-bottom:.4rem}
+.tab{
+  background:none;border:none;cursor:pointer;position:relative;
+  font-family:'Cinzel',serif;font-weight:600;font-size:.92rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim);
+  padding:.95rem .15rem;transition:color .18s;
+}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--gold)}
+.tab.active::after{
+  content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--blood);
+  box-shadow:0 1px 0 rgba(201,160,80,.35);
+}
+.tab-panel{padding-top:1.2rem}
+
+/* ============ Тулбар справочника ============ */
+.ref-toolbar{display:flex;gap:1rem;margin:1rem 0 1.8rem;flex-wrap:wrap}
+.search-wrap{flex:1;min-width:250px;position:relative}
+.search-wrap .ic{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:var(--ink-faint);width:1.15rem;height:1.15rem}
+input[type=text],input[type=number],select{
+  background:var(--bg-deep);border:1px solid var(--line);color:var(--ink);
+  font-family:inherit;font-size:1rem;padding:.58rem .9rem;width:100%;
+  transition:border-color .18s, box-shadow .18s;
+}
+input[type=number]{width:auto}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold-dim);box-shadow:0 0 0 1px rgba(201,160,80,.18)}
+.search-wrap input{padding-left:2.6rem}
+select{cursor:pointer;min-width:210px;width:auto}
+select option{background:var(--bg-deep)}
+
+/* ============ Секции справочника ============ */
+.cat{margin-bottom:2.6rem}
+.cat-head{
+  display:flex;align-items:baseline;gap:.85rem;
+  border-bottom:1px solid var(--line);padding-bottom:.55rem;margin-bottom:1.15rem;
+  position:sticky;top:0;background:var(--bg);z-index:10;
+}
+.cat-title{font-family:'Cinzel',serif;font-weight:700;font-size:1.32rem;color:var(--gold);letter-spacing:.06em}
+.cat-count{margin-left:auto;color:var(--ink-faint);font-size:.88rem;font-style:italic}
+
+/* ============ Карточки-статьи ============ */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:.85rem}
+.card{
+  background:var(--panel);border:1px solid var(--line-soft);position:relative;
+  padding:.95rem 1.1rem .85rem;cursor:pointer;
+  box-shadow:0 2px 6px rgba(0,0,0,.35);
+  transition:border-color .18s, box-shadow .18s, transform .18s;
+}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:transparent;transition:background .18s}
+.card:hover,.card:focus-visible{
+  border-color:var(--gold-dim);box-shadow:0 5px 16px rgba(0,0,0,.5);transform:translateY(-1px);outline:none;
+}
+.card:hover::before,.card:focus-visible::before{background:var(--blood)}
+.card-name{
+  font-family:'Cinzel',serif;font-weight:700;font-size:1.03rem;letter-spacing:.03em;
+  display:flex;align-items:center;gap:.55rem;color:var(--ink);
+}
+.card-short{color:var(--ink-dim);font-style:italic;font-size:.96rem;margin-top:.4rem}
+.card-meta{
+  margin-top:.6rem;font-family:'Cinzel',serif;font-size:.7rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);
+}
+.card-meta .tag-good{color:var(--gold)}
+.card-meta .tag-bad{color:var(--blood-bright)}
+mark{background:none;color:var(--gold);border-bottom:1px solid var(--gold-dim);padding:0}
+
+/* ============ Таблицы ============ */
+.table-scroll{overflow-x:auto;border:1px solid var(--line-soft);background:var(--panel);box-shadow:0 2px 6px rgba(0,0,0,.35)}
+table{width:100%;border-collapse:collapse;min-width:660px;font-size:.96rem}
+th{
+  font-family:'Cinzel',serif;font-weight:600;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--gold);text-align:left;padding:.7rem .85rem;white-space:nowrap;
+  background:var(--panel-2);border-bottom:1px solid var(--line);
+}
+td{padding:.55rem .85rem;border-bottom:1px solid var(--line-soft);color:var(--ink-dim);vertical-align:top}
+tbody tr{cursor:pointer;transition:background .15s}
+tbody tr:hover{background:var(--panel-2)}
+tbody tr:hover td{color:var(--ink)}
+tbody tr:last-child td{border-bottom:none}
+td.rowname{font-family:'Cinzel',serif;font-weight:600;color:var(--ink);font-size:.95rem;letter-spacing:.02em}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tnote{color:var(--ink-faint);font-size:.87rem;font-style:italic;margin-top:.6rem}
+th.sortable{cursor:pointer;user-select:none}
+th.sortable:hover{color:var(--ink)}
+.sort-arrow{color:var(--gold);font-size:.75em;margin-left:.3rem}
+.armor-group{margin-bottom:1.5rem}
+.armor-group h3{font-family:'Cinzel',serif;font-weight:600;font-size:1rem;color:var(--ink);letter-spacing:.06em;margin-bottom:.6rem}
+
+/* ============ Пустые состояния ============ */
+.empty{
+  border:1px dashed var(--line);padding:2.6rem 1.5rem;text-align:center;
+  color:var(--ink-faint);font-style:italic;
+}
+.empty .diam{display:block;margin:0 auto .8rem;opacity:.7}
+
+/* ============ Трекер: тулбар ============ */
+.xp-toolbar{display:flex;gap:1rem;flex-wrap:wrap;align-items:stretch;margin:1rem 0 1.8rem}
+.char-form{display:flex;gap:.7rem;flex:1;min-width:270px}
+.char-form input{flex:1}
+.xp-tools{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+
+/* ============ Кнопки ============ */
+.btn{
+  font-family:'Cinzel',serif;font-weight:600;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;
+  padding:.55rem 1.05rem;background:transparent;border:1px solid var(--line);color:var(--ink-dim);
+  cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;white-space:nowrap;
+  transition:color .18s,border-color .18s,background .18s;
+}
+.btn:hover{color:var(--ink);border-color:var(--gold-dim)}
+.btn.gold{border-color:var(--gold-dim);color:var(--gold)}
+.btn.gold:hover{background:rgba(201,160,80,.08);border-color:var(--gold)}
+.btn.blood{border-color:#5c2420;color:#cd7166}
+.btn.blood:hover{background:rgba(139,0,0,.14);border-color:var(--blood-bright);color:#e08a7e}
+.btn.danger{border-color:#5c2420;color:var(--ink-dim)}
+.btn.danger:hover{color:var(--blood-bright);border-color:var(--blood-bright)}
+.icon-btn{
+  background:none;border:1px solid transparent;cursor:pointer;color:var(--ink-faint);
+  padding:.45rem;display:inline-flex;transition:color .18s,border-color .18s;
+}
+.icon-btn:hover{color:var(--blood-bright);border-color:var(--line)}
+
+/* ============ Трекер: персонажи ============ */
+.char-list{display:flex;flex-direction:column;gap:.8rem}
+.char-row{
+  display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;
+  background:var(--panel);border:1px solid var(--line-soft);border-left:3px solid var(--gold-dim);
+  padding:.95rem 1.2rem;box-shadow:0 2px 6px rgba(0,0,0,.35);transition:border-color .18s;
+}
+.char-row:hover{border-left-color:var(--blood)}
+.char-name{font-family:'Cinzel',serif;font-weight:700;font-size:1.14rem;letter-spacing:.03em}
+.char-xp{margin-left:auto;display:flex;align-items:baseline;gap:.55rem}
+.xp-num{font-family:'Cinzel',serif;font-weight:900;font-size:1.9rem;color:var(--gold);min-width:2ch;text-align:center;line-height:1}
+.xp-num.neg{color:var(--blood-bright)}
+.xp-label{font-style:italic;color:var(--ink-faint);font-size:.9rem}
+.char-actions{display:flex;gap:.55rem;align-items:center}
+
+/* ============ Заголовки секций трекера ============ */
+.sec-title{
+  display:flex;align-items:center;gap:.85rem;font-family:'Cinzel',serif;font-weight:700;
+  font-size:1.22rem;letter-spacing:.05em;margin:2.3rem 0 1.1rem;
+}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--line)}
+.sec-title .side{margin-left:0;display:flex;gap:.7rem;align-items:center}
+.sec-title select{font-size:.9rem;padding:.35rem .6rem}
+.log-count{font-family:'EB Garamond',serif;font-weight:400;font-style:italic;font-size:.9rem;color:var(--ink-faint);letter-spacing:0}
+
+/* ============ Лог ============ */
+td .sign{font-family:'Cinzel',serif;font-weight:700;font-size:1.05rem;margin-right:.35rem}
+td .sign.plus{color:var(--gold)}
+td .sign.minus{color:var(--blood-bright)}
+
+/* ============ Модальные окна ============ */
+.overlay{
+  position:fixed;inset:0;z-index:100;background:rgba(10,8,6,.78);
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:6vh 1rem;overflow-y:auto;
+}
+.modal{
+  background:#1e1b16;border:1px solid var(--gold-dim);outline:1px solid rgba(201,160,80,.22);outline-offset:4px;
+  max-width:660px;width:100%;box-shadow:0 24px 70px rgba(0,0,0,.75);
+  animation:modalIn .22s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.modal-head{display:flex;align-items:flex-start;gap:1rem;padding:1.25rem 1.5rem .95rem;border-bottom:1px solid var(--line)}
+.modal-head h2{font-family:'Cinzel',serif;font-weight:700;font-size:1.28rem;color:var(--gold);letter-spacing:.04em;line-height:1.3;flex:1}
+.modal-head .icon-btn{margin:-.2rem -.4rem 0 0}
+.modal-body{padding:1.25rem 1.5rem 1.6rem}
+.modal-kicker{
+  font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.9rem;
+}
+.d-desc{font-size:1.08rem;color:var(--ink)}
+.d-drop::first-letter{
+  font-family:'Cinzel',serif;font-weight:700;font-size:2.7em;color:var(--gold);
+  float:left;line-height:.82;padding:.06em .14em 0 0;
+}
+.d-block{margin-top:1.15rem;border-left:2px solid var(--gold-dim);padding:.15rem 0 .15rem 1rem}
+.d-block.bloodline{border-left-color:var(--blood)}
+.d-block .lbl{
+  font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--gold);display:block;margin-bottom:.35rem;
+}
+.d-block.bloodline .lbl{color:var(--blood-bright)}
+.d-block p{color:var(--ink-dim);font-size:.99rem}
+ul.specs{list-style:none;margin-top:.2rem}
+ul.specs li{padding:.32rem 0;color:var(--ink-dim);font-size:.99rem;display:flex;gap:.6rem;align-items:baseline}
+ul.specs li b{color:var(--ink);font-weight:600;white-space:nowrap}
+.props{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.55rem;margin:1rem 0 .2rem}
+.props>div{border:1px solid var(--line-soft);background:var(--bg-deep);padding:.5rem .75rem}
+.props dt{font-family:'Cinzel',serif;font-size:.64rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint)}
+.props dd{font-size:1.06rem;color:var(--ink);margin-top:.12rem}
+.lvl{display:flex;gap:1.05rem;padding:.75rem 0;border-bottom:1px dashed var(--line-soft)}
+.lvl:last-child{border-bottom:none}
+.lvl-num{
+  flex:none;width:2.05rem;height:2.05rem;display:grid;place-items:center;margin:.15rem .5rem 0 0;
+  border:1px solid var(--gold-dim);transform:rotate(45deg);
+  font-family:'Cinzel',serif;font-weight:700;font-size:.8rem;color:var(--gold);
+}
+.lvl-num span{transform:rotate(-45deg)}
+.lvl b{color:var(--ink);font-weight:600}
+.lvl p{color:var(--ink-dim);font-size:.97rem;margin-top:.15rem}
+.warn{color:var(--blood-bright);font-style:italic;font-size:.93rem;margin-top:.2rem}
+
+/* ============ Формы в модалках ============ */
+.field{margin-bottom:1.05rem}
+.field label{
+  display:block;font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--ink-dim);margin-bottom:.4rem;
+}
+.modal-actions{display:flex;justify-content:flex-end;gap:.7rem;margin-top:1.5rem}
+.check{display:flex;gap:.6rem;align-items:flex-start;cursor:pointer;margin-top:1rem;color:var(--ink-dim);font-size:.97rem}
+.check input{accent-color:var(--blood);margin-top:.3rem;flex:none}
+
+/* ============ Тосты ============ */
+.toasts{position:fixed;bottom:1.2rem;right:1.2rem;display:flex;flex-direction:column;gap:.55rem;z-index:200}
+.toast{
+  background:#221e18;border:1px solid var(--gold-dim);border-left:3px solid var(--gold);
+  padding:.72rem 1.05rem;font-size:.95rem;max-width:340px;box-shadow:0 6px 20px rgba(0,0,0,.55);
+  animation:toastIn .25s ease;
+}
+.toast.err{border-color:#5c2420;border-left-color:var(--blood-bright)}
+@keyframes toastIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+
+footer{border-top:1px solid var(--line-soft);margin-top:2.5rem;padding:1.2rem 0 .5rem;text-align:center;color:var(--ink-faint);font-style:italic;font-size:.88rem}
+
+/* ============ Адаптив ============ */
+@media (max-width:680px){
+  body{font-size:16.5px}
+  .site-head{gap:.9rem;padding-top:1.6rem}
+  .site-head h1{font-size:1.45rem;letter-spacing:.14em}
+  .emblem{width:44px;height:44px}
+  .tabs{gap:1.3rem}
+  .tab{font-size:.8rem;letter-spacing:.1em}
+  .char-xp{margin-left:0;width:100%;order:3}
+  .char-actions{margin-left:auto}
+  .modal-body,.modal-head{padding-left:1.05rem;padding-right:1.05rem}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <!-- Шапка с эмблемой: меч в ромбе -->
+  <header class="site-head">
+    <svg class="emblem" viewBox="0 0 64 64" aria-hidden="true">
+      <g fill="none" stroke="currentColor" stroke-width="1.4">
+        <path d="M32 3 57 32 32 61 7 32Z"/>
+        <path d="M32 17v29"/>
+        <path d="M23 27h18"/>
+      </g>
+      <path d="M32 10l4 7h-8z" fill="currentColor"/>
+      <circle cx="32" cy="49" r="2" fill="currentColor"/>
+    </svg>
+    <div>
+      <h1>Скиталец</h1>
+      <p class="sub">Тёмные времена · настольный помощник мастера и отряда</p>
+    </div>
+  </header>
+
+  <div class="rule-orn"><span class="diam" data-diamond></span></div>
+
+  <!-- Вкладки -->
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="ref">Справочник</button>
+    <button class="tab" data-tab="xp">Трекер опыта</button>
+  </nav>
+
+  <!-- ================= Вкладка «Справочник» ================= -->
+  <section id="panel-ref" class="tab-panel">
+    <div class="ref-toolbar">
+      <div class="search-wrap">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6"/><line x1="15" y1="15" x2="20" y2="20"/></svg>
+        <input type="text" id="refSearch" placeholder="Поиск по названию и описанию…" autocomplete="off">
+      </div>
+      <select id="refCat" aria-label="Фильтр по категориям">
+        <option value="all">Все категории</option>
+      </select>
+    </div>
+    <div id="refList"></div>
+  </section>
+
+  <!-- ================= Вкладка «Трекер опыта» ================= -->
+  <section id="panel-xp" class="tab-panel hidden">
+    <div class="xp-toolbar">
+      <form id="charForm" class="char-form">
+        <input type="text" id="charNameInput" placeholder="Имя нового скитальца…" maxlength="40" autocomplete="off">
+        <button class="btn gold" type="submit" id="charAddBtn">Принять в отряд</button>
+      </form>
+      <div class="xp-tools">
+        <button class="btn" id="exportBtn">Экспорт JSON</button>
+        <button class="btn" id="importBtn">Импорт JSON</button>
+        <button class="btn danger" id="resetBtn">Сбросить данные</button>
+        <input type="file" id="importFile" accept=".json,application/json" hidden>
+      </div>
+    </div>
+
+    <h2 class="sec-title"><span class="diam" data-diamond></span>Отряд</h2>
+    <div id="charList" class="char-list"></div>
+
+    <h2 class="sec-title">
+      <span class="diam" data-diamond></span>Летопись опыта
+      <span class="side">
+        <span class="log-count" id="logCount"></span>
+        <select id="logCharFilter" aria-label="Фильтр летописи по персонажу"></select>
+      </span>
+    </h2>
+    <div id="logWrap"></div>
+  </section>
+
+  <footer>Все данные хранятся только в вашем браузере — мастер может спать спокойно.</footer>
+</div>
+
+<!-- Модальное окно -->
+<div class="overlay hidden" id="overlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2 id="modalTitle"></h2>
+      <button class="icon-btn" id="modalClose" aria-label="Закрыть">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+'use strict';
+
+/* =====================================================================
+   ДАННЫЕ ПРАВИЛ — объект gameData
+   Короткие ключи: n — название, s — краткое описание, d — полное описание,
+   m — игромеханика, sp — специализации [{n, d}], lv — уровни [{lv, n, d}],
+   pr — расплата проклятой силы.
+   ===================================================================== */
+const CAT_META = {
+  qualities:{title:'Качества',      kicker:'Качество'},
+  skills:   {title:'Навыки',        kicker:'Навык'},
+  lore:     {title:'Знания',        kicker:'Знание'},
+  virtues:  {title:'Добродетели',   kicker:'Добродетель'},
+  powers:   {title:'Проклятые силы',kicker:'Проклятая сила'},
+  states:   {title:'Состояния',     kicker:'Состояние'},
+  weapons:  {title:'Оружие',        kicker:'Оружие'},
+  armor:    {title:'Броня',         kicker:'Броня'},
+  traits:   {title:'Особенности',   kicker:'Особенность'},
+};
+const CAT_ORDER = ['qualities','skills','lore','virtues','powers','states','weapons','armor','traits'];
+
+const gameData = {
+
+  qualities: [
+    {n:'Сила', s:'Грубая мощь тела: поднять, сломать, удержать.',
+     d:'Сила измеряет грубую мощь скитальца — способность поднимать тяжести, ломать запоры, молотить и давить. Это качество тех, кто привык к топору, наковальне и пахоте, и тех, кто умеет держать дверь щитом.',
+     m:'Добавляется к броскам подъёма тяжестей, выламывания дверей и борьбы. Определяет урон большинством тяжёлого и древкового оружия. Тяжёлая броня требует определённого значения Силы.'},
+    {n:'Проворство', s:'Лёгкость движений: уклониться, вскочить, удержать равновесие.',
+     d:'Проворство — это грация и скорость тела: увернуться от удара, пройти по рассохшейся балке, соскочить с повозки на полном ходу. Оно отличает ловкого бродягу от доспехавшего себя латника.',
+     m:'Броски равновесия, акробатики, уклонений и поспешных отступлений. Влияет на очерёдность хода и на то, как тяжело доспех сковывает движения.'},
+    {n:'Точность', s:'Твёрдая рука: попасть, воткнуть, не задеть лишнего.',
+     d:'Точность — согласованность глаза и руки. Она нужна стрелку, что целится в щель забрала, и мастеру, что ставит последний гвоздь в подкову, не задев пальцев.',
+     m:'Все броски атаки дальним и метательным оружием, а также тонкой работы руками: завязывание узлов, метание ножа, работа с мелкими деталями.'},
+    {n:'Выносливость', s:'Сколько страдания тело способно стерпеть.',
+     d:'Выносливость — запас, на котором держится тело: способность идти, когда ноги подводят, терпеть рану, яд и лихорадку, работать от зари до зари и наутро встать снова.',
+     m:'Определяет запас здоровья. Броски против усталости, голода, яда и болезни; длительные переходы, недосып и работа до седьмого пота.'},
+    {n:'Харизма', s:'Сила притяжения: слово, взгляд, осанка.',
+     d:'Харизма — то, отчего людям хочется слушать скитальца и идти за ним. Она видна в осанке, в голосе, в том, как он входит в комнату — и крестьянин, и барон это чувствуют.',
+     m:'Броски первого впечатления, выступлений и приказов, которые хочется исполнять. Влияет на цену при торге и на расположение знатных особ.'},
+    {n:'Хитрость', s:'Кривая дорожка: обмануть, срезать, украсть.',
+     d:'Хитрость — искусство кривой дорожки: сказать правду так, чтобы она звучала как ложь, и наоборот; подсмотреть карту, срезать угол, подставить подножку и остаться неузнанным.',
+     m:'Броски обмана, блефа, нечестной игры и плутовских манёвров. Противостоит Чутью и Эмпатии тех, кто пытается распознать ложь.'},
+    {n:'Восприятие', s:'Зоркий глаз и цепкое ухо.',
+     d:'Восприятие — умение замечать то, что другие пропускают: тень за изгородью, дрожь в голосе собеседника, свежую царапину на замке. В тёмные времена цепкое ухо стоит дорого.',
+     m:'Броски замечать детали, засады, следы и подмену. Определяет, сколько скиталец успевает увидеть и услышать в сумерках и в толчее.'},
+    {n:'Ум', s:'Начитанность, память и холодный расчёт.',
+     d:'Ум — способность помнить, сопоставлять и считать. Он отличает того, кто найдёт выход из осаждённого города, от того, кто запрёт ворота и станет ждать.',
+     m:'Броски памяти, логики, шифров и планов. Добавляется к большинству Знаний; определяет, сколько языков и письмён освоил скиталец.'},
+    {n:'Чутьё', s:'Шестое чувство на беду и нечисть.',
+     d:'Чутьё — это то, что нельзя объяснить: холод между лопаток у развилки, где сегодня утонет обоз; желание уйти со двора за минуту до того, как придут по нему. Дар — или метка.',
+     m:'Броски на смутное предчувствие опасности, дурные места и присутствие нечистой силы. Мастер зовёт на него проверку, когда правду слишком страшно рассказать прямо.'},
+  ],
+
+  skills: [
+    {n:'Атлетика', s:'Бег, лазание, плавание — всё, где тело работает целиком.',
+     d:'Атлетика охватывает всё, для чего нужно сильное и послушное тело: карабкаться по стене, плыть против течения, догонять или убегать.',
+     sp:[{n:'Лазание',d:'скалы, городские стены, колодцы'},{n:'Плавание',d:'реки, броды, тонкий лёд'},{n:'Прыжки',d:' через ров, с крыши на крышу'},{n:'Долгий бег',d:'погоня и отступление на выносливость'}]},
+    {n:'Бдительность', s:'Стоять в дозоре и не пропустить беду.',
+     d:'Бдительность — ремесло часового: не дремать у огня, замечать шорох за частоколом, понимать, что тишина в лесу — тоже знак.',
+     sp:[{n:'Ночной дозор',d:'не пропустить беду, когда глаза слипаются'},{n:'Засады',d:'заманить и встретить'},{n:'Караульная служба',d:'порядок у костра и на стене'},{n:'Замечать слежку',d:'почувствовать взгляд за спиной'}]},
+    {n:'Выживание', s:'Дорога, костёр и охота там, где нет ни дорог, ни людей.',
+     d:'Выживание — знание, как остаться живым между деревнями: накрыться от дождя, найти тропу, выследить дичь и не съесть не то, что съедобно на вид.',
+     sp:[{n:'Охота и следопытство',d:'выследить, взять, разделать'},{n:'Ориентирование',d:'по звёздам, мху и старым меткам'},{n:'Лекарственные травы',d:'найти, отличить, заварить'},{n:'Ловушки и силки',d:'от зайца до нежданного гостя'}]},
+    {n:'Красноречие', s:'Слово, которым открывают двери и кошельки.',
+     d:'Красноречие — умение говорить так, чтобы слушающий сделал нужное и думал, что это его собственная мысль. Иногда — умение просто вовремя замолчать.',
+     sp:[{n:'Убеждение',d:'довести человека до согласия'},{n:'Торг',d:'сбить цену, продать дороже'},{n:'Публичные речи',d:'толпа, площадь, суд'},{n:'Слухи и сплетни',d:'запустить, поймать, распустить'}]},
+    {n:'Ловкость рук', s:'Пальцы быстрее глаза.',
+     d:'Ловкость рук — ремесло тех, кто работает там, где нельзя быть замеченным: вытащить кошелёк, вскрыть замок, спрятать нож в рукаве.',
+     sp:[{n:'Карманная кража',d:'кошельки, печати, сердечки'},{n:'Взлом замков',d:'отactionDate сундука до городских ворот'},{n:'Шулерство',d:'колода всегда за говорящего'},{n:'Фокусы',d:'отвлечь, удивить, замести следы'}]},
+    {n:'Ремесло', s:'Умение сделать и починить почти что угодно.',
+     d:'Ремесло — честное мастерство рук: выковать, сострогать, сшить, починить то, что сломалось в самый неподходящий час.',
+     sp:[{n:'Кузнечное дело',d:'подковы, гвозди, клинки попроще'},{n:'Плотницкое дело',d:'от табурета до мостков'},{n:'Портняжное дело',d:'залатать, перешить, скрыть ношу'},{n:'Ювелирное дело',d:'оценить и починить ценное'}]},
+    {n:'Скрытность', s:'Тихий шаг, тень и терпение.',
+     d:'Скрытность — искусство быть там, где тебя не должно быть, и не быть замеченным: слиться с тенью, замереть в нужный миг, уйти по гребню стены.',
+     sp:[{n:'Тихий шаг',d:'половицы, хворост, сторожевые псы'},{n:'Маскировка',d:'стать кем-то другим'},{n:'Прятаться в городе',d:'подворотни, чердаки, телеги'},{n:'Ночные переходы',d:'уйти там, где нет дороги'}]},
+    {n:'Стрельба', s:'Лук, арбалет и всё, что летит.',
+     d:'Стрельба — владение оружием, которое бьёт издали: натянуть тетиву, взять поправку на ветер, выстрелить в тот единственный миг, когда цель открылась.',
+     sp:[{n:'Короткий лук',d:'конный бой и густой лес'},{n:'Длинный лук',d:'дальний бой и навесной залп'},{n:'Арбалет',d:'медленно заряжается, бьёт насквозь'},{n:'Метательное оружие',d:'ножи, дротики, камни'}]},
+    {n:'Фехтование', s:'Сталь в руках: ближний бой в любых его видах.',
+     d:'Фехтование — умение драться вплотную: чувствовать дистанцию, ловить ритм противника и бить туда, где он этого не ждёт.',
+     sp:[{n:'Одноручный клинок',d:'меч, сабля, тесак'},{n:'Щит и клинок',d:'стена, за которой живут'},{n:'Двуручное оружие',d:'медленный замах, страшный удар'},{n:'Древковое оружие',d:'копьё и рогатина против чего угодно'},{n:'Кулачный бой',d:'когда оружия нет или не положено'}]},
+  ],
+
+  lore: [
+    {n:'Анализ', s:'Разложить странное на части и понять.',
+     d:'Анализ — умение смотреть на хаос и видеть порядок: вывести заключение из мелочей, понять, кто и зачем прошёл по комнате до тебя.',
+     sp:[{n:'Дедукция',d:'вывести целое из двух мелочей'},{n:'Осмотр места',d:'что здесь произошло и в каком порядке'},{n:'Шифры и тайнопись',d:'разобрать письмо, что пишут для других'},{n:'Оценка стоимости',d:'не купить камень за цену меча'}]},
+    {n:'Животные', s:'Нравы зверей, птиц и всякой живности.',
+     d:'Знание о животных — понимание того, как живут, охотятся и боятся звери, и как вести себя с теми из них, кого приручили люди.',
+     sp:[{n:'Лошади',d:'успокоить, оседлать, оценить'},{n:'Собаки',d:'понять, кто лает из страха, кто из долга'},{n:'Хищники',d:'нравы волка, рыси и медведя'},{n:'Птицы',d:'приметы и голубиная почта'}]},
+    {n:'Искусство', s:'Песни, роспись и размышление о прекрасном.',
+     d:'Искусство — знакомство с тем, что люди создают, чтобы не сойти с ума: песня у костра, фреска в часовне, баллада о давно павшем короле.',
+     sp:[{n:'Музыка и пение',d:'сыграть, подпеть, узнать мелодию'},{n:'Живопись и иконопись',d:'школа, возраст, подлинность'},{n:'Поэзия',d:'сложить и разобрать стих'},{n:'История искусств',d:'чьей работы и чьих годов'}]},
+    {n:'Медицина', s:'Раны, хвори и то, что поможет до костоправа.',
+     d:'Медицина — умение удержать человека между жизнью и смертью: остановить кровь, вправить плечо, отличить лихорадку от порчи — последнее не всегда просто.',
+     sp:[{n:'Первая помощь',d:'остановить кровь и удержать дух'},{n:'Болезни и поветрия',d:'откуда пришло и чем лечится'},{n:'Травничество',d:'отвар, припарка, сонное зелье'},{n:'Анатомия',d:'знать, куда бить и куда не трогать'}]},
+    {n:'Обычаи', s:'Как ведут себя люди — при дворе и на погосте.',
+     d:'Знание обычаев — понимание того, как устроены люди: кому первому подают кубок, какие слова нельзя произносить на кладбище и чем грозит срубленная чужая верба.',
+     sp:[{n:'Этикет знатных домов',d:'не опозорить себя перед бароном'},{n:'Законы и тяжбы',d:'что грозит и как изворотиться'},{n:'Народные поверья',d:'что можно и чего нельзя в деревне'},{n:'Чужеземные земли',d:'нравы и приметы дальних краёв'}]},
+    {n:'Мистика', s:'Знание о нечисти, проклятиях и обрядах.',
+     d:'Мистика — то, что знают шепотом: какая нечисть боится железа, какую порчу снимают на убывающей луне и почему нельзя отвечать тому, кто зовёт твоим именем из-за реки.',
+     sp:[{n:'Нечистая сила',d:'виды, повадки, слабости'},{n:'Проклятия и порча',d:'распознать и понять, как снята'},{n:'Обереги и ритуалы',d:'что защищает и как правильно освятить'},{n:'Погребальные обряды',d:'чтобы мёртвые лежали смирно'}]},
+    {n:'Плутовство', s:'Законы тёмной стороны города.',
+     d:'Плутовство — знание нижней стороны жизни: где скупают краденое, как отличить вора от переодетого стражника и во что обойдётся долг лудильщику.',
+     sp:[{n:'Воровской жаргон',d:'понять и не выдать себя'},{n:'Контрабанда',d:'что, где и почём провозят'},{n:'Азартные игры',d:'стол, кости и те, кто за ними стоит'},{n:'Притоны и скупщики',d:'где ищут и что предлагают'}]},
+    {n:'Ученость', s:'Книги, языки и мудрость веков.',
+     d:'Ученость — то, что дают книги и старые учителя: история земель, чужие письмена, ход светил и знамения, которые читают по ним.',
+     sp:[{n:'История и хроника',d:'кто, когда и почему'},{n:'Чужие языки',d:'прочитать и объяснить'},{n:'Алхимия',d:'теория и немного практики'},{n:'Астрономия и знамения',d:'что сулят затмения и кометы'}]},
+    {n:'Эмпатия', s:'Сердце читает сердце.',
+     d:'Эмпатия — умение чувствовать людей: заметить, что улыбка у торговца дежурная, что у вдовы за плачем каменное спокойствие, что друг молчит не просто так.',
+     sp:[{n:'Распознать ложь',d:'слышать, где голос ломается'},{n:'Настоящие чувства',d:'что за маской'},{n:'Утешить',d:'найти слова для горя'},{n:'Толпа и её настроение',d:'почувствовать, когда она закипит'}]},
+  ],
+
+  virtues: [
+    {n:'Совесть', s:'Голос, что не даёт переступить черту.',
+     d:'Совесть — внутренний суд, который не отпускает после дурного поступка. В тёмные времена её легко заглушить — и очень трудно вернуть.',
+     m:'Проверки против искушения и жестокости. Провал Совести при дурном деле оставляет зарубку на душе — а каждая зарубка кормит Тьму.'},
+    {n:'Хладнокровие', s:'Не дрогнуть, когда все вокруг кричат.',
+     d:'Хладнокровие — способность сохранять ясную голову посреди ужаса: когда горит обоз, когда из леса идёт то, чего не должно быть.',
+     m:'Проверки против ужаса и паники. Позволяет действовать в раунд страха без штрафа и трезво смотреть на кровавые сцены.'},
+    {n:'Самоконтроль', s:'Власть над собственными желаниями.',
+     d:'Самоконтроль — умение удержать себя: не выпить, когда нужно стоять, не ответить на оскорбление клинком, не призывать силу, которая просит слишком много.',
+     m:'Сопротивление соблазнам, гневу и зову проклятых сил. Проклятые силы требуют проверок Самоконтроля, когда их призывают слишком часто.'},
+    {n:'Смелость', s:'Шаг вперёд, хотя ноги просят назад.',
+     d:'Смелость — не отсутствие страха, а решение, принятое вопреки ему: остаться при раненом, выйти к воротам, заглянуть туда, куда другие отказались идти.',
+     m:'Проверки, чтобы действовать перед лицом опасности: броситься на помощь, не бежать, взять на себя первый удар.'},
+    {n:'Праведность', s:'Сила веры против тьмы.',
+     d:'Праведность — та часть души, до которой нечистой силе больно касаться. Она сильна не словами, а тем, что за ними стоит.',
+     m:'Проверки при чтении молитв, освящении оберегов и противостоянии нечисти. Чистая совесть добавляет кости к Праведности.'},
+    {n:'Стрессоустойчивость', s:'Долго носить невыносимое и не сломаться.',
+     d:'Стрессоустойчивость — выносливость духа: неделями жить под страхом, терять близких и всё равно вставать утром. Трещина в ней не видна — пока не поздно.',
+     m:'Проверки против затяжного ужаса, лишений и бессонницы. Провалы копятся в усталость духа и ведут к кошмарам и помутнениям.'},
+  ],
+
+  powers: [
+    {n:'Звериная сила', s:'Проклятие звериной крови: тело помнит, как было иначе.',
+     d:'В жилах скитальца проснулась кровь зверя. Чем глубже он её пьёт, тем меньше в нём остаётся человеческого: взгляд становится жёлтым, движения — рывками, а по полнолунию тянет выть.',
+     pr:'Дети и звери пугаются скитальца без причины; при проверке Чутья на нечисть мастер может бросить скрытую кость — на единицу звериное начало берёт верх, и скиталец поступает по звериному.',
+     lv:[
+      {lv:'I', n:'Нечистый нюх', d:'Обоняние и слух на грани возможного: скиталец чует кровь, страх и погоню за сотни шагов. +2 кости к Восприятию на запахи и звуки; выслеживание по следу без проверок в хороших условиях.'},
+      {lv:'II', n:'Когти и клыки', d:'Ногти твердеют в кривые когти — естественное оружие с уроном 2 и бронебойностью 1. Не считается ношением оружия и не может быть отнято.'},
+      {lv:'III', n:'Недремлющая мощь', d:'Тело зверя не знает усталости: скиталец не получает штрафов за усталость, лазает и прыгает как хищник (+2 кости к Атлетике при лазании и прыжках).'},
+      {lv:'IV', n:'Оборотень', d:'Действием скиталец принимает звериный облик (волк либо медведь — как уговорено с мастером): +3 кости к Силе и Проворству, но исчезают речь и руки. Облик держится, пока скиталец сам его не отпустит.'}]},
+    {n:'Дурной глаз', s:'Порча, что идёт из взгляда.',
+     d:'Есть люди, на которых лучше не смотреть долго. Скиталец умеет наслать порчу одним взглядом — но с каждым разом его глаза становятся всё более жёлтыми, а люди инстинктивно отводят взгляд.',
+     pr:'При торге и знакомстве собеседник, встретившийся со скитальцем взглядом, инстинктивно настораживается: −1 кость к Харизме и Красноречию в первом разговоре.',
+     lv:[
+      {lv:'I', n:'Сглаз', d:'Действием наводит на видимую цель сглаз: её следующая проверка получает −2 кости. На одну цель не чаще раза за сцену.'},
+      {lv:'II', n:'Слово порченое', d:'Проклинает вслух: цель, услышавшая порчу, теряет 1 кость во всех проверках до конца сцены.'},
+      {lv:'III', n:'Навий взгляд', d:'Видит то, что скрыто от живых: духов, метки смерти, порчу на людях. Автоматически распознаёт проклятия и нечисть под личиной.'},
+      {lv:'IV', n:'Чёрный заговор', d:'Раз в историю насылает тяжёлую порчу: цель впадает в хворь (состояние Ошеломлённый, пока не снято обрядом) или теряет самое дорогое — решает мастер. Обряд занимает ночь.'}]},
+    {n:'Нечистая мощь', s:'Сила, что даётся не Богом.',
+     d:'Мышцы скитальца напитаны чем-то чужим. Он ломает то, что не гнётся, и сам не гнётся — но чем чаще прибегает к этой силе, тем тяжелее становятся его черты, а сердце бьётся всё реже.',
+     pr:'На освящённой земле скиталец чувствует жжение; проверки Праведности он совершает с −1 костью.',
+     lv:[
+      {lv:'I', n:'Костяная крепость', d:'+1 к значению брони (суммируется с надетой). Проверки Выносливости против боли и усталости — с +2 костями.'},
+      {lv:'II', n:'Медвежья хватка', d:'+2 кости к Силе в борьбе и захватах. Вырваться из его захвата может лишь тот, чья Сила выше.'},
+      {lv:'III', n:'Голос грома', d:'Действием издаёт утробный рёв: все слышавшие проходят проверку Хладнокровия или получают состояние Ошеломлённый на раунд.'},
+      {lv:'IV', n:'Несокрушимый', d:'Первый раз в сцене, когда скиталец должен был пасть, он остаётся на ногах с 1 здоровьем. До конца сцены это проявление более не действует.'}]},
+    {n:'Морок', s:'Туман в чужих глазах.',
+     d:'Скиталец умеет заволакивать чужое зрение: скрыть, подменить, заставить увидеть нужное. Люди вокруг видят мир чуть так, как удобно ему, — и чем дальше, тем меньше он сам уверен, что его собственные глаза не лгут.',
+     pr:'Скиталец не видит своего отражения ясно: вода и зеркала показывают лишь размытый силуэт.',
+     lv:[
+      {lv:'I', n:'Отвод глаз', d:'Действием скрывает себя или небольшую вещь: ищущие совершают Восприятие против его Скрытности с −2 костями.'},
+      {lv:'II', n:'Чужой лик', d:'Раз в день принимает облик знакомого человека (рост и одежда — свои). Речь и повадки не копируются.'},
+      {lv:'III', n:'Туманная мгла', d:'Создаёт полосу тумана в нескольких шагах: внутри видят только те, кого скиталец позволит; остальные — Восприятие с −3 костями.'},
+      {lv:'IV', n:'Хижина на курьих ножках', d:'Раз в историю укутывает целый дом или лагерь мороком: чужаки блуждают по кругу, пока чары не сняты или пока их не поведёт тот, кому скиталец доверяет.'}]},
+    {n:'Голод', s:'Жажда чужой жизни.',
+     d:'Внутри скитальца поселилась пустота, которую не заполнить хлебом. Она требует жизни — крови, тепла, лет чужих судеб. Чем больше он отдаёт голоду, тем холоднее его кожа и голоднее взгляд.',
+     pr:'Раз в неделю скиталец обязан испить чужой жизненной силы, иначе получает −1 кость во всех проверках, пока Голод не утолён.',
+     lv:[
+      {lv:'I', n:'Тёмная жажда', d:'Чует живую кровь и слабости: +2 кости к Восприятию против живых существ; видит раны и хвори насквозь.'},
+      {lv:'II', n:'Первый глоток', d:'Касанием высасывает силу: цель теряет 1 здоровье или 1 кость на сцену — скиталец лечит столько же.'},
+      {lv:'III', n:'Голодный взгляд', d:'Действием вытягивает волю на расстоянии взгляда: цель проходит Самоконтроль или теряет действие. Не чаще раза на цель за сцену.'},
+      {lv:'IV', n:'Вечный голод', d:'Смертельные раны более не страшны: получив смертельный удар, скиталец падает, но не умирает, пока Голод не утолён кровью живого. Солнечный свет жжёт: −2 кости всем проверкам под открытым небом днём.'}]},
+    {n:'Тень', s:'Шёпот из-за грани.',
+     d:'Скиталец слышит мёртвых — и отвечает им. Тень ходит за ним по пятам, показывая то, чего не видят живые, и берёт плату воспоминаниями: чем чаще он заглядывает за грань, тем больше забывает о живых.',
+     pr:'Каждый раз, используя силу, скиталец называет мастеру одно своё тёплое воспоминание — оно тускнеет и более не в силах радовать.',
+     lv:[
+      {lv:'I', n:'Шёпот из-за грани', d:'Может задать один вопрос недавно умершему (в пределах сцены его смерти) или услышать последнее слово места, где пролилась кровь.'},
+      {lv:'II', n:'Холодное касание', d:'Касанием насылает могильный холод: цель проходит Выносливость или получает −1 кость до конца сцены. Нечисть от такого касания отшатывается.'},
+      {lv:'III', n:'Зов мёртвых', d:'Ночью у останков поднимает тень умершего и беседует с ней, пока горит свеча. Тень говорит правду, но любит загадки.'},
+      {lv:'IV', n:'Хождение за грань', d:'Раз в историю оставляет тело и на несколько минут уходит туда, где живым нет пути: видит скрытое, слышит все шёпоты. Тело остаётся беззащитным.'}]},
+    {n:'Ведьмин дар', s:'Слово и трава, что гнут судьбу.',
+     d:'Старый дар, который передают у печи и на перекрёстках: знать травы, наговаривать на воду, шептать на судьбу. Церковь называет это ересью, деревня — помощью, а расплата приходит одинаково.',
+     pr:'Церковь знает приметы дара: если скитальца узнают, путь к священникам закрыт, а в деревнях могут потребовать испытания.',
+     lv:[
+      {lv:'I', n:'Зельеварение', d:'Заваривает снадобья из собранных трав: сонное, болеутольное, приворотное. На одно зельье — ночь и проверка Мистики или Медицины.'},
+      {lv:'II', n:'Наговор', d:'Наговаривает на воду, нитку или соль: вещь обретает малую силу (оберег +1 кость против порчи и тому подобное). Один наговор за сцену.'},
+      {lv:'III', n:'Плетение судьбы', d:'Раз в историю шепчет на судьбу: перекидывает один брошенный кубик любого персонажа или превращает провал в успех на проверке без специализации.'},
+      {lv:'IV', n:'Ведьмин полёт', d:'Раз в ночь поднимается в полёт — на метле, на тёртом корыте или просто по воздуху, пока не кончится ночь. Свидетели проходят проверку Хладнокровия.'}]},
+    {n:'Метка Тьмы', s:'Сама тьма признала своего.',
+     d:'На скитальце стоит метка, которую видит всякая нечисть и которую прячут одежды и капюшоны. Тьма слушается его, как слушается хозяйский дом, — и приходит за ним, когда он слаб.',
+     pr:'Праведные люди чувствуют метку взглядом: священники и благочестивые могут опознать её проверкой Восприятия. Обереги на скитальце трещат и темнеют.',
+     lv:[
+      {lv:'I', n:'Зрение во тьме', d:'Видит в темноте, как в сумерках; тьма от костров его не слепит.'},
+      {lv:'II', n:'Тени слушаются', d:'Действием гасит или разжигает огни, сдвигает тени, чтобы укрыть себя или товарища (+2 кости к Скрытности в тени).'},
+      {lv:'III', n:'Шаг сквозь тень', d:'Раз за сцену уходит в одну тень и выходит из другой, которую видит, — в пределах десятков шагов.'},
+      {lv:'IV', n:'Пожиратель света', d:'Раз в историю гасит весь свет вокруг — факелы, свечи, волшебное пламя — на несколько минут. В кромешной тьме видят лишь он и те, кого он коснулся.'}]},
+  ],
+
+  states: [
+    {n:'Беззащитный', s:'Связан, безоружен или застигнут врасплох — защищаться нечем.',
+     d:'Скиталец не может защищаться и уклоняться. Все атаки против него совершаются с +3 костями, а его собственные проверки противостояния проваливаются автоматически.'},
+    {n:'Обездвиженный', s:'Ноги не слушаются: путы, зажатие, паралич.',
+     d:'Скиталец не может двигаться с места и теряет действия, связанные с перемещением. Вырваться можно проверкой Силы или Проворства против удержавшего — это занимает действие.'},
+    {n:'Захваченный', s:'Противник держит всем телом.',
+     d:'Скиталец схвачен и не может атаковать никого, кроме захватчика, и то с −2 костями. Вырвание — противоположная проверка Силы; пока захват держится, чужие атаки по скитальцу могут задеть и захватчика.'},
+    {n:'Сбит с ног', s:'Лежит на земле — дурное место для боя.',
+     d:'Все проверки скитальца, кроме попытки подняться, — с −2 костями. Подняться — действие и проверка Проворства. Атаки против лежащего получают +2 кости.'},
+    {n:'Ошеломлённый', s:'Мир звенит, мысль не собирается.',
+     d:'Скиталец теряет следующее действие и до конца сцены совершает проверки с −1 костью. Повторный ошелом продлевает и усугубляет состояние.'},
+    {n:'Ослеплённый', s:'Перед глазами — только чернота.',
+     d:'Все проверки, опирающиеся на зрение, и все атаки — с −3 костями. Слух и Чутьё работают как обычно, и опытный скиталец может частично возместить слепоту.'},
+    {n:'Оглохший', s:'Мир онемел.',
+     d:'Проверки Бдительности и Восприятия на слух — с −3 костями; окрик и команда не слышны. Взрывы и рёв рядом при глухоте особенно выбивают из равновесия.'},
+    {n:'Немой', s:'Голос отнят.',
+     d:'Скиталец не может говорить, кричать и наговаривать: любые силы и приёмы, требующие слова, недоступны. Позвать на помощь можно лишь жестом или стуком.'},
+    {n:'В укрытии', s:'Стена, мешок зерна, поваленное дерево.',
+     d:'Атаки по скитальцу получают −2 кости, а часть удара приходится на укрытие: если броня укрытия выше, чем у скитальца, считать броню по укрытию. Из-за укрытия нельзя атаковать в полный размах.'},
+    {n:'Окружённый', s:'Со всех сторон — враги.',
+     d:'Скиталец окружён: он не может отступить без проверки Проворства, враги атакуют с любой стороны, лишая его выгоды укрытия и оборонительных стилей. Прорыв окружения — действие и проверка.'},
+  ],
+
+  weapons: [
+    {n:'Кинжал',        dmg:1, hid:'легко',  m1:'+1', m2:'0',  ap:'—', st:'Клинок',        price:'3 с.',  d:'Незаменим в ножнах у пояса: последняя надежда, когда всё остальное потеряно.'},
+    {n:'Короткий меч',  dmg:2, hid:'трудно', m1:'+1', m2:'+1', ap:'—', st:'Клинок',        price:'12 с.', d:'Надёжный спутник горожанина и наёмника: лёгок, быстр, не обременяет.'},
+    {n:'Длинный меч',   dmg:3, hid:'нет',    m1:'+1', m2:'0',  ap:'1', st:'Клинок',        price:'25 с.', d:'Знак свободного человека с мечом в руках; требует ремесла, а не одной злости.'},
+    {n:'Двуручный меч', dmg:4, hid:'нет',    m1:'+2', m2:'−1', ap:'1', st:'Тяжёлое',       price:'45 с.', d:'Медленный замах и страшный итог; обороняться им трудно — руки всегда заняты.'},
+    {n:'Боевой топор',  dmg:3, hid:'нет',    m1:'+1', m2:'0',  ap:'1', st:'Тяжёлое',       price:'18 с.', d:'Простой, злой и честный: пробивает то, что меч лишь царапает.'},
+    {n:'Дубина',        dmg:2, hid:'нет',    m1:'0',  m2:'+1', ap:'—', st:'Тяжёлое',       price:'1 с.',  d:'Первое оружие бедняка; ломает кости и не жалуется на уход.'},
+    {n:'Боевой молот',  dmg:4, hid:'нет',    m1:'+1', m2:'−1', ap:'2', st:'Тяжёлое',       price:'22 с.', d:'Заточен под латы: там, где клинок скользнёт, молот продавит.'},
+    {n:'Копьё',         dmg:2, hid:'нет',    m1:'0',  m2:'+1', ap:'—', st:'Древковое',     price:'6 с.',  d:'Держит врага на расстоянии; в строю и против зверя — почти без цены.'},
+    {n:'Рогатина',      dmg:3, hid:'нет',    m1:'+1', m2:'0',  ap:'—', st:'Древковое',     price:'14 с.', d:'Тяжёлое охотничье древко: им встречают медведя и то, что носит медвежью шкуру.'},
+    {n:'Кистень',       dmg:2, hid:'трудно', m1:'+1', m2:'−1', ap:'—', st:'Гибкое',        price:'8 с.',  d:'Гибкое оружие: обходит щит, но и хозяину не прощает ошибки.'},
+    {n:'Короткий лук',  dmg:2, hid:'нет',    m1:'+1', m2:'0',  ap:'—', st:'Лук',           price:'10 с.', d:'Лук леса и конных налётов: быстрый выстрел в тесноте.'},
+    {n:'Длинный лук',   dmg:3, hid:'нет',    m1:'+1', m2:'0',  ap:'1', st:'Лук',           price:'20 с.', d:'Бьёт дальше, чем слышно, как кричат под ним.'},
+    {n:'Арбалет',       dmg:3, hid:'трудно', m1:'+1', m2:'0',  ap:'3', st:'Арбалет',       price:'30 с.', d:'Медленно заряжается, но пробивает почти любую броню.'},
+    {n:'Метательный нож',dmg:1,hid:'легко',  m1:'+1', m2:'0',  ap:'—', st:'Метательное',   price:'4 с.',  d:'Три ножа в поясе стоят дешевле одной паники.'},
+  ],
+
+  armor: [
+    {name:'Лёгкая броня', rows:[
+      {slot:'Голова', n:'Кожаный шлем',        a:1, str:'—', pen:'—',              w:'0,5 кг', price:'5 с.'},
+      {slot:'Торс',   n:'Кожаный дублет',      a:1, str:'—', pen:'—',              w:'2 кг',   price:'10 с.'},
+      {slot:'Руки',   n:'Кожаные наручи',      a:1, str:'—', pen:'—',              w:'1 кг',   price:'4 с.'},
+      {slot:'Ноги',   n:'Кожаные наколенники', a:1, str:'—', pen:'—',              w:'1 кг',   price:'4 с.'},
+    ]},
+    {name:'Средняя броня', rows:[
+      {slot:'Голова', n:'Кольчужный капюшон',  a:2, str:'2', pen:'—',              w:'1 кг',   price:'15 с.'},
+      {slot:'Торс',   n:'Кольчуга',            a:3, str:'3', pen:'−1 Проворство',  w:'6 кг',   price:'45 с.'},
+      {slot:'Руки',   n:'Кольчужные рукава',   a:2, str:'2', pen:'−1 Ловкость рук',w:'1,5 кг', price:'12 с.'},
+      {slot:'Ноги',   n:'Кольчужные чулки',    a:2, str:'2', pen:'—',              w:'2 кг',   price:'15 с.'},
+    ]},
+    {name:'Тяжёлая броня', rows:[
+      {slot:'Голова', n:'Шлем с забралом',     a:3, str:'3', pen:'−1 Восприятие (слух)', w:'2 кг',  price:'30 с.'},
+      {slot:'Торс',   n:'Пластинчатый доспех', a:4, str:'4', pen:'−2 Проворство',  w:'10 кг',  price:'90 с.'},
+      {slot:'Руки',   n:'Латные руки',         a:3, str:'3', pen:'−1 Проворство',  w:'3 кг',   price:'25 с.'},
+      {slot:'Ноги',   n:'Латные ноги',         a:3, str:'3', pen:'−1 Проворство',  w:'4 кг',   price:'25 с.'},
+    ]},
+  ],
+
+  traits: [
+    // Достоинства (стоимость в опыте)
+    {n:'Адреналин',       k:'Достоинство', c:'5', s:'Боль только заводит.',
+     d:'Когда здоровье скитальца впервые за сцену падает ниже половины, он получает +2 кости к следующей атаке или проверке Силы.'},
+    {n:'Богатый',         k:'Достоинство', c:'5', s:'Кошель с лишним.',
+     d:'Скиталец начинает с кошельком вдесятеро толще обычного и связями среди торговцев; деньги в его руках тают медленнее — мастер не обирает его первым же торгом.'},
+    {n:'Живучесть',       k:'Достоинство', c:'5', s:'Тело, что не хочет умирать.',
+     d:'+2 к запасу здоровья и +1 кость к проверкам Выносливости против ран, яда и хвори.'},
+    {n:'Меткий стрелок',  k:'Достоинство', c:'5', s:'Глаз намётан.',
+     d:'+1 кость к атакам дальним и метательным оружием; умышленное прицеливание даёт ещё одну дополнительную кость.'},
+    {n:'Крепкая спина',   k:'Достоинство', c:'3', s:'Носит на себе полдома.',
+     d:'Может нести вдвое больше без штрафов; тяжёлая броня утомляет его вдвое медленнее.'},
+    {n:'Связи',           k:'Достоинство', c:'5', s:'В каждом городе — кто-то свой.',
+     d:'Раз в историю скиталец находит в городе знакомого: ночлег, свежий слух, скупку краденого или ходатая перед властями.'},
+    {n:'Счастливчик',     k:'Достоинство', c:'8', s:'Судьба отворачивается редко.',
+     d:'Раз за игровую сессию скиталец может перекинуть любой свой брошенный кубик, приняв второй результат.'},
+    {n:'Тихий шаг',       k:'Достоинство', c:'3', s:'Половицы молчат под ним.',
+     d:'+2 кости к Скрытности при тихом передвижении; дома и стража слышат его в последнюю очередь.'},
+    {n:'Эрудит',          k:'Достоинство', c:'5', s:'Много читал, ещё больше слушал.',
+     d:'+1 кость ко всем Знаниям; знает один дополнительный язык.'},
+    {n:'Обаятельный',     k:'Достоинство', c:'4', s:'Люди сами идут навстречу.',
+     d:'+1 кость к Харизме при первом впечатлении и к Красноречию в мирных разговорах.'},
+    {n:'Закалённый',      k:'Достоинство', c:'4', s:'Голод, холод и дождь — старые знакомые.',
+     d:'Проверки Выносливости против непогоды и лишений — с +2 костями; спит где угодно и просыпается бодрым.'},
+    // Недостатки (приносят опыт)
+    {n:'Фобия',           k:'Недостаток', c:'5', s:'Страх, что сильнее разума.',
+     d:'У скитальца есть предмет страха — замкнутое пространство, вода, огонь, толпа… Обсудите с мастером. При встрече — проверка Хладнокровия, иначе Ошеломлённый и −2 кости на сцену.'},
+    {n:'Зависимость',     k:'Недостаток', c:'5', s:'Слабость, что всегда с собой.',
+     d:'Вино, дым, игра или зелье: без своей доли скиталец получает −1 кость ко всем проверкам, а при возможности тратит на неё деньги и время.'},
+    {n:'Долг',            k:'Недостаток', c:'4', s:'Кто-то ждёт возврата.',
+     d:'У скитальца долг — деньгами, кровью или словом. Кредитор напомнит о себе в худший момент; отказ платить — отдельная история с последствиями.'},
+    {n:'Вражда',          k:'Недостаток', c:'5', s:'Кто-то желает зла.',
+     d:'У скитальца есть враг или целый род врагов. Они появляются там, где он уязвим, — и не остановятся.'},
+    {n:'Метка Тьмы',      k:'Недостаток', c:'6', s:'На нём печать.',
+     d:'Нечисть чует скитальца издалека и первым делом идёт к нему; благочестивые люди настораживаются рядом с ним без причины.'},
+    {n:'Хромота',         k:'Недостаток', c:'5', s:'Нога не та.',
+     d:'−1 кость к Атлетике при беге и прыжках; погоня и отступление для скитальца всегда с осложнением.'},
+    {n:'Дурная слава',    k:'Недостаток', c:'3', s:'О нём говорят не то.',
+     d:'В каждом втором городе скитальца опознают по дурной молве: цены выше, стража придирчива, честные дома не открывают.'},
+    {n:'Кошмары',         k:'Недостаток', c:'3', s:'Ночи не отдых.',
+     d:'Каждую ночь — проверка Стрессоустойчивости: на провале скиталец встаёт разбитым (−1 кость до полудня). То, что ему снится, иногда сбывается.'},
+  ],
+};
+
+/* Назначаем идентификаторы элементам для ссылок из интерфейса */
+(function assignIds(){
+  for(const key of CAT_ORDER){
+    const sec = gameData[key];
+    if(Array.isArray(sec)) sec.forEach((it,i)=> it.id = key+'-'+i);
+  }
+  gameData.armor.forEach((g,gi)=> g.rows.forEach((r,ri)=> r.id = 'armor-'+gi+'-'+ri));
+})();
+
+/* =====================================================================
+   ИКОНКИ (инлайн SVG, без внешних библиотек)
+   ===================================================================== */
+const ICONS = {
+  diamond:'<path d="M12 3.5 20 12l-8 8.5L4 12z"/>',
+  plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+  minus:'<line x1="5" y1="12" x2="19" y2="12"/>',
+  trash:'<path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7l1 12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-12"/><line x1="10" y1="11" x2="10" y2="16"/><line x1="14" y1="11" x2="14" y2="16"/>',
+  download:'<path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/>',
+  upload:'<path d="M12 16V5"/><path d="M7 9l5-5 5 5"/><path d="M5 20h14"/>',
+  reset:'<path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v4h-4"/>',
+  user:'<circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.2-3.2 4-4.8 7-4.8s5.8 1.6 7 4.8"/>',
+};
+function icon(name){
+  return '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+ICONS[name]+'</svg>';
+}
+/* Ромб-орнамент ставится во все плейсхолдеры [data-diamond] */
+document.querySelectorAll('[data-diamond]').forEach(el=> el.innerHTML = icon('diamond'));
+
+/* =====================================================================
+   УТИЛИТЫ
+   ===================================================================== */
+const $  = s => document.querySelector(s);
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const escapeReg = s => s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const uid = () => 'id'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+
+/* Подсветка совпадений поиска */
+function hl(text, q){
+  const safe = esc(text);
+  if(!q) return safe;
+  const re = new RegExp('('+escapeReg(esc(q))+')','gi');
+  return safe.replace(re,'<mark>$1</mark>');
+}
+/* Русские склонения: pluralize(5, ['запись','записи','записей']) */
+function pluralize(n, forms){
+  const a = Math.abs(n)%100, b = a%10;
+  if(a>10 && a<20) return forms[2];
+  if(b>1 && b<5)  return forms[1];
+  if(b===1)       return forms[0];
+  return forms[2];
+}
+function fmtDate(ts){
+  const d = new Date(ts), p = x => String(x).padStart(2,'0');
+  return p(d.getDate())+'.'+p(d.getMonth()+1)+'.'+d.getFullYear()+', '+p(d.getHours())+':'+p(d.getMinutes());
+}
+
+/* =====================================================================
+   СОСТОЯНИЕ И ХРАНИЛИЩЕ
+   ===================================================================== */
+const STORE_KEY = 'skitalets_tool_data_v1';
+let state = { characters:[], log:[] };
+let logSort = { key:'ts', dir:-1 };   // сортировка летописи
+let logCharFilter = 'all';            // фильтр летописи по персонажу
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return;
+    const parsed = JSON.parse(raw);
+    if(Array.isArray(parsed.characters) && Array.isArray(parsed.log)) state = parsed;
+  }catch(e){ console.warn('Не удалось прочитать сохранение:', e); }
+}
+function saveState(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+  catch(e){ toast('Не удалось сохранить данные в браузере', false); }
+}
+
+/* =====================================================================
+   ТОСТЫ
+   ===================================================================== */
+function toast(msg, ok=true){
+  const el = document.createElement('div');
+  el.className = 'toast'+(ok?'':' err');
+  el.textContent = msg;
+  $('#toasts').appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(),300); }, 3200);
+}
+
+/* =====================================================================
+   МОДАЛЬНЫЕ ОКНА (единая система; alert/confirm не используются)
+   ===================================================================== */
+const overlay = $('#overlay');
+function openModal(title, bodyHTML){
+  $('#modalTitle').innerHTML = title;
+  $('#modalBody').innerHTML = bodyHTML;
+  overlay.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(){
+  overlay.classList.add('hidden');
+  document.body.style.overflow = '';
+}
+ $('#modalClose').addEventListener('click', closeModal);
+overlay.addEventListener('click', e=>{ if(e.target === overlay) closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && !overlay.classList.contains('hidden')) closeModal(); });
+
+/* Окно подтверждения с опасным действием */
+function confirmModal({title, body, confirmText, onConfirm}){
+  openModal(esc(title),
+    '<p class="d-desc">'+body+'</p>'+
+    '<div class="modal-actions">'+
+      '<button class="btn" id="cfCancel">Отмена</button>'+
+      '<button class="btn blood" id="cfOk">'+esc(confirmText)+'</button>'+
+    '</div>');
+  $('#cfCancel').addEventListener('click', closeModal);
+  $('#cfOk').addEventListener('click', ()=>{ closeModal(); onConfirm(); });
+}
+
+/* =====================================================================
+   ВКЛАДКИ
+   ===================================================================== */
+ $('#tabs').addEventListener('click', e=>{
+  const btn = e.target.closest('.tab');
+  if(!btn) return;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t===btn));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.add('hidden'));
+  $('#panel-'+btn.dataset.tab).classList.remove('hidden');
+});
+
+/* =====================================================================
+   СПРАВОЧНИК: поиск, фильтр, рендер
+   ===================================================================== */
+const refState = { q:'', cat:'all' };
+
+/* Выпадающий список категорий */
+(function fillCatSelect(){
+  const sel = $('#refCat');
+  CAT_ORDER.forEach(k=>{
+    const o = document.createElement('option');
+    o.value = k; o.textContent = CAT_META[k].title;
+    sel.appendChild(o);
+  });
+})();
+ $('#refCat').addEventListener('change', e=>{ refState.cat = e.target.value; renderReference(); });
+ $('#refSearch').addEventListener('input', e=>{ refState.q = e.target.value.trim(); renderReference(); });
+
+function itemMatches(it, q){
+  if(!q) return true;
+  let hay = it.n+' '+it.s+' '+it.d;
+  if(it.sp) hay += ' '+it.sp.map(s=>s.n+' '+s.d).join(' ');
+  if(it.lv) hay += ' '+it.lv.map(l=>l.n+' '+l.d).join(' ');
+  if(it.k)  hay += ' '+it.k;
+  return hay.toLowerCase().includes(q);
+}
+
+function sectionHead(key, count){
+  const m = CAT_META[key];
+  return '<div class="cat-head">'+
+    '<span class="diam">'+icon('diamond')+'</span>'+
+    '<h2 class="cat-title">'+esc(m.title)+'</h2>'+
+    '<span class="cat-count">'+count+' '+pluralize(count,['позиция','позиции','позиций'])+'</span>'+
+  '</div>';
+}
+
+function cardHTML(it, key, q){
+  let meta = '';
+  if(it.sp) meta = it.sp.length+' '+pluralize(it.sp.length,['специализация','специализации','специализаций']);
+  if(it.lv) meta = 'уровни I–IV · есть расплата';
+  if(key==='traits'){
+    const good = it.k==='Достоинство';
+    meta = '<span class="'+(good?'tag-good':'tag-bad')+'">'+esc(it.k)+
+      (good ? ' · '+esc(it.c)+' опыта' : ' · даёт '+esc(it.c)+' опыта')+'</span>';
+  }
+  return '<article class="card" role="button" tabindex="0" data-cat="'+key+'" data-item="'+it.id+'">'+
+    '<h3 class="card-name"><span class="diam">'+icon('diamond')+'</span>'+hl(it.n, q)+'</h3>'+
+    '<p class="card-short">'+hl(it.s, q)+'</p>'+
+    (meta ? '<p class="card-meta">'+meta+'</p>' : '')+
+  '</article>';
+}
+
+function weaponsTableHTML(items, q){
+  return '<div class="table-scroll"><table><thead><tr>'+
+    '<th>Название</th><th class="num">Урон</th><th>Скрытность</th><th class="num">МС наст.</th><th class="num">МС обор.</th><th class="num">ББ</th><th>Стиль</th><th class="num">Цена</th>'+
+    '</tr></thead><tbody>'+
+    items.map(w=>'<tr data-cat="weapons" data-item="'+w.id+'">'+
+      '<td class="rowname">'+hl(w.n,q)+'</td>'+
+      '<td class="num">'+w.dmg+'</td><td>'+w.hid+'</td>'+
+      '<td class="num">'+w.m1+'</td><td class="num">'+w.m2+'</td>'+
+      '<td class="num">'+w.ap+'</td><td>'+w.st+'</td><td class="num">'+w.price+'</td>'+
+    '</tr>').join('')+
+    '</tbody></table></div>'+
+    '<p class="tnote">МС — модификатор костей боевого стиля: наступательного (наст.) и оборонительного (обор.). ББ — бронебойность: столько очков брони удар игнорирует.</p>';
+}
+
+function armorTablesHTML(groups, q){
+  return groups.map(g=>
+    '<div class="armor-group"><h3>'+esc(g.name)+'</h3>'+
+    '<div class="table-scroll"><table><thead><tr>'+
+    '<th>Часть тела</th><th>Название</th><th class="num">Броня</th><th class="num">Треб. Силы</th><th>Штрафы</th><th class="num">Вес</th><th class="num">Цена</th>'+
+    '</tr></thead><tbody>'+
+    g.rows.map(r=>'<tr data-cat="armor" data-item="'+r.id+'">'+
+      '<td>'+r.slot+'</td><td class="rowname">'+hl(r.n,q)+'</td>'+
+      '<td class="num">'+r.a+'</td><td class="num">'+r.str+'</td>'+
+      '<td>'+r.pen+'</td><td class="num">'+r.w+'</td><td class="num">'+r.price+'</td>'+
+    '</tr>').join('')+
+    '</tbody></table></div></div>').join('')+
+    '<p class="tnote">Требование к Силе — минимальное значение качества, при котором доспех не считается обременительным. Штрафы действуют, пока соответствующая часть тела прикрыта.</p>';
+}
+
+function renderReference(){
+  const q = refState.q.toLowerCase();
+  const cats = refState.cat==='all' ? CAT_ORDER : [refState.cat];
+  let html = '', found = 0;
+
+  for(const key of cats){
+    const sec = gameData[key];
+    if(key==='weapons'){
+      const items = sec.filter(w=>itemMatches(w,q));
+      if(q && !items.length) continue;
+      found += items.length;
+      html += '<section class="cat">'+sectionHead(key,items.length)+weaponsTableHTML(items,q)+'</section>';
+    }else if(key==='armor'){
+      const groups = sec.map(g=>({name:g.name, rows:g.rows.filter(r=>itemMatches(r,q))}))
+                        .filter(g=>!q || g.rows.length);
+      const count = groups.reduce((s,g)=>s+g.rows.length,0);
+      if(q && !count) continue;
+      found += count;
+      html += '<section class="cat">'+sectionHead(key,count)+armorTablesHTML(groups,q)+'</section>';
+    }else{
+      const items = sec.filter(it=>itemMatches(it,q));
+      if(q && !items.length) continue;
+      found += items.length;
+      html += '<section class="cat">'+sectionHead(key,items.length)+
+        '<div class="cards">'+items.map(it=>cardHTML(it,key,q)).join('')+'</div></section>';
+    }
+  }
+  if(!found && q){
+    html = '<div class="empty"><span class="diam">'+icon('diamond')+'</span>По запросу «'+esc(refState.q)+'» ничего не найдено.<br>Попробуйте иное слово — летопись тёмных времён обширна.</div>';
+  }
+  $('#refList').innerHTML = html;
+}
+
+/* Открытие карточки / строки таблицы: делегирование */
+function openItemModal(key, id){
+  const meta = CAT_META[key];
+  let body = '', title = '';
+
+  if(key==='weapons'){
+    const w = gameData.weapons.find(x=>x.id===id); if(!w) return;
+    title = w.n;
+    body = '<p class="modal-kicker">'+meta.kicker+'</p>'+
+      '<dl class="props">'+
+        '<div><dt>Урон</dt><dd>'+w.dmg+'</dd></div>'+
+        '<div><dt>Скрытность</dt><dd>'+esc(w.hid)+'</dd></div>'+
+        '<div><dt>МС наст.</dt><dd>'+esc(w.m1)+'</dd></div>'+
+        '<div><dt>МС обор.</dt><dd>'+esc(w.m2)+'</dd></div>'+
+        '<div><dt>Бронебойность</dt><dd>'+esc(w.ap)+'</dd></div>'+
+        '<div><dt>Стиль</dt><dd>'+esc(w.st)+'</dd></div>'+
+        '<div><dt>Цена</dt><dd>'+esc(w.price)+'</dd></div>'+
+      '</dl>'+
+      '<p class="d-desc d-drop">'+esc(w.d)+'</p>'+
+      '<div class="d-block"><span class="lbl">Игромеханика</span><p>МС — модификатор костей боевого стиля: наступательного и оборонительного. ББ — бронебойность: столько очков брони удар игнорирует. Скрытность показывает, можно ли унести оружие незамеченным.</p></div>';
+  }
+  else if(key==='armor'){
+    let row=null, group=null;
+    for(const g of gameData.armor){ const r=g.rows.find(x=>x.id===id); if(r){row=r;group=g;break;} }
+    if(!row) return;
+    title = row.n;
+    body = '<p class="modal-kicker">'+meta.kicker+' · '+esc(group.name)+'</p>'+
+      '<dl class="props">'+
+        '<div><dt>Часть тела</dt><dd>'+row.slot+'</dd></div>'+
+        '<div><dt>Броня</dt><dd>'+row.a+'</dd></div>'+
+        '<div><dt>Треб. Силы</dt><dd>'+esc(row.str)+'</dd></div>'+
+        '<div><dt>Штрафы</dt><dd>'+esc(row.pen)+'</dd></div>'+
+        '<div><dt>Вес</dt><dd>'+esc(row.w)+'</dd></div>'+
+        '<div><dt>Цена</dt><dd>'+esc(row.price)+'</dd></div>'+
+      '</dl>'+
+      '<div class="d-block"><span class="lbl">Игромеханика</span><p>Броня вычитается из урона по прикрытой части тела. Если значение Силы ниже требуемого, все штрафы доспеха удваиваются.</p></div>';
+  }
+  else{
+    const it = gameData[key].find(x=>x.id===id); if(!it) return;
+    title = it.n;
+    body = '<p class="modal-kicker">'+meta.kicker+'</p>';
+    body += '<p class="d-desc d-drop">'+esc(it.d)+'</p>';
+    if(it.m) body += '<div class="d-block"><span class="lbl">Игромеханика</span><p>'+esc(it.m)+'</p></div>';
+    if(it.sp) body += '<div class="d-block"><span class="lbl">Специализации</span><ul class="specs">'+
+      it.sp.map(s=>'<li><b>'+esc(s.n)+'</b><span>— '+esc(s.d)+'</span></li>').join('')+'</ul></div>';
+    if(it.pr) body += '<div class="d-block bloodline"><span class="lbl">Расплата</span><p>'+esc(it.pr)+'</p></div>';
+    if(it.lv) body += '<div class="d-block bloodline"><span class="lbl">Уровни и проявления</span><div>'+
+      it.lv.map(l=>'<div class="lvl"><span class="lvl-num"><span>'+l.lv+'</span></span><div><b>'+esc(l.n)+'.</b><p>'+esc(l.d)+'</p></div></div>').join('')+'</div></div>';
+    if(key==='traits'){
+      const good = it.k==='Достоинство';
+      body += '<div class="d-block"><span class="lbl">'+(good?'Стоимость':'Даёт опыта')+'</span><p>'+
+        (good ? esc(it.c)+' опыта' : esc(it.c)+' опыта')+'</p></div>';
+    }
+  }
+  openModal(esc(title), body);
+}
+
+ $('#refList').addEventListener('click', e=>{
+  const el = e.target.closest('[data-cat][data-item]');
+  if(el) openItemModal(el.dataset.cat, el.dataset.item);
+});
+ $('#refList').addEventListener('keydown', e=>{
+  if(e.key==='Enter' || e.key===' '){
+    const el = e.target.closest('.card[data-cat]');
+    if(el){ e.preventDefault(); openItemModal(el.dataset.cat, el.dataset.item); }
+  }
+});
+
+/* =====================================================================
+   ТРЕКЕР ОПЫТА
+   ===================================================================== */
+ $('#charForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const name = $('#charNameInput').value.trim();
+  if(!name){ toast('Дайте скитальцу имя — даже самое мрачное', false); return; }
+  state.characters.push({ id:uid(), name, xp:0 });
+  $('#charNameInput').value = '';
+  saveState(); renderTracker();
+  toast('«'+name+'» принят в отряд');
+});
+
+/* Перерисовка всего трекера */
+function renderTracker(){ renderChars(); renderLog(); }
+
+function renderChars(){
+  const box = $('#charList');
+  if(!state.characters.length){
+    box.innerHTML = '<div class="empty"><span class="diam">'+icon('diamond')+'</span>Отряд пока пуст. Впишите имя первого скитальца — и путь начнётся.</div>';
+    return;
+  }
+  box.innerHTML = state.characters.map(c=>{
+    const neg = c.xp < 0;
+    return '<div class="char-row">'+
+      '<div class="char-name">'+esc(c.name)+'</div>'+
+      '<div class="char-xp"><span class="xp-num'+(neg?' neg':'')+'">'+(neg?'−':'')+Math.abs(c.xp)+'</span><span class="xp-label">'+pluralize(Math.abs(c.xp),['очко опыта','очка опыта','очков опыта'])+'</span></div>'+
+      '<div class="char-actions">'+
+        '<button class="btn gold" data-act="add" data-id="'+c.id+'">'+icon('plus')+'Добавить</button>'+
+        '<button class="btn blood" data-act="spend" data-id="'+c.id+'">'+icon('minus')+'Потратить</button>'+
+        '<button class="icon-btn" data-act="del" data-id="'+c.id+'" aria-label="Удалить персонажа" title="Удалить">'+icon('trash')+'</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+ $('#charList').addEventListener('click', e=>{
+  const btn = e.target.closest('[data-act]');
+  if(!btn) return;
+  const c = state.characters.find(x=>x.id===btn.dataset.id);
+  if(!c) return;
+  if(btn.dataset.act==='add')  openXpModal(c, 'add');
+  if(btn.dataset.act==='spend')openXpModal(c, 'spend');
+  if(btn.dataset.act==='del')  openDeleteCharModal(c);
+});
+
+/* --- Окно добавления/траты опыта --- */
+function openXpModal(c, mode){
+  const isAdd = mode==='add';
+  openModal((isAdd?'Добавить опыт · ':'Потратить опыт · ')+esc(c.name),
+    '<form id="xpForm">'+
+      '<div class="field"><label>Количество</label><input type="number" id="xpAmount" min="1" step="1" value="1"></div>'+
+      '<div class="field"><label>Причина</label><input type="text" id="xpReason" maxlength="120" placeholder="'+
+        (isAdd?'подвиг, найденный клад, урок мастера…':'обучение, снаряжение, услуга…')+'"></div>'+
+      '<p class="warn hidden" id="xpWarn">Внимание: опыт уйдёт в минус. Мастер вольно распоряжается судьбой, но подумайте ещё раз.</p>'+
+      '<div class="modal-actions">'+
+        '<button type="button" class="btn" id="xpCancel">Отмена</button>'+
+        '<button type="submit" class="btn '+(isAdd?'gold':'blood')+'">'+(isAdd?'Записать прибавку':'Записать трату')+'</button>'+
+      '</div>'+
+    '</form>');
+  const amountEl = $('#xpAmount');
+  const warnEl = $('#xpWarn');
+  amountEl.addEventListener('input', ()=>{
+    const v = parseInt(amountEl.value,10)||0;
+    warnEl.classList.toggle('hidden', isAdd || (c.xp - v) >= 0);
+  });
+  $('#xpCancel').addEventListener('click', closeModal);
+  $('#xpForm').addEventListener('submit', e=>{
+    e.preventDefault();
+    const amount = parseInt(amountEl.value,10);
+    if(!amount || amount<1){ toast('Укажите количество больше нуля', false); return; }
+    const reason = $('#xpReason').value.trim() || 'Без причины';
+    c.xp += isAdd ? amount : -amount;
+    state.log.push({ id:uid(), ts:Date.now(), charId:c.id, charName:c.name,
+                     type:isAdd?'+':'−', amount, reason });
+    saveState(); closeModal(); renderTracker();
+    toast((isAdd?'+':'−')+amount+' · '+c.name+' — «'+reason+'»');
+  });
+  amountEl.focus(); amountEl.select();
+}
+
+/* --- Удаление персонажа с опцией чистки летописи --- */
+function openDeleteCharModal(c){
+  const n = state.log.filter(l=>l.charId===c.id).length;
+  const entryWord = pluralize(n,['запись','записи','записей']);
+  confirmModal({
+    title:'Удалить скитальца?',
+    body:'«'+esc(c.name)+'» покинет отряд'+(n ? ' — в летописи останется '+n+' '+entryWord+' о нём.' : '.')+
+      '<label class="check"><input type="checkbox" id="delLogEntries" checked> Удалить также его '+n+' '+entryWord+' из летописи</label>',
+    confirmText:'Удалить',
+    onConfirm(){
+      state.characters = state.characters.filter(x=>x.id!==c.id);
+      if($('#delLogEntries') && $('#delLogEntries').checked){
+        state.log = state.log.filter(l=>l.charId!==c.id);
+      }
+      saveState(); renderTracker();
+      toast('«'+c.name+'» покинул отряд');
+    }
+  });
+}
+
+/* --- Летопись: фильтр, сортировка, рендер --- */
+ $('#logCharFilter').addEventListener('change', e=>{ logCharFilter = e.target.value; renderLog(); });
+ $('#logWrap').addEventListener('click', e=>{
+  const th = e.target.closest('th[data-sort]');
+  if(!th) return;
+  const key = th.dataset.sort;
+  if(logSort.key===key) logSort.dir *= -1;
+  else logSort = { key, dir: key==='ts' ? -1 : 1 };
+  renderLog();
+});
+
+function renderLog(){
+  /* Фильтр по персонажу */
+  const sel = $('#logCharFilter');
+  const current = state.characters.some(c=>c.id===logCharFilter) ? logCharFilter : 'all';
+  sel.innerHTML = '<option value="all">Все скитальцы</option>'+
+    state.characters.map(c=>'<option value="'+c.id+'"'+(c.id===current?' selected':'')+'>'+esc(c.name)+'</option>').join('');
+  logCharFilter = current;
+
+  $('#logCount').textContent = state.log.length
+    ? state.log.length+' '+pluralize(state.log.length,['запись','записи','записей']) : '';
+
+  let rows = state.log.filter(l=> logCharFilter==='all' || l.charId===logCharFilter);
+  rows = rows.slice().sort((a,b)=>{
+    if(logSort.key==='ts') return (a.ts-b.ts)*logSort.dir;
+    return a.charName.localeCompare(b.charName,'ru')*logSort.dir;
+  });
+
+  const arrow = k => logSort.key===k ? '<span class="sort-arrow">'+(logSort.dir===1?'▴':'▾')+'</span>' : '';
+
+  if(!rows.length){
+    $('#logWrap').innerHTML = '<div class="empty"><span class="diam">'+icon('diamond')+'</span>Летопись пока чиста. Каждый прибывший и потраченный опыт будет записан сюда.</div>';
+    return;
+  }
+  $('#logWrap').innerHTML = '<div class="table-scroll"><table><thead><tr>'+
+    '<th class="sortable" data-sort="ts">Дата'+arrow('ts')+'</th>'+
+    '<th class="sortable" data-sort="name">Персонаж'+arrow('name')+'</th>'+
+    '<th>Тип</th><th class="num">Кол-во</th><th>Причина</th>'+
+    '</tr></thead><tbody>'+
+    rows.map(l=>
+      '<tr><td style="white-space:nowrap">'+fmtDate(l.ts)+'</td>'+
+      '<td>'+esc(l.charName)+'</td>'+
+      '<td><span class="sign '+(l.type==='+'?'plus':'minus')+'">'+l.type+'</span>'+(l.type==='+'?'получение':'трата')+'</td>'+
+      '<td class="num">'+l.amount+'</td>'+
+      '<td>'+esc(l.reason)+'</td></tr>').join('')+
+    '</tbody></table></div>';
+}
+
+/* =====================================================================
+   ЭКСПОРТ / ИМПОРТ / СБРОС
+   ===================================================================== */
+ $('#exportBtn').addEventListener('click', ()=>{
+  const stamp = new Date().toISOString().slice(0,16).replace(/[:T]/g,'-');
+  const blob = new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'skitalets-save-'+stamp+'.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  toast('Данные сохранены в файл skitalets-save-'+stamp+'.json');
+});
+
+ $('#importBtn').addEventListener('click', ()=> $('#importFile').click());
+ $('#importFile').addEventListener('change', e=>{
+  const file = e.target.files[0];
+  e.target.value = '';
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    let data;
+    try{ data = JSON.parse(reader.result); }
+    catch(err){ toast('Файл повреждён: это не корректный JSON', false); return; }
+    if(!data || !Array.isArray(data.characters) || !Array.isArray(data.log)){
+      toast('Структура файла не похожа на сохранение Скитальца', false); return;
+    }
+    const nC = data.characters.length, nL = data.log.length;
+    confirmModal({
+      title:'Заменить данные?',
+      body:'Из файла будут восстановлены <b>'+nC+'</b> '+pluralize(nC,['скиталец','скитальца','скитальцев'])+
+           ' и <b>'+nL+'</b> '+pluralize(nL,['запись','записи','записей'])+' летописи. Текущие данные будут заменены.',
+      confirmText:'Заменить',
+      onConfirm(){
+        state = data; saveState(); renderTracker();
+        toast('Данные успешно загружены из файла');
+      }
+    });
+  };
+  reader.onerror = ()=> toast('Не удалось прочитать файл', false);
+  reader.readAsText(file);
+});
+
+ $('#resetBtn').addEventListener('click', ()=>{
+  confirmModal({
+    title:'Сбросить все данные?',
+    body:'Весь отряд и вся летопись будут <b>безвозвратно удалены</b> из памяти браузера. Перед сбросом можно сделать экспорт в JSON.',
+    confirmText:'Стереть всё',
+    onConfirm(){
+      try{ localStorage.removeItem(STORE_KEY); }catch(e){}
+      state = { characters:[], log:[] };
+      logCharFilter = 'all';
+      renderTracker();
+      toast('Все данные стёрты. Начинается новая история');
+    }
+  });
+});
+
+/* =====================================================================
+   ИНИЦИАЛИЗАЦИЯ
+   ===================================================================== */
+loadState();
+renderReference();
+renderTracker();
+</script>
+</body>
+</html>
