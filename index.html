@@ -1,0 +1,2548 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Скиталец · Ожившие кошмары — летопись странника</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@500;600;700&family=Cormorant:ital,wght@0,500;0,600;1,500&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0d0a; --panel:#16120d; --panel2:#1b1610; --bg2:#0c0a08;
+  --ink:#d9cbaa; --ink-strong:#efe3c4; --dim:#9b8b6c; --faint:#6e6149;
+  --gold:#c39b4a; --gold-soft:#a5823e; --blood:#a3352c; --blood-deep:#6e1f1a;
+  --line:rgba(205,180,130,.16); --line-strong:rgba(205,180,130,.34);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 'Spectral',serif;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.8 0 0 0 0 0.7 0 0 0 0 0.5 0 0 0 0.045 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 50% 38%, transparent 52%, rgba(0,0,0,.55) 100%)}
+body.locked{overflow:hidden}
+#app{max-width:1180px;margin:0 auto;padding:0 20px 60px;position:relative;z-index:1}
+.ic{flex:none;display:block}
+.ic .f{fill:currentColor;stroke:none}
+button{font:inherit;color:inherit}
+:focus{outline:none}
+:focus-visible{outline:1px solid var(--gold-soft);outline-offset:2px}
+::selection{background:rgba(195,155,74,.3)}
+mark{background:rgba(195,155,74,.25);color:var(--ink-strong);padding:0 2px}
+.empty{color:var(--faint);font-style:italic;padding:10px 0;font-size:14px}
+
+.masthead{display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap;padding:26px 0 14px}
+.brand{display:flex;align-items:center;gap:14px}
+.brand .sigil{color:var(--gold)}
+.brand h1{font:600 34px/1 'Cormorant SC',serif;letter-spacing:.06em;color:var(--ink-strong)}
+.brand .sub{display:block;font:500 12px 'Cormorant SC',serif;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);margin-top:4px}
+.prof-line{margin-left:auto;display:flex;align-items:center;gap:9px;font:600 12px 'Cormorant SC',serif;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding-bottom:6px}
+.prof-line select{padding:6px 10px;max-width:190px}
+.prof-line .ibtn{width:26px;height:26px}
+
+.gbar{position:sticky;top:0;z-index:30;background:rgba(15,13,10,.94);backdrop-filter:blur(5px);
+  border-bottom:1px solid var(--line);padding:10px 0;margin:0 -20px;padding-left:20px;padding-right:20px}
+.gsearch{position:relative;max-width:640px;margin:0 auto;display:flex;align-items:center;gap:10px;
+  background:var(--panel);border:1px solid var(--line-strong);padding:9px 14px}
+.gsearch .ic{color:var(--faint)}
+.gsearch input{flex:1;background:transparent;border:none;font:15px 'Spectral',serif;padding:0;color:var(--ink)}
+.gsearch input::placeholder{color:var(--faint);font-style:italic}
+.gsearch kbd{font:600 11px monospace;color:var(--faint);border:1px solid var(--line);padding:1px 7px;border-radius:3px}
+.gdrop{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--panel);
+  border:1px solid var(--line-strong);box-shadow:0 24px 60px rgba(0,0,0,.65);
+  max-height:min(62vh,500px);overflow:auto;z-index:40}
+.g-head{font:600 10.5px 'Cormorant SC',serif;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);padding:9px 14px 2px}
+.g-item{display:flex;align-items:center;gap:10px;padding:8px 14px;cursor:pointer;border-left:2px solid transparent}
+.g-item:hover{background:rgba(195,155,74,.07);border-left-color:var(--gold)}
+.g-item .ic{color:var(--gold-soft)}
+.g-tt{font:600 14.5px 'Cormorant',serif;color:var(--ink-strong)}
+.g-meta{margin-left:auto;font-size:11.5px;color:var(--faint);font-style:italic;white-space:nowrap;padding-left:12px}
+.g-hint{display:flex;flex-wrap:wrap;gap:6px;padding:12px 14px}
+.g-chip{border:1px solid var(--line);color:var(--dim);font-size:12.5px;padding:3px 11px;cursor:pointer;transition:all .12s}
+.g-chip:hover{color:var(--gold);border-color:var(--gold-soft)}
+.g-none{padding:13px 14px;color:var(--faint);font-style:italic}
+
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:2px}
+.tab{font:600 13px 'Cormorant SC',serif;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
+  padding:10px 16px;border:none;border-bottom:2px solid transparent;background:none;cursor:pointer;
+  display:flex;gap:9px;align-items:center;transition:color .15s}
+.tab:hover{color:var(--ink-strong)}
+.tab.active{color:var(--gold);border-color:var(--gold)}
+
+.panel{background:var(--panel);border:1px solid var(--line);padding:16px 18px;position:relative}
+.panel::before,.panel::after{content:'';position:absolute;width:11px;height:11px;pointer-events:none}
+.panel::before{top:-1px;left:-1px;border-top:1px solid var(--gold-soft);border-left:1px solid var(--gold-soft)}
+.panel::after{bottom:-1px;right:-1px;border-bottom:1px solid var(--gold-soft);border-right:1px solid var(--gold-soft)}
+.sec-title{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sec-title h2{font:600 16px 'Cormorant SC',serif;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-strong);display:flex;align-items:center;gap:9px}
+.sec-title h2 .ic{color:var(--gold-soft)}
+.sec-title .ln{flex:1;height:1px;background:var(--line)}
+.sec-title .note{font:500 11.5px 'Cormorant SC',serif;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.view-head{margin:26px 0 4px}
+.view-head h2{font:600 26px 'Cormorant SC',serif;color:var(--ink-strong);letter-spacing:.04em}
+.view-head p{color:var(--dim);font-style:italic;font-size:14.5px}
+
+.btn{font:600 12.5px 'Cormorant SC',serif;letter-spacing:.12em;text-transform:uppercase;
+  border:1px solid var(--line-strong);background:transparent;color:var(--ink);
+  padding:8px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:all .15s}
+.btn:hover{border-color:var(--gold);color:var(--gold)}
+.btn-primary{background:var(--gold);border-color:var(--gold);color:#1a130a}
+.btn-primary:hover{background:#d3ab57;color:#1a130a}
+.btn-danger{border-color:var(--blood);color:var(--blood)}
+.btn-danger:hover{border-color:var(--blood);background:rgba(163,53,44,.12);color:#c4574e}
+.btn-ghost{border:none;background:none;color:var(--dim);padding:4px 6px}
+.btn-ghost:hover{color:var(--gold)}
+.ibtn{width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;flex:none;
+  background:transparent;border:1px solid var(--line);color:var(--dim);cursor:pointer;transition:all .12s}
+.ibtn:hover{color:var(--gold);border-color:var(--gold-soft)}
+.ibtn:disabled{opacity:.25;pointer-events:none}
+.ibtn.armed{width:auto;padding:0 8px;border-color:var(--blood);color:var(--blood);
+  font:600 11px 'Cormorant SC',serif;letter-spacing:.08em;text-transform:uppercase}
+.link-btn{background:none;border:none;color:var(--faint);cursor:pointer;font:13px 'Spectral',serif;text-decoration:underline dotted}
+.link-btn:hover{color:var(--gold)}
+input[type=text],input[type=number],select,textarea{
+  background:var(--bg2);border:1px solid var(--line);color:var(--ink);
+  font:14px 'Spectral',serif;padding:7px 10px;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--gold-soft)}
+input::placeholder,textarea::placeholder{color:var(--faint);font-style:italic}
+input[type=checkbox]{accent-color:var(--gold)}
+
+.char-strip{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.char-tab{display:flex;align-items:center;gap:9px;padding:6px 8px 6px 14px;cursor:pointer;
+  background:var(--panel);border:1px solid var(--line);color:var(--dim);
+  font:600 14px 'Cormorant SC',serif;letter-spacing:.05em;transition:all .15s}
+.char-tab:hover{color:var(--ink)}
+.char-tab.active{color:var(--ink-strong);border-color:var(--gold-soft)}
+.char-tab .ct-xp{display:inline-flex;align-items:center;gap:4px;color:var(--gold);font-size:12px}
+.char-tab .ct-del{opacity:0;transition:opacity .15s}
+.char-tab.active:hover .ct-del{opacity:1}
+
+.pregen-banner{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:18px;border-color:var(--gold-soft)}
+.pb-tag{font:600 11px 'Cormorant SC',serif;letter-spacing:.16em;text-transform:uppercase;color:#1a130a;background:var(--gold);padding:3px 10px;flex:none}
+.pregen-banner #pgName{border:none;background:transparent;border-bottom:1px solid var(--line);
+  font:600 19px 'Cormorant SC',serif;color:var(--ink-strong);width:180px}
+.pregen-banner #pgNote{border:1px solid transparent;background:transparent;font:italic 14px 'Spectral',serif;color:var(--dim);flex:1;min-width:150px}
+.pregen-banner #pgNote:focus{border-color:var(--line)}
+
+.sheet-grid{display:grid;grid-template-columns:300px 1fr;gap:22px;margin-top:18px;align-items:start}
+.sheet-aside{display:flex;flex-direction:column;gap:18px}
+.sheet-main{display:flex;flex-direction:column;gap:24px;min-width:0}
+.name-plate input{width:100%;background:transparent;border:none;border-bottom:1px solid transparent;
+  font:600 26px 'Cormorant SC',serif;color:var(--ink-strong);padding:2px 0 6px}
+.name-plate input:hover{border-bottom-color:var(--line)}
+.name-plate input:focus{border-bottom-color:var(--gold-soft)}
+.counter{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(205,180,130,.08)}
+.counter:last-child{border-bottom:none;padding-bottom:2px}
+.counter:first-child{padding-top:2px}
+.c-label{font:600 12.5px 'Cormorant SC',serif;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);
+  display:flex;gap:8px;align-items:center;width:126px;flex:none}
+.c-label .ic{color:var(--gold-soft)}
+.track{display:flex;gap:3px;flex:1;min-width:0;flex-wrap:wrap}
+.cell{width:11px;height:16px;border:1px solid var(--line);cursor:pointer;transform:skewX(-8deg);transition:all .12s}
+.cell:hover{border-color:var(--gold-soft)}
+.cell.on.blood{background:var(--blood-deep);border-color:var(--blood)}
+.cell.on.stress{background:#8f6d26;border-color:var(--gold-soft)}
+.c-num{font:500 17px 'Spectral',serif;color:var(--ink-strong);min-width:18px;text-align:center}
+.c-num.big{font:600 24px 'Cormorant SC',serif;color:var(--gold)}
+.hum-note{font-size:12.5px;color:var(--faint);font-style:italic;padding:2px 0 6px;border-bottom:1px solid rgba(205,180,130,.08)}
+.hum-note b{color:var(--dim);font-weight:500}
+.tier-tag{font:600 11px 'Cormorant SC',serif;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-soft)}
+
+.suns{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.sun{width:14px;height:14px;border-radius:50%;cursor:pointer;transition:all .12s;border:1px solid var(--line-strong)}
+.sun.dark{background:radial-gradient(circle at 45% 35%,#33261f,#0d0906);border-color:var(--blood)}
+.sun.dark:hover{border-color:#c4574e}
+.sun.lit{background:var(--gold);border-color:var(--gold);box-shadow:0 0 6px rgba(195,155,74,.35)}
+.sun.lit:hover{background:#d3ab57}
+
+.der-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 16px;margin-top:4px}
+.der-item{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:5px 0;
+  border-bottom:1px dashed rgba(205,180,130,.09);font-size:13.5px;color:var(--dim)}
+.der-item b{font-weight:500;color:var(--ink-strong);font-size:15px}
+.der-item .wctl{margin-left:auto}
+.der-item input{width:56px;padding:2px 6px;text-align:center;font-size:14px}
+.der-wide{grid-column:1/-1}
+
+.stat-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;
+  padding:7px 2px;border-bottom:1px solid rgba(205,180,130,.07)}
+.stat-row:last-child{border-bottom:none}
+.stat-name{font:500 15px 'Cormorant SC',serif;letter-spacing:.04em;color:var(--ink)}
+.pips{display:flex;gap:5px}
+.pip{width:9px;height:9px;transform:rotate(45deg);border:1px solid rgba(195,155,74,.38);cursor:pointer;transition:all .12s}
+.pip:hover{border-color:var(--gold)}
+.pip.on{background:var(--gold);border-color:var(--gold)}
+.pips.blood .pip{border-color:rgba(163,53,44,.5)}
+.pips.blood .pip.on{background:var(--blood);border-color:var(--blood)}
+.pips.static .pip{cursor:default}
+.stat-ctl{display:flex;gap:4px;opacity:.5;transition:opacity .15s}
+.stat-row:hover .stat-ctl{opacity:1}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+
+.persona-strip .ps-row{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.ps-field{display:flex;align-items:center;gap:8px}
+.ps-field>span{font:600 11.5px 'Cormorant SC',serif;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.ps-field .ibtn{width:18px;height:18px}
+
+.tags{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tag{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);
+  padding:3px 6px 3px 11px;font-size:13px;color:var(--ink);background:var(--bg2)}
+.tag .ibtn{width:16px;height:16px;border:none}
+.spec-add{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.spec-add input{flex:1;min-width:140px}
+.spec-bar{padding:0 4px}
+
+.power-row{padding:12px 2px;border-bottom:1px solid rgba(205,180,130,.08)}
+.power-row:last-child{border-bottom:none}
+.pr-main{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.power-name{background:none;border:none;cursor:pointer;padding:0;
+  font:600 17px 'Cormorant SC',serif;letter-spacing:.04em;color:var(--ink-strong);
+  text-decoration:underline dotted rgba(195,155,74,.45);text-underline-offset:4px}
+.power-name:hover{color:var(--gold)}
+.pr-manif{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:9px}
+
+.equip-row{display:flex;align-items:center;gap:12px;padding:8px 2px;border-bottom:1px solid rgba(205,180,130,.07)}
+.equip-row:last-child{border-bottom:none}
+.eq-qty{display:flex;align-items:center;gap:6px;flex:none}
+.eq-qty b{font:500 15px 'Spectral',serif;color:var(--ink-strong);min-width:16px;text-align:center}
+.eq-main{flex:1;min-width:0}
+.eq-name{font:500 15.5px 'Cormorant SC',serif;color:var(--ink)}
+.eq-note{display:block;color:var(--dim);font-style:italic;font-size:13px}
+
+.roll-controls{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:14px}
+.rc{display:flex;flex-direction:column;gap:4px;font:600 11.5px 'Cormorant SC',serif;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--dim);cursor:pointer}
+.rc input[type=checkbox]{margin-right:5px}
+.dice-field{min-height:104px;border:1px solid var(--line);background:var(--bg2);
+  display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center;padding:14px}
+.dice-empty{display:flex;align-items:center;gap:14px;color:var(--faint);font-style:italic;font-size:14.5px;text-align:center}
+.dice-empty .ic{color:rgba(195,155,74,.3)}
+.die{width:40px;height:40px;background:#1e1812;border:1px solid var(--line-strong);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;flex:none;transition:border-color .2s,box-shadow .2s}
+.die svg{width:30px;height:30px;display:block}
+.die svg polygon{fill:#241d15;stroke:rgba(215,196,158,.35);stroke-width:.8}
+.die svg text{fill:#cdbd97;font:600 12px 'Spectral',serif}
+.die.success{border-color:var(--gold);box-shadow:0 0 0 1px rgba(195,155,74,.4),0 0 16px rgba(195,155,74,.16)}
+.die.success svg polygon{fill:var(--gold)}
+.die.success svg text{fill:#1a130a}
+.die.ten{box-shadow:0 0 0 1px rgba(211,171,87,.8),0 0 20px rgba(211,171,87,.35)}
+.die.botch{border-color:rgba(163,53,44,.75)}
+.die.botch svg polygon{fill:var(--blood-deep)}
+.die.botch svg text{fill:#e0b3a8}
+.die.dealing{animation:deal .28s both}
+@keyframes deal{from{transform:translateY(-22px) rotate(-20deg);opacity:0}}
+.die.shuffling{animation:jitter .12s infinite alternate}
+@keyframes jitter{from{transform:translate(-1px,0) rotate(-2deg)}to{transform:translate(1px,-1px) rotate(2.5deg)}}
+.die.settled{transform:rotate(var(--tilt,0deg))}
+.dice-result{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-top:12px;min-height:34px}
+.succ-big{font:600 24px 'Cormorant SC',serif;color:var(--gold)}
+.succ-big.fail{color:var(--blood)}
+.roll-sub{color:var(--dim);font-size:13.5px;font-style:italic}
+.roll-math{color:var(--faint);font-size:13px}
+.history{margin-top:14px}
+.h-head{font:600 11.5px 'Cormorant SC',serif;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:4px}
+.h-row{display:flex;gap:12px;align-items:baseline;font-size:13px;color:var(--dim);
+  padding:5px 2px;border-bottom:1px dashed rgba(205,180,130,.08)}
+.h-row:last-child{border-bottom:none}
+.h-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.h-vals{font-variant-numeric:tabular-nums;letter-spacing:.1em;white-space:nowrap}
+.h-vals b{color:var(--gold);font-weight:500}
+.h-vals i{color:var(--blood);font-style:normal}
+.h-succ{min-width:44px;text-align:right;color:var(--gold);font-weight:500}
+.h-succ.fail{color:var(--blood)}
+
+.body-fig svg{display:block;width:100%;max-width:190px;margin:0 auto}
+.fig-part{cursor:pointer;transition:opacity .15s;stroke-width:1.4}
+.fig-part:hover{opacity:.8}
+.wound-panel{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.wp-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px}
+.wp-head b{font:600 15px 'Cormorant SC',serif;letter-spacing:.08em;color:var(--ink-strong);text-transform:uppercase}
+.wp-total{color:var(--dim);font-size:12.5px}
+.wp-row{display:flex;align-items:center;gap:10px;padding:3px 0;font:500 13px 'Cormorant SC',serif;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.wctl{display:flex;align-items:center;gap:7px;margin-left:auto}
+.wctl b{font:500 15px 'Spectral',serif;color:var(--ink-strong);min-width:16px;text-align:center}
+.wp-thresh{font-size:12.5px;color:var(--faint);font-style:italic;margin-top:6px}
+.wounds-reset{margin-top:10px}
+
+.mb{position:fixed;inset:0;background:rgba(5,4,2,.74);backdrop-filter:blur(3px);
+  display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;animation:fadeIn .18s}
+@keyframes fadeIn{from{opacity:0}}
+.modal{width:min(660px,100%);max-height:86vh;overflow:auto;background:var(--panel);
+  border:1px solid var(--line-strong);position:relative;box-shadow:0 30px 80px rgba(0,0,0,.65);animation:modalIn .2s}
+@keyframes modalIn{from{transform:translateY(10px);opacity:0}}
+.modal::before,.modal::after{content:'';position:absolute;width:12px;height:12px;pointer-events:none}
+.modal::before{top:-1px;left:-1px;border-top:1px solid var(--gold);border-left:1px solid var(--gold)}
+.modal::after{bottom:-1px;right:-1px;border-bottom:1px solid var(--gold);border-right:1px solid var(--gold)}
+.modal>header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel);z-index:2}
+.modal>header h3{font:600 18px 'Cormorant SC',serif;letter-spacing:.06em;color:var(--ink-strong)}
+.modal-body{padding:18px 20px}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;flex-wrap:wrap}
+.cat-tag{font:600 11.5px 'Cormorant SC',serif;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-soft);margin-bottom:6px;display:block}
+.modal-body p{margin:.6em 0}
+.modal-body ul{margin:.6em 0 .6em 1.25em}
+.modal-body li{margin:.3em 0}
+.form-row{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.form-row label{font:600 12px 'Cormorant SC',serif;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.pw-opt{border:1px solid var(--line);padding:10px 14px;margin-bottom:8px;cursor:pointer;transition:all .12s}
+.pw-opt:hover{border-color:var(--gold-soft)}
+.pw-opt.sel{border-color:var(--gold);background:rgba(195,155,74,.05)}
+.pw-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.pw-top b{font:600 15.5px 'Cormorant SC',serif;color:var(--ink-strong)}
+.pw-has{font:600 11px 'Cormorant SC',serif;letter-spacing:.1em;text-transform:uppercase;color:var(--blood)}
+.pw-opt p{color:var(--dim);font-size:13.5px;margin:3px 0 0}
+.pw-detail{border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+.pw-detail>p{color:var(--dim);font-size:14px}
+.pw-lvl{display:flex;align-items:center;gap:10px;margin:10px 0;flex-wrap:wrap}
+.pw-lvl .lbl{font:600 12px 'Cormorant SC',serif;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.pw-count{font-size:13px;color:var(--dim);font-style:italic;margin:6px 0}
+.pw-count.over{color:var(--gold)}
+.mrow{display:flex;gap:10px;padding:6px 9px;border:1px solid var(--line);margin-bottom:6px;cursor:pointer;align-items:baseline;transition:all .12s}
+.mrow:hover{border-color:var(--gold-soft)}
+.mrow.on{border-color:var(--gold-soft);background:rgba(195,155,74,.06)}
+.mbox{width:13px;height:13px;border:1px solid var(--line-strong);flex:none;align-self:center}
+.mrow.on .mbox{background:var(--gold);border-color:var(--gold)}
+.mrow b{font:600 14.5px 'Cormorant SC',serif;color:var(--ink-strong)}
+.mrow .mlv{color:var(--gold-soft);font-size:11px;letter-spacing:2px;white-space:nowrap}
+.mrow p{color:var(--dim);font-size:12.5px;margin:1px 0 0}
+
+/* инструменты и поиск-калькуляторы */
+.tool-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:6px}
+.tool-out{border-top:1px solid var(--line);margin-top:14px;padding-top:12px;font-size:14.5px}
+.tool-out .big{font:600 22px 'Cormorant SC',serif;color:var(--gold);display:block;margin-bottom:2px}
+.tool-roll{margin:8px 0;color:var(--ink);font-variant-numeric:tabular-nums}
+.ok,.crit-ok{color:var(--gold)}
+.no,.crit-bad{color:var(--blood)}
+.mini-table{display:flex;gap:0;flex-wrap:wrap;margin:8px 0}
+.mini-table span{border:1px solid var(--line);padding:4px 10px;font-size:12.5px;color:var(--dim);margin:0 -1px -1px 0}
+
+.codex-head{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:20px 0 10px}
+.searchbox{flex:1;min-width:240px;display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);padding:9px 14px}
+.searchbox .ic{color:var(--faint)}
+.searchbox input{background:transparent;border:none;flex:1;font-size:15px;padding:0}
+.cat-filter{display:flex;flex-wrap:wrap;gap:6px}
+.cf-btn{font:600 12px 'Cormorant SC',serif;letter-spacing:.1em;text-transform:uppercase;
+  padding:6px 12px;border:1px solid var(--line);background:transparent;color:var(--dim);cursor:pointer;transition:all .12s}
+.cf-btn:hover{color:var(--ink)}
+.cf-btn.active{color:var(--gold);border-color:var(--gold-soft)}
+.codex-count{font-size:13px;color:var(--faint);font-style:italic;margin-bottom:6px}
+.codex-row{padding:14px 8px;border-bottom:1px solid rgba(205,180,130,.08);cursor:pointer;transition:background .15s}
+.codex-row:hover{background:rgba(195,155,74,.045)}
+.cr-top{display:flex;justify-content:space-between;gap:14px;align-items:baseline}
+.cr-title{font:600 19px 'Cormorant',serif;color:var(--ink-strong)}
+.codex-row:hover .cr-title{color:var(--gold)}
+.cr-cat{font:600 11px 'Cormorant SC',serif;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);white-space:nowrap}
+.cr-sum{color:var(--dim);font-size:14px;margin-top:3px}
+
+.xp-grid{display:grid;grid-template-columns:360px 1fr;gap:22px;margin-top:22px;align-items:start}
+.xp-balance{display:flex;align-items:baseline;gap:12px;margin:4px 0 12px}
+.xp-num{font:600 52px/1 'Cormorant SC',serif;color:var(--gold)}
+.xp-cap{font:600 13px 'Cormorant SC',serif;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.xp-stats{display:flex;gap:20px;font-size:14px;color:var(--dim);
+  border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);padding:10px 2px;margin-bottom:18px}
+.xp-stats b{color:var(--ink-strong);font-weight:500}
+.btn-group{display:flex}
+.bg-btn{flex:1;padding:9px 6px;border:1px solid var(--line);background:transparent;color:var(--dim);cursor:pointer;
+  font:600 12px 'Cormorant SC',serif;letter-spacing:.1em;text-transform:uppercase;transition:all .12s;margin-left:-1px}
+.bg-btn:first-child{margin-left:0}
+.bg-btn:hover{color:var(--ink)}
+.bg-btn.active{color:#1a130a;background:var(--gold);border-color:var(--gold)}
+.bg-btn.active.spend-act{background:var(--blood);border-color:var(--blood);color:#f2e6cf}
+.calc-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.calc-out{font-size:14px;color:var(--dim);margin-top:8px;font-style:italic}
+.calc-out b{color:var(--gold);font-style:normal;font-weight:500}
+.log-row{display:grid;grid-template-columns:92px 52px 1fr 26px;gap:4px 12px;align-items:baseline;
+  padding:9px 4px;border-bottom:1px dashed rgba(205,180,130,.08);font-size:14px}
+.log-date{color:var(--faint);font-size:12px;font-variant-numeric:tabular-nums}
+.log-delta{font-weight:600;text-align:right}
+.log-delta.plus{color:var(--gold)}
+.log-delta.minus{color:var(--blood)}
+.log-cat{font:500 14.5px 'Cormorant SC',serif;color:var(--ink)}
+.log-del{opacity:.4}
+.log-row:hover .log-del{opacity:1}
+
+/* кабинет сказителя */
+.gm-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:20px;align-items:start}
+.gm-row{display:flex;align-items:center;gap:9px;padding:9px 4px;border-bottom:1px dashed rgba(205,180,130,.1)}
+.gm-row b{font:600 15px 'Cormorant SC',serif;color:var(--ink-strong);white-space:nowrap}
+.gm-meta{color:var(--faint);font-size:12.5px;font-style:italic;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tbadge{font:600 10.5px 'Cormorant SC',serif;letter-spacing:.12em;text-transform:uppercase;padding:2px 9px;border:1px solid var(--line-strong);color:var(--dim);flex:none}
+.tbadge.monster{color:#d98a7f;border-color:var(--blood)}
+.tbadge.enemy{color:var(--gold);border-color:var(--gold-soft)}
+.tbadge.npc{color:var(--dim)}
+
+/* редактор твари */
+.mob-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:6px 0 12px}
+.mf{display:flex;flex-direction:column;gap:3px;font:600 10.5px 'Cormorant SC',serif;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.mf input,.mf select{padding:4px 7px;font-size:13.5px}
+.mf .mini{width:100%;text-align:center;padding:4px 2px}
+.atk-row{display:grid;grid-template-columns:1.1fr 56px 1.3fr 26px 26px;gap:7px;margin-bottom:6px;align-items:center}
+.derived{font:600 17px 'Cormorant SC',serif;color:var(--gold)}
+
+#toast-root{position:fixed;bottom:22px;right:22px;z-index:80;display:flex;flex-direction:column;gap:8px}
+.toast{background:#1c1712;border:1px solid var(--line-strong);border-left:3px solid var(--gold);
+  padding:10px 16px;color:var(--ink);font-size:14px;max-width:340px;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:toastIn .25s}
+.toast.err{border-left-color:var(--blood)}
+@keyframes toastIn{from{transform:translateY(8px);opacity:0}}
+.toast.out{animation:toastOut .3s forwards}
+@keyframes toastOut{to{opacity:0;transform:translateY(6px)}}
+.foot{margin-top:48px;border-top:1px solid var(--line);padding:14px 0 0;
+  display:flex;gap:18px;justify-content:space-between;flex-wrap:wrap;font-size:13px;color:var(--faint)}
+.foot .btns{display:flex;gap:14px;flex-wrap:wrap}
+
+@media (max-width:960px){
+  .sheet-grid,.two-col,.xp-grid,.gm-grid{grid-template-columns:1fr}
+  .masthead{align-items:center}
+  .prof-line{padding-bottom:0}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="masthead">
+    <div class="brand">
+      <svg class="sigil" width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3">
+        <circle cx="20" cy="20" r="13"/><path d="M20 7v-4M20 37v-4M33 20h4M3 20h4" stroke-linecap="round"/>
+        <path d="M20 12l2.6 5.4 6 .8-4.4 4.2 1.1 5.9-5.3-2.9-5.3 2.9 1.1-5.9-4.4-4.2 6-.8z" fill="currentColor" stroke="none" opacity=".85"/>
+      </svg>
+      <div>
+        <h1>Скиталец</h1>
+        <span class="sub">Ожившие кошмары · летопись странника</span>
+      </div>
+    </div>
+    <label class="prof-line">Играет
+      <select id="profSel" title="Профиль игрока — фильтр списка персонажей"></select>
+      <button class="ibtn" data-act="prof-open" title="Игроки: добавить, переименовать, убрать">${'${'}''}</button>
+    </label>
+  </header>
+
+  <div class="gbar">
+    <div class="gsearch" id="gsearch">
+      <svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.4-4.4"/></svg>
+      <input type="text" id="gq" placeholder="Сквозной поиск: попадание, КУ, урон, провал, тварь…  ( / )" autocomplete="off">
+      <kbd>/</kbd>
+      <div class="gdrop" id="gdrop" hidden></div>
+    </div>
+  </div>
+
+  <nav class="tabs" id="tabs"></nav>
+
+  <section id="view-sheet" class="view"></section>
+  <section id="view-codex" class="view" hidden></section>
+  <section id="view-xp" class="view" hidden></section>
+  <section id="view-gm" class="view" hidden></section>
+
+  <footer class="foot">
+    <span>Летопись хранится в этом браузере — берегите её, как берегут огонь.</span>
+    <span class="btns">
+      <button class="link-btn" data-act="export">Экспорт летописи</button>
+      <button class="link-btn" data-act="import">Импорт из JSON</button>
+      <button class="link-btn" data-act="reset" id="resetBtn">Стереть летопись</button>
+      <input type="file" id="impFile" accept=".json,application/json" hidden>
+    </span>
+  </footer>
+</div>
+
+<div id="modal-root"></div>
+<div id="toast-root"></div>
+
+<script>
+'use strict';
+/* ═══════════ УТИЛИТЫ ═══════════ */
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>String(s).toLowerCase().replace(/ё/g,'е');
+const uid=p=>p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function plural(n,a,b,c){n=Math.abs(n)%100;const d=n%10;if(n>10&&n<20)return c;if(d>1&&d<5)return b;if(d===1)return a;return c}
+const fmtDate=ts=>new Date(ts).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+const r10=()=>1+Math.floor(Math.random()*10);
+const irnd=n=>Math.floor(Math.random()*n);
+const pick=a=>a[irnd(a.length)];
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=irnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+function download(name,text){
+  const blob=new Blob([text],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),500);
+}
+
+/* ═══════════ ИКОНКИ ═══════════ */
+const ICONS={
+  die:'<rect x="3.5" y="3.5" width="17" height="17" rx="3.5"/><path d="M12 7.5v9M8 11l4-3.5 4 3.5" stroke-linecap="round"/>',
+  eye:'<path d="M2.5 12S6.5 5.5 12 5.5 21.5 12 21.5 12 17.5 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/>',
+  book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+  drop:'<path d="M12 3.5s6.5 7.2 6.5 11.3a6.5 6.5 0 0 1-13 0C5.5 10.7 12 3.5 12 3.5z"/>',
+  flame:'<path d="M12 2.5c1 4-4.5 5.5-4.5 10a4.5 4.5 0 0 0 9 0c0-2.5-1-4-2-5.5-.3 1.4-1 2.2-2 2.5.6-2.4.2-4.8-.5-7z"/>',
+  gem:'<path d="M12 2.5l6.5 6.5L12 21.5 5.5 9z"/><path d="M5.5 9h13"/><path d="M12 2.5 9 9l3 12.5L15 9z"/>',
+  quill:'<path d="M20.5 3.5c-7 .5-11.5 4-13.5 10L4 20.5l7-3c6-2 9-7 9.5-14z"/><path d="M8 16l7.5-7.5"/>',
+  sword:'<path d="M19.5 4.5 9.5 14.5"/><path d="M19.5 4.5 19 9m.5-4.5L15 5"/><path d="M7.5 13.5l3 3"/><path d="M9.5 16.5 5 21l-2-2 4.5-4.5z"/>',
+  heart:'<path d="M12 20.5S4 15 4 9.5A4.5 4.5 0 0 1 12 6.7 4.5 4.5 0 0 1 20 9.5c0 5.5-8 11-8 11z"/>',
+  hourglass:'<path d="M6 3h12M6 21h12"/><path d="M8 3v3l4 5 4-5V3M8 21v-3l4-5 4 5v3"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  minus:'<path d="M5 12h14"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  trash:'<path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 13h9l1-13"/><path d="M10 11v5.5M14 11v5.5"/>',
+  dl:'<path d="M12 4v11M7.5 11l4.5 4.5L16.5 11"/><path d="M5 20h14" stroke-linecap="round"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5" stroke-linecap="round"/><circle class="f" cx="12" cy="8" r="1.1"/>',
+  users:'<path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="3.5"/><path d="M21 21v-2a4 4 0 0 0-3-3.9"/><path d="M15 3.6a3.5 3.5 0 0 1 0 6.8"/>'
+};
+function icon(n,s=16){return `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ICONS[n]}</svg>`}
+
+/* ═══════════ ИГРОВЫЕ ДАННЫЕ ═══════════ */
+const QUALITIES=[
+  {id:'strength',name:'Сила'},{id:'agility',name:'Проворство'},{id:'accuracy',name:'Точность'},
+  {id:'endurance',name:'Выносливость'},{id:'charisma',name:'Харизма'},{id:'cunning',name:'Хитрость'},
+  {id:'perception',name:'Восприятие'},{id:'intellect',name:'Ум'},{id:'intuition',name:'Чутьё'}
+];
+const SKILLS=[
+  {id:'athletics',name:'Атлетика'},{id:'vigilance',name:'Бдительность'},{id:'survival',name:'Выживание'},
+  {id:'eloquence',name:'Красноречие'},{id:'sleightOfHand',name:'Ловкость рук'},{id:'craft',name:'Ремесло'},
+  {id:'stealth',name:'Скрытность'},{id:'shooting',name:'Стрельба'},{id:'fencing',name:'Фехтование'}
+];
+const LORE=[
+  {id:'analysis',name:'Анализ'},{id:'animals',name:'Животные'},{id:'art',name:'Искусство'},
+  {id:'medicine',name:'Медицина'},{id:'customs',name:'Обычаи'},{id:'trickery',name:'Плутовство'},
+  {id:'mysticism',name:'Мистика'},{id:'scholarship',name:'Учёность'},{id:'empathy',name:'Эмпатия'}
+];
+const VIRTUES=[
+  {id:'conscience',name:'Совесть'},{id:'composure',name:'Хладнокровие'},
+  {id:'selfControl',name:'Самоконтроль'},{id:'courage',name:'Смелость'}
+];
+const GROUPS={
+  qualities:{list:QUALITIES,min:0,max:6,note:'врождённое · 0–5'},
+  skills:{list:SKILLS,min:0,max:5,note:'мышечная память · 0–5'},
+  lore:{list:LORE,min:0,max:5,note:'память ума · 0–5'},
+  virtues:{list:VIRTUES,min:1,max:5,note:'столп души · 1–5'}
+};
+const PARTNER={athletics:'strength',vigilance:'perception',survival:'intuition',eloquence:'charisma',
+  sleightOfHand:'accuracy',craft:'intellect',stealth:'agility',shooting:'accuracy',fencing:'agility',
+  analysis:'intellect',animals:'intuition',art:'intellect',medicine:'intellect',customs:'intellect',
+  mysticism:'intuition',trickery:'cunning',scholarship:'intellect',empathy:'perception'};
+const QPARTNER={strength:'athletics',agility:'fencing',accuracy:'shooting',endurance:'survival',
+  charisma:'eloquence',cunning:'trickery',perception:'vigilance',intellect:'analysis',intuition:'animals'};
+
+const PARTS=[
+  {id:'head',name:'Голова'},{id:'torso',name:'Торс'},{id:'leftArm',name:'Левая рука'},
+  {id:'rightArm',name:'Правая рука'},{id:'leftLeg',name:'Левая нога'},{id:'rightLeg',name:'Правая нога'}
+];
+const PART_SVG={
+  head:'M70 8c10 0 17 7 17 17 0 8-4 15-10 20l-7 5-7-5c-6-5-10-12-10-20 0-10 7-17 17-17z',
+  torso:'M50 54h40l6 14-4 30-8 44H56l-8-44-4-30z',
+  rightArm:'M44 60 28 70l-7 40 3 42 10-1 2-34 8-30z',
+  leftArm:'M96 60l16 10 7 40-3 42-10-1-2-34-8-30z',
+  rightLeg:'M50 146h16l-1 46-4 44H48l-2-44z',
+  leftLeg:'M74 146h16l-1 46 4 44h-13l-4-44z'
+};
+const STRESS_TIERS=['','Стекло','Глина','Сухая ветка','Крепкое дерево','Бронза','Кремень','Гранит','Железо','Сталь','Булат'];
+const SIZES=[
+  {id:'huge',name:'Огромный',c:7},{id:'big',name:'Большой',c:9},{id:'medium',name:'Средний',c:11},
+  {id:'small',name:'Малый',c:13},{id:'tiny',name:'Крошечный',c:15}];
+const NAMES_F=['Марфа','Глафира','Оксинья','Любава','Ярина','Василиса','Аглая','Феврония','Устинья','Млава','Дарина','Злата'];
+const NAMES_M=['Гордей','Мирон','Савелий','Тихон','Захар','Прохор','Демьян','Ерофей','Назар','Милан','Валек','Истлав'];
+const EQUIP_POOL=['Фонарь','Верёвка','Огниво','Фляга','Сухари в мешке','Нож','Плащ','Лук и колчан','Ручной арбалет','Зелье знахаря','Оберег из кости','Свечи','Топорик','Кошель с медью','Кнут','Гребень'];
+
+const VICES={
+  wrath:{name:'Гнев',being:'Волколак',adv:'Сложность проверок обоняния и слуха снижена на 1.',dis:'Ярость берёт верх: сложность проверок ярости +2; сверхусилие против ярости стоит 2 стресса.',start:['beastStrength','shapeshifting']},
+  lust:{name:'Сладострастие',being:'Летавец',adv:'Соблазнение и обман даются легче: сложность −1.',dis:'Видя привлекательную особь — Самоконтроль со сложностью 8 или сверхусилие.',start:['sirenVoice','shapeshifting']},
+  sloth:{name:'Лень',being:'Водяной',adv:'К подготовленному делу каждая кость броска получает +1.',dis:'К неподготовленному делу каждая кость броска получает −1.',start:['sirenVoice','beastStrength']},
+  cowardice:{name:'Малодушие',being:'Кикимора',adv:'Порог боли — 85% предела ран вместо половины.',dis:'Смелость со сложностью +2; сверхусилие против страха стоит 2 стресса.',start:['unseenStep','devilishJokes']},
+  hermitage:{name:'Отшельничество',being:'Леший',adv:'Скрытность и ориентированье в дикой местности: сложность −1.',dis:'Незнакомцы требуют Самоконтроль 8, иначе пул вдвое.',start:['stoneFlesh','unseenStep']},
+  guilt:{name:'Вина',being:'Ночница',adv:'Доброжелательное общение с детьми: сложность −1.',dis:'Видя ребёнка — Самоконтроль 8 или попытаться забрать и оберегать.',start:['nightbirdWail','beastStrength']},
+  grudge:{name:'Обида',being:'Лихо',adv:'Предел ран (боль и смерть вслед за ним) увеличен на 15%.',dis:'Обязан носить физический недостаток ценой не менее 5 пунктов.',start:['beastStrength','stoneFlesh']},
+  mischief:{name:'Шутовство',being:'Черт',adv:'Кутёж, застолья и веселье: +2 к каждой кости.',dis:'Прожил день без розыгрыша — наутро 1 стресса.',start:['unseenStep','devilishJokes']},
+  lechery:{name:'Распутство',being:'Русалка',adv:'Пока рядом союзник, каждая кость получает +1.',dis:'Сопротивление соблазнению: сложность +2.',start:['sirenVoice','rusalkaSong']}
+};
+const ESSENCES=[
+ ['Безумец','иррациональный или шокирующий поступок решает проблему или сбивает противника с толку'],
+ ['Борец','несмотря на провал и отчаяние, продолжаешь попытки и добиваешься результата'],
+ ['Бунтарь','открыто нарушаешь приказ или традицию властной фигуры и остаёшься безнаказанным'],
+ ['Верный пёс','твои действия прямо и заметно способствуют успеху того, кому служишь'],
+ ['Ведающий','убеждаешь поступить по морали или интуиции, и это приводит к лучшему'],
+ ['Воевода','группа по твоему приказу успешно справляется с кризисом или опасностью'],
+ ['Ворчун','твой мрачный прогноз сбывается с пугающей точностью'],
+ ['Головорез','добиваешься своего прямой угрозой насилием или её демонстрацией'],
+ ['Гордец','получаешь личную выгоду через осознанно эгоистичный поступок'],
+ ['Заморыш','тебе безвозмездно помогают, защищают или исполняют желание'],
+ ['Защитник','предотвращаешь реальную угрозу тому, что поклялся защищать'],
+ ['Зверь','побеждаешь в прямом противостоянии грубой силой и инстинктами'],
+ ['Изверг','причиняешь боль, имея возможность насладиться её проявлениями'],
+ ['Кающийся грешник','добровольно терпишь страдание, искупая реальный или мнимый проступок'],
+ ['Консерватор','старый проверенный метод доказывает превосходство над новшеством'],
+ ['Купец','удачно продаёшь что-либо или заключаешь очевидно выгодную сделку'],
+ ['Лихач','добровольно идёшь на огромный риск и успешно его преодолеваешь'],
+ ['Маска','успешно выдаёшь себя за другого и получаешь нужное'],
+ ['Мастер','выполняешь работу так мастерски, что результат — образец качества'],
+ ['Мечтатель','поступок по состраданию или долгу приносит реальное облегчение другому'],
+ ['Мудрец','твой совет побуждает другого к важному правильному поступку'],
+ ['Мученик','сознательно принимаешь боль и опасность, избавляя от них других'],
+ ['Наставник','ученик успешно применяет переданные тобой знания'],
+ ['Непоседа','бросаешь текущее дело и с энтузиазмом начинаешь новое'],
+ ['Око бури','принимаешь важное решение, сохраняя самообладание в хаосе'],
+ ['Опекун','защищаешь подопечного или выводишь его из кризиса'],
+ ['Отродье','намеренно демонстрируешь странность, вызывая испуг и власть над толпой'],
+ ['Отшельник','решаешь проблему полностью сам, без чужой помощи'],
+ ['Пеструн','становишься центром всеобщего внимания благодаря поступку'],
+ ['Победитель','одерживаешь верх в прямом состязании со значимыми ставками'],
+ ['Подвижник','посвящаешь значительное время своему делу без помех'],
+ ['Полная чаша','тратишь ресурсы на удовольствия и полностью предаёшься им'],
+ ['Правдолюб','чистым разумом решаешь загадку или раскрываешь первопричину'],
+ ['Скоморох','шутка разряжает опасный конфликт или публично унижает высокомерного'],
+ ['Солдат','безупречно и в срок исполняешь приказ авторитетной фигуры'],
+ ['Страдалец','достигаешь цели, сознательно преодолев боль или унижение'],
+ ['Судья','разрешаешь чужой конфликт вердиктом, основанным на фактах и правилах'],
+ ['Творец','завершаешь значимый объект, вложив в него мастерство и время'],
+ ['Фанатик','действие прямо и существенно продвигает твою высшую цель'],
+ ['Хитрец','обманом заставляешь другого навредить себе тебе во благо'],
+ ['Чужак','открыто нарушаешь важное табу или обычай, игнорируя осуждение']
+];
+const POWERS={
+ beastStrength:{name:'Звериная сила',flavor:'Само воплощение Проклятья: чёрная кровь многократно усиливает носителя.',manif:[
+  [1,'Нечистая сила','за пункт крови перебросить кости физической проверки силы (столько, каково Проклятье)'],
+  [1,'Недремлющая мощь','значение силы добавляется к пулу проверок силы и урона'],
+  [1,'Внутристые мышцы','мускулы наливаются: сила добавляется к социальным проверкам силы'],
+  [2,'Смертоносность','безоружные атаки по желанию наносят тяжёлые раны'],
+  [2,'Молотобоец','бронебойность безоружных ударов +5 × значение силы'],
+  [2,'Шелепок','лёгкие раны от ваших ударов не становятся тяжёлыми — лишь нокаут'],
+  [4,'Неотразимость','ваши атаки ближнего боя невозможно парировать; щит получает двойной урон'],
+  [5,'Сокрушение','за пункт крови в проверке урона значения ниже силы считаются равными силе']]},
+ nightbirdWail:{name:'Плач ночницы',flavor:'Ограниченный контроль времени и нечеловеческая скорость.',manif:[
+  [1,'Мигание','за пункт крови перебросить кости проверки проворства (столько, каково Проклятье)'],
+  [1,'Проклятая быстрота','значение добавляется к пулу проверок проворства'],
+  [2,'Стремительность','нивелировать штраф множественных действий для первых (значение÷2, вверх) действий'],
+  [2,'Созерцание','Ум + Плач: мир замирает — ментальные действия мгновенны, каждый успех снижает сложность дальнейших проверок'],
+  [2,'Скука','Ум + Плач против Чутья: цель застывает за рутинным занятием'],
+  [3,'Скорость ветра','Бег больше не тратит действие, Рывок гарантированно удаётся'],
+  [3,'Замирание','замедлить время цели: её проворство, ум и точность теряют по кубу за ваш успех'],
+  [4,'Незримый удар','значение вычитается из пулов парирования и уклонения цели'],
+  [4,'Буря мечей','при Стремительности ещё пункт крови даёт дополнительную атаку'],
+  [5,'Пронзая время','полное действие: остановить время и атаковать; к пулу атаки + значение силы пути']}],
+ stoneFlesh:{name:'Каменная плоть',flavor:'Проклятых убить сложно. Обладающих этой силой — ещё сложнее.',manif:[
+  [1,'Дар Радислава','предел ран растёт, будто Выносливость выше на уровень'],
+  [1,'Гранит','защита частей тела против лёгких и тяжёлых ран +5 × значение'],
+  [1,'Неутомимый','за пункт крови перебросить кости проверки выносливости'],
+  [1,'Стойкость камня','значение добавляется к пулу проверок выносливости'],
+  [3,'Нечувствительность к боли','Выносливость + Атлетика: игнорировать штрафы боли (ходы = успехи; 5+ — до конца сцены)'],
+  [4,'Отторжение','исторгнуть инородные тела: Выносливость + Атлетика, сложность 8, по телу за успех'],
+  [5,'Бессмертный','предела смерти больше нет'],
+  [5,'Неуязвимый','защита даже от того, от чего защититься нельзя: огонь, травы, серебро']]},
+ unseenStep:{name:'Незримая поступь',flavor:'Ходить как кот: без шума, следов и запаха.',manif:[
+  [1,'Тихий шаг','не издавать звуков до конца сцены: проверки против вас на слух проваливаются'],
+  [1,'Бесследное перемещение','не оставлять следов: выследить по земле или запаху невозможно'],
+  [1,'Лес за деревьями','пока движетесь шагом, значение добавляется к проверкам скрытности'],
+  [2,'Блуждающая тень','значение к скрытности даже бегом и рывком'],
+  [3,'Объять леса','распространить незаметность на союзников рядом'],
+  [4,'Сокрытие','действие любой силы поступи — на объекты: лошадь, дверь, оружие'],
+  [4,'Притворство Яги','слиться с толпой: до конца сцены вы — «один из многих»'],
+  [5,'Марш призраков','все силы поступи разом на союзников (радиус: Восприятие + Бдительность)'],
+  [5,'Мираж','провал скрытности — полный действие и пункт крови: переброс; свидетель решит, что «показалось»']]},
+ guise:{name:'Личина',flavor:'Сила Летавцев: навязать жертве веру в чужой облик.',manif:[
+  [1,'Незнакомец','Хитрость + Личина: изменить облик до конца сцены; узнать случайно невозможно'],
+  [2,'Маска','глубже: пол, рост, возраст; попытка принять облик конкретного человека'],
+  [2,'Бутафория','менять также одежду и снаряжение'],
+  [3,'Роль','копировать поведение, жесты и мимику: визуально вы — тот, за кого себя выдаёте'],
+  [3,'Плотность','личина действует на все органы чувств, не только на зрение'],
+  [4,'Идеальный фасад','скрывать непроизвольные изменения: пот, раны, гримасы боли от серебра'],
+  [5,'Подмена сущности','сменить облик на виду у всех (сложность +2, до 10); память зрителей переписывается']]},
+ devilishJokes:{name:'Чертячьи шутки',flavor:'Морок: иллюзии, обманывающие все чувства разом.',manif:[
+  [1,'Наваждение','Хитрость + Шутки: галлюцинации, связанные со страхами и травмами цели'],
+  [2,'Голоса и шёпоты','ментальная связь и доступ к поверхностным мыслям цели'],
+  [3,'Страсть и ужас','яркий образ: Добродетель против [4 + успехи], иначе паника или ярость'],
+  [4,'Навязчивые мысли','сложность «Голосов» −2; непринятые «мысли» звучат как собственные'],
+  [4,'Нереальный меч','создаваемый образ можно привязать к реальному объекту или человеку'],
+  [5,'Горе','образы ужаса прошлого и будущего: цель получает стресс по числу успехов'],
+  [5,'Цветок папоротника','видение исполненных желаний: сложность 11 − стресс цели; успехи снимают её стресс']]},
+ sirenVoice:{name:'Голос Сирин',flavor:'Один взгляд — и чужая воля ломается, как сухой сук.',manif:[
+  [1,'Указ','короткий приказ в глаза, выполненный дословно за один ход'],
+  [2,'Инструкция','сложные растянутые приказы с триггером или сроком'],
+  [2,'Забвение','приказ «Забудь»: вырезать куски памяти и вносить новые'],
+  [3,'Потушить глаза','воздействовать голосом без зрительного контакта'],
+  [4,'Раб','каждый день под Голосом сопротивление цели дорожает на 1, до 11'],
+  [5,'Марионетка','при сложности 11 цель — марионетка; лимит равен Уму'],
+  [5,'Царский указ','игнорировать штраф разницы Проклятья; приказы любые, даже самоубийственные']]},
+ rusalkaSong:{name:'Русалья песнь',flavor:'Незримая аура, что делает красоту оружием.',manif:[
+  [1,'Обаяние','значение добавляется к пулу социальных проверок (в непосредственном контакте)'],
+  [2,'Благоговение','приковать внимание толпы: Самоконтроль против Харизма + Песнь'],
+  [2,'Отвращение','окружающие инстинктивно сторонятся вас'],
+  [2,'Угроза','от вас исходит ощущение опасности: люди стараются не попадаться на глаза'],
+  [3,'Внимание','сфокусировать любую из сил на одной цели'],
+  [4,'Экзальтация','эмоции цели к вам доводятся до предела: любовь, ненависть, сковывающий ужас'],
+  [5,'Письмо русалки','действовать через письмо, картину или посланника'],
+  [5,'Приворот','зафиксировать чувство навсегда; три успешных сопротивления — невосприимчивость']]},
+ firegirlFlame:{name:'Пламя Огневицы',flavor:'Огневики горят. Ярко. В прямом смысле.',manif:[
+  [1,'Сродство с огнём','урон от огня снижен на 5 × значение'],
+  [2,'Жидкий огонь','кровь горюча; предмет, покрытый ею, наносит [2 × Пламя] тяжёлых ран в ход'],
+  [3,'Внутренний горн','огонь сквозь поры: ослепляет в ближнем бою, прикосновение жжёт'],
+  [3,'Огненное дыхание','извергнуть пламя изо рта (дальность: Сила × 5)'],
+  [3,'Болотные огоньки','кровь горит сутки за пункт Выносливости; цвет и жар настраиваются'],
+  [3,'Солнечный луч','исцеление на расстоянии в пределах видимости'],
+  [3,'Молодильные яблоки','тяжёлые раны исцеляются сразу; лечатся травмы и болезни'],
+  [4,'Лик Единого','исцеление голосом на расстоянии [(Харизма + Красноречие/Искусство) × 5]'],
+  [4,'Ярость змия','конус пламени за несколько пунктов крови (до значения силы пути)'],
+  [5,'Милость Единого','исцелить превысивших порог смерти — пока не минуло минут Выносливости']]},
+ shapeshifting:{name:'Оборотничество',flavor:'Звериные черты, пробившиеся сквозь человеческую плоть.',manif:[
+  [1,'Звериные чувства','значение к проверкам Восприятия: зрение, обоняние или слух (выбор при изучении)'],
+  [1,'Звериная речь','понимать зверей и отвечать: Животные + Оборотничество'],
+  [2,'Оружие зверя','когти или клыки за пункт крови: урон [значение + 1], тяжёлые раны'],
+  [3,'Вожак','значение к социальным проверкам, направленным на животных'],
+  [3,'Облик зверя','Выносливость + Оборотничество: принять звериный облик (скорость = успехи)'],
+  [4,'Свободная трансформация','второй облик без ограничения размера'],
+  [4,'Сродство со змием','отбрасывать конечности вместе с их ранами; вернуть — после еды и долгого сна'],
+  [5,'Частичная трансформация','отрастить хвост, крылья или когти, не меняя остального тела']]},
+ medisEyes:{name:'Глаза Медиса',flavor:'Видеть суть, скрытую за масками и мороком.',manif:[
+  [1,'Золотая маска','значение добавляется к пулу проверок Чутья'],
+  [2,'Взгляд за деревья','видеть сквозь морок и Личину: встречные проверки'],
+  [2,'Взгляд в душу','узнать эмоции, раны, травмы и значения параметров цели'],
+  [3,'Откровение','видеть взаимосвязи: вопрос Сказителю (1 успех — намёк, 5 — честный ответ)'],
+  [3,'След души','прикоснуться к предмету или месту и увидеть его прошлое'],
+  [5,'Царский взгляд','закрыть глаза и перенести взгляд в знакомое место (сложность 8, +1 за раз в сутки)']}
+};
+const XP_MULT={quality:['Качество',5],skill:['Навык / Знание',4],virtue:['Добродетель',2],
+  damnation:['Проклятье',5],powerKind:['Видовая сила',7],powerSide:['Сторонняя сила',8]};
+
+/* ═══════════ КОДЕКС ═══════════ */
+const CODEX_CATS=[
+  {id:'basis',name:'Основы'},{id:'rolls',name:'Проверки'},{id:'char',name:'Персонаж'},
+  {id:'combat',name:'Сражение'},{id:'dark',name:'Тьма'}
+];
+const CODEX=[
+{cat:'basis',title:'Раде́я и Чёрное Солнце',summary:'Мир, дух эпохи двоеверия и Проклятье в каждой капле крови.',body:[
+'Этот мир схож с Русью эпохи двоеверия: над всеми Царь, ниже — бояре с дружинами, а основа — вольный люд. Триста лет назад взошло Чёрное Солнце, и Проклятье пропитало землю, воду, воздух и кровь каждого живого.',
+'Пока человек сыт, здоров и в ладу с собой — Проклятье спит. Но сильный стресс — рана души — отпирает внутреннюю темницу: гибель близких, пытка, годы унижений будят Скверну.',
+'Действие идёт в дремучих лесах, на болотах и в городах Радеи. Тьма здесь не наступает — она уже здесь. Внутри. И с ней придётся договариваться.']},
+{cat:'basis',title:'Проклятые и охотники',summary:'Трагедия бывших людей и орден тех, кто их охотит.',body:[
+'Проклятые — бывшие люди (иногда звери), сломавшиеся под грузом тоски, страха, горя или вины. Проклятье дало форму и власти той тьме, что сидела внутри: нечеловеческая сила, замирание времени, морок, власть над разумом.',
+'Вместе с силой просыпается Голос — внутренний ропот, сводящий сложные чувства к «Возьми», «Убей», «Беги». Большинство не выдерживает и становится Одичавшими. Суть бытия уцелевшего — вечный баланс между чудовищной силой и человечностью.',
+'Единая Церковь содержит орден охотников — профессиональных убийц проклятых. Их главная опасность — проиграть битву за собственный рассудок: падение охотника страшнее рождения дикого монстра.']},
+{cat:'rolls',title:'Проверка',summary:'Пул d10: качество + умение; сложность по умолчанию 6.',body:[
+'Пул проверки складывается из Качества и подходящего Навыка или Знания. Иногда проверяется одна Выносливость или Добродетель — комбинацию выбирает Сказитель.',
+'Бросьте пул d10. Кость, равная сложности или выше, — успех. Если Сказитель не назвал сложность, она равна 6 (шкала от 3 «элементарно» до 9 «почти невозможно»).',
+'Одного успеха достаточно, чтобы задуманное удалось. Каждый следующий делает результат лучше:',
+'- 1 — условный успех: с оговорками, высокой ценой или последствиями.',
+'- 2 — умеренный успех: всё вышло, но, возможно, не лучшим образом.',
+'- 3 — безусловный успех: задуманное удалось полностью и без потерь.',
+'- 4 — исключительный успех: результат превзошёл ожидания.',
+'- 5 и более — феноменальный успех: деяние, достойное легенд.']},
+{cat:'rolls',title:'Десятки и специализации',summary:'«10» дают два успеха, со специализацией — три.',body:[
+'Выпавшая «10» — критический успех: она даёт два успеха вместо одного.',
+'Когда Навык или Знание достигают трёх, можно выбрать Специализацию — узкую грань мастерства: «длинные клинки» в Фехтовании, «первая помощь» в Медицине.',
+'Если проверка попадает в специализацию, «10» дают не два, а три успеха. Бонус засчитывается один раз, даже если специализаций несколько.']},
+{cat:'rolls',title:'Неудача, провал и цена',summary:'Единицы отменяют успехи; ноль успехов с единицами — провал.',body:[
+'Ноль успехов — неудача: меч прошёл мимо, уговоры не сработали. Не катастрофа, но желаемого нет.',
+'Гораздо хуже единицы: каждая отменяет один успех. Если успехов не было, а единицы остались — это провал: неудача с последствиями. Удар пришёлся по союзнику, уговоры рассердили собеседника, карта порвалась в ответственный момент.',
+'Провалы не убивают персонажей, но двигают историю: мир отвечает осложнением — интересным, драматичным или хотя бы смешным.']},
+{cat:'rolls',title:'Сверхусилие и повторные попытки',summary:'+1 стресса за переброс; попытки дорожают.',body:[
+'Если результат не оставил приятного послевкусия, персонаж может совершить Сверхусилие: получить 1 пункт Стресса и перебросить от 1 до 3 кубов брошенного пула. Новые значения заменяют старые, все выбранные кубы перебрасываются разом. Раз в раунд; на проверках добродетелей Сверхусилие неприменимо.',
+'Повторная попытка сложнее: +1 к сложности за каждую новую. На сложности 11 попытки исчерпаны.',
+'Если бросок лишь тормозит игру, Сказитель объявляет гарантированный успех с одним успехом — обычно когда пул превышает сложность или обстановка спокойна.']},
+{cat:'rolls',title:'Действия, реакции и помощь',summary:'Рефлекторные, множественные, встречные проверки.',body:[
+'Рефлекторное действие — мгновение (дёрнуться, моргнуть, выдохнуть): действия не тратит. Реакция — осознанный ответ вне очереди (уклонение, парирование, оттащить друга) — тратит действие или одно из множественных.',
+'Множественные действия: каждый следующий шаг в цепочке получает +1 к сложности и −1 кость (для атак и парных проверок — −2 к пулу). На сложности 11 и выше действие невозможно.',
+'Помощь: успехи помощников добавляются к пулу исполнителя, их критические провалы — вычитаются. Встречные проверки: оба бросают, побеждает больший счёт успехов.']},
+{cat:'char',title:'Создание персонажа',summary:'Пять шагов: типаж, порок, три блока, силы и добродетели, 40 пунктов.',body:[
+'Шаг I. Типаж и суть: смертный человек или Проклятый — выбор самой сути истории. Определите Порок (вид нечисти с достоинством и недостатком), Суть и Маску, ответьте на три вопроса: кем был, что сломало, за что цепляться.',
+'Шаг II. Распределите по 5 пунктов в качества, навыки и знания: 1 пункт поднимает значение с 0 до 1, ещё 2 (итого 3) — с 1 до 2. Качество растёт лишь при двух других качествах того же уровня.',
+'Шаг III. Проклятый распределяет 5 пунктов между силами по тому же правилу; базовое Проклятье отмечается на шкале Человечности.',
+'Шаг IV. Добродетели стартуют с 1; всего 6 пунктов: 2 поднимают 1→2, ещё 3 — до 3. Считаются Праведность = (Совесть + Самоконтроль) + 2 и Стрессоустойчивость = (Хладнокровие + Смелость) + 2.',
+'Шаг V. 40 свободных пунктов на доводку образа и Особенности (недостатки возвращают очки).']},
+{cat:'char',title:'Пороки',summary:'Девять видов нечисти: цена и дар каждого.',body:[
+'- Гнев · Волколак: обоняние и слух легче на 1; зато ярость сложнее на 2.',
+'- Сладострастие · Летавец: соблазн и обман легче на 1; красивая особь требует Самоконтроль 8.',
+'- Лень · Водяной: подготовленное дело — +1 к каждой кости; неподготовленное — −1.',
+'- Малодушие · Кикимора: порог боли 85%; Смелость сложнее на 2.',
+'- Отшельничество · Леший: скрытность и глушь легче на 1; незнакомцы — Самоконтроль 8.',
+'- Вина · Ночница: дети легче на 1; видя ребёнка — Самоконтроль 8.',
+'- Обида · Лихо: предел ран +15%; обязан носить тяжёлый физический недостаток.',
+'- Шутовство · Черт: кутежи +2 к костям; день без розыгрыша — утром стресс.',
+'- Распутство · Русалка: союзник рядом даёт +1 кости; соблазнить вас проще на 2.']},
+{cat:'char',title:'Суть и Маска',summary:'Сброс стресса действием по Сути; Маска — фасад.',body:[
+'Суть — подлинная, часто скрытая суть. Действуя в согласии с ней, персонаж на миг глушит Шёпот Скверны и сбрасывает 1 пункт Стресса.',
+'Маска — фасад для окружающих: удобная ширма или болезненное противоречие тому, кто вы есть внутри. Их взаимодействие и создаёт драму персонажа.',
+'У каждого архетипа своё условие сброса: «Борец» упрямо доводит начатое сквозь провалы, «Защитник» предотвращает угрозу обещанному, «Скоморох» разряжает опасность насмешкой.']},
+{cat:'char',title:'Цены развития',summary:'Сколько опыта стоит уровень каждого параметра.',body:[
+'- Качество — 5 × приобретаемый уровень.',
+'- Навык или Знание — 4 × приобретаемый уровень.',
+'- Добродетель — 2 × приобретаемый уровень (Праведность и Стрессоустойчивость при этом не пересчитываются).',
+'- Проклятье — 5 × приобретаемый уровень.',
+'- Видовая проклятая сила — 7 × уровень; сторонняя (без повышения самой силы) — 8 × уровень.',
+'- Особенности — индивидуально по описанию; недостатки возвращают очки.']},
+{cat:'char',title:'Специализации',summary:'С уровня 3; десятки дают три успеха.',body:[
+'Специализация доступна, когда навык или знание достигают трёх, — узкая грань, не слишком универсальная и не слишком тесная.',
+'На подходящей проверке «10» дают три успеха вместо двух. В бою специализация также повышает эффективность.',
+'Опциональное правило «Мастер на все руки»: для Ремесла, Учёности, Искусства и Обычаев первая специализация бесплатна, последующие покупаются за опыт.']},
+{cat:'combat',title:'Сражение',summary:'Раунд — три секунды; инициатива и КУ.',body:[
+'Раунд — три секунды боя. Порядок: инициатива (к10 + Проворство + Ум), ходы от большей инициативы к меньшей, итог раунда. Есть «быстрый» и «полный» порядок хода — выберите один и держитесь его.',
+'КУ (коэффициент уклонения) = 11 + Проворство + половина Чутья (вверх). Размер меняет константу: огромный — 7, большой — 9, средний — 11, малый — 13, крошечный — 15.',
+'Правило пяти раундов: если бой затянулся, завершайте его нарративно — после пяти раундов обычно уже ясно, кто побеждает.']},
+{cat:'combat',title:'Состояния',summary:'Беззащитен, сбит с ног, ослеплён и прочие беды.',body:[
+'- Беззащитен: КУ 6, никаких действий; атака из засады по непредвидевшей цели — то же.',
+'- Обездвижен: КУ 6, тело не слушается. Захвачен: КУ вдвое.',
+'- Сбит с ног: КУ и пулы вдвое, перемещение ползком; встать — Проворство + Атлетика, сложность 6.',
+'- Оглушён: любой пул и КУ вдвое. Ослеплён: Проворство вне КУ, физический пул ограничен [Чутьё + Бдительность].',
+'- В укрытии: КУ +4, пулы вдвое (арбалет — исключение, +2 к пулу). Окружён: защитные коэффициенты −1 за каждого противника сверх первого.']},
+{cat:'combat',title:'Урон, раны и лечение',summary:'Лёгкий и тяжёлый урон, пороги, серебро для проклятых.',body:[
+'Лёгкий урон наносят дубины, кулаки и падения; от него защищают Выносливость (5 × уровень) и броня. Тяжёлый — сталь, огонь, когти; от него защищает только броня.',
+'Серебро и едкие травы (крапива, чертополох, полынь) жгут проклятых: [к10 × Проклятье] тяжёлого урона в ход касания. Соль и железо — вдвое меньше.',
+'Урон в голову удваивается и не бывает лёгким; по конечностям — половина, но конечность может выйти из строя.',
+'Пороги от Предела ран: Боль — половина (все пулы вдвое), Отключка — сам предел (без сознания), Смерть — удвоенный. Для конечностей: 10% / 20% / 40%.',
+'Исцеление: проверка раз в сутки для тяжёлых и раз в час для лёгких ран; пул Выносливости, сумма выпавшего снимает раны, десятки считаются за 20. Пока есть тяжёлые раны, лёгкие не лечатся. Проклятые добавляют к пулу исцеления Проклятье за пункт крови.']},
+{cat:'combat',title:'Броня и оружие',summary:'Три тяжести брони, требования к силе, урон оружия.',body:[
+'Броня бывает тяжёлой, средней и лёгкой и закрывает четыре зоны: торс, голову, руки, ноги. Значение брони вычитается из урона по этой зоне.',
+'Тяжёлая и средняя броня требует Силу: за каждую недостающую единицу −1 Проворства. Элементы дают свои штрафы: панцирь — на Проворство, шлем — на Восприятие, наручи — на Ловкость рук, поножи — на скорость.',
+'Урон оружия — множитель в формуле урона; МС — минимальная Сила (−2 к пулу за каждый недостающий пункт); бронебойность вычитается из брони цели.',
+'Наложение стрелы — Проворство + Стрельба; перезарядка арбалета — продолжительная проверка Сила + Стрельба и отдельное действие.']},
+{cat:'dark',title:'Праведность и Проклятье',summary:'Единая шкала из десяти солнц; кровь и потолки параметров.',body:[
+'Праведность и Проклятье — две стороны одной медали на единой шкале из десяти солнц: слева тьма, справа свет; в сумме всегда 10. Повышение одного автоматически понижает другое.',
+'Праведность = (Совесть + Самоконтроль) + 2. Ни одна первичная добродетель не может превышать текущую Праведность.',
+'Проклятье задаёт потолок параметров (при 5 и ниже — максимум 5) и запас Чёрной крови: 5 + Проклятье × 2.',
+'При Праведности 6 и ниже проклятье всегда активно: глаза горят алым, мир теряет краски, штрафы за темноту не применяются — но и спрятать нечисть труднее.']},
+{cat:'dark',title:'Моральная деградация',summary:'Иерархия грехов и проверки Совести.',body:[
+'Всякий раз, когда персонаж совершает грех уровня своей Праведности или ниже (от эгоистичных мыслей на 10 до каннибализма на 1), он проходит проверку Совести со сложностью 8. Сверхусилие здесь неприменимо.',
+'Для полного прохождения нужно успехов не меньше, чем [Праведность − Уровень греха + 1]. Частичный успех роняет Праведность на разницу; провал — на полную сумму; провал с единицами стоит ещё и пункта Совести.',
+'Праведность 0 — конец истории: человеческое «Я» мертво, остаётся лишь неразумное чудовище — часть пейзажа ужаса.']},
+{cat:'dark',title:'Стресс и Стрессоустойчивость',summary:'Иерархия стресса, проверки Хладнокровия, отдых.',body:[
+'Стрессоустойчивость = (Хладнокровие + Смелость) + 2 — запас шкалы от «Стекла» до «Булата»: сколько ужаса душа выдержит до срыва.',
+'Иерархия стресса: давящее место — 1; страшная смерть чужого — 2; гибель множества людей — 3; смерть соратника — 4; смерть близкого — 5. Проверка Хладнокровия (сложность 6): каждый успех снимает пункт.',
+'Переполнившаяся шкала: смертный проходит Самоконтроль (провал — обращение в Проклятого); проклятый впадает в Ярость, пока не совершит грех, роняющий Праведность.',
+'Отдых в безопасности: проверка Хладнокровия со сложностью 7 снимает стресс по числу успехов.']},
+{cat:'dark',title:'Проклятые силы',summary:'Одиннадцать путей, уровни и проявления.',body:[
+'Известны одиннадцать путей: Звериная сила, Плач ночницы, Каменная плоть, Незримая поступь, Личина, Чертячьи шутки, Голос Сирин, Русалья песнь, Пламя Огневицы, Оборотничество и Глаза Медиса.',
+'Уровень силы — от 1 до 5; каждый уровень открывает одно проявление этого уровня или ниже. Проявление, выученное без повышения силы, считается сторонним и стоит больше опыта.',
+'Пограничные проявления стоят на стыке двух сил и требуют знаний в обеих. Большинство тратит Чёрную кровь: её запас — 5 + Проклятье × 2.']}
+];
+
+/* ═══════════ ИНСТРУМЕНТЫ (поисковые калькуляторы) ═══════════ */
+function verdictText(f,botch){
+  if(f<=0)return botch?'Провал':'Неудача';
+  if(f===1)return 'Условный успех';
+  if(f===2)return 'Умеренный успех';
+  if(f===3)return 'Безусловный успех';
+  if(f===4)return 'Исключительный успех';
+  return 'Феноменальный успех';
+}
+const TOOLS=[
+ {id:'pool',title:'Пул проверки',keys:'проверка пул бросок кости сложность успех провал единицы добродетель попытка сверхусилие',
+  fields:[
+   {k:'q',label:'Качество / уровень',type:'num',min:0,max:12,def:2},
+   {k:'s',label:'Умение',type:'num',min:0,max:9,def:2},
+   {k:'b',label:'Доп. кости',type:'num',min:-5,max:9,def:0},
+   {k:'d',label:'Сложность',type:'sel',options:[3,4,5,6,7,8,9],def:6},
+   {k:'spec',label:'Специализация (10 = 3 успеха)',type:'chk',def:false},
+   {k:'virt',label:'Добродетель (пул = уровень, без сверхусилия)',type:'chk',def:false}],
+  compute(v,rnd){
+   const diff=+v.d||6;
+   const pool=v.virt?Math.max(1,+v.q||0):Math.max(0,(+v.q||0)+(+v.s||0)+(+v.b||0));
+   if(pool<1)return '<p class="no">Пул пуст — проверка невозможна. Поднимите параметры или добавьте кости.</p>';
+   const head=`<span class="big">${pool} к10</span>
+    <p>сложность ${diff} · успех на ${diff}+ · «10» = ${v.spec?3:2} успеха${v.virt?' · добродетель: Сверхусилие неприменимо':''} · единицы отменяют успехи</p>`;
+   if(!rnd)return head+'<button class="btn" data-troll>Бросить</button>';
+   const d=Array.from({length:pool},r10);
+   let s=0,ones=0;
+   d.forEach(x=>{if(x===10)s+=v.spec?3:2;else if(x>=diff)s++;else if(x===1)ones++});
+   const fin=Math.max(0,s-ones);
+   return head+`<div class="tool-roll">${d.join(' · ')}</div>
+    <p class="${fin?'ok':'no'}">${verdictText(fin,fin===0&&ones>0)}</p>
+    <p>успехов: ${s}${ones?` − ${ones} (единицы)`:''} = <b>${fin}</b></p>`;}},
+ {id:'hit',title:'Попадание (атака)',keys:'попадание атака удар выстрел бей сокрушающий точный парирование КУ дубли крит цель',
+  fields:[
+   {k:'acc',label:'Точность',type:'num',min:0,max:10,def:2},
+   {k:'skl',label:'Фехтование / Стрельба',type:'num',min:0,max:9,def:2},
+   {k:'style',label:'Стиль',type:'sel',options:[{v:'prec',n:'Точный удар'},{v:'crush',n:'Сокрушающий удар'}],def:'prec'},
+   {k:'ku',label:'КУ цели',type:'num',min:1,max:30,def:11},
+   {k:'spec',label:'Специализация',type:'chk',def:false}],
+  compute(v,rnd){
+   const mod=(+v.acc||0)+(+v.skl||0),ku=+v.ku||11;
+   if(v.style==='crush'){
+    const pairs=Math.floor((mod+2)/2);
+    const head=`<span class="big">${pairs} пар 2к10</span><p>пул ${mod+2} к10 (Точность + умение + 2) · пара ≥ КУ ${ku} — успех · дубли [6+] — +1 успех${v.spec?' (со специализацией +2)':''} · дубли [1–5] — −1 успех</p>`;
+    if(!rnd)return head+'<button class="btn" data-troll>Бросить пары</button>';
+    let succ=0;const notes=[];
+    for(let i=0;i<pairs;i++){const a=r10(),b=r10();
+     if(a===b&&a>=6){succ+=v.spec?2:1;notes.push(`<b>[${a}+${b}]</b>`)}
+     else if(a===b){succ--;notes.push(`<i class="crit-bad">[${a}+${b}]</i>`)}
+     else if(a+b>=ku){succ++;notes.push(`[${a}+${b}]`)}
+     else notes.push(`<span style="color:var(--faint)">[${a}+${b}]</span>`)}
+    return head+`<div class="tool-roll">${notes.join(' · ')}</div>
+     <p class="${succ>0?'ok':'no'}">${succ>0?`Попадание — ${plural(succ,'успех','успеха','успехов')}. Урон: Сила + ${succ} + урон оружия, ×к10.`:'Промах.'}</p>`;
+   }
+   const head=`<span class="big">2к10 + ${mod}</span><p>результат против КУ <b>${ku}</b>. Дубли [6+6]…[10+10] — критический успех: гарантированное попадание и двойной урон${v.spec?', броня игнорируется':''}. Дубли [1+1]…[5+5] — критический провал.</p>`;
+   if(!rnd)return head+'<button class="btn" data-troll>Бросить 2к10</button>';
+   const a=r10(),b=r10(),s=a+b;
+   let out=head+`<div class="tool-roll">${a} + ${b} → ${s} + ${mod} = <b>${s+mod}</b> против КУ ${ku}</div>`;
+   if(a===b&&a>=6)out+=`<p class="crit-ok">Критический успех (${a}+${a}) — цель поражена независимо от КУ, урон удвоен${v.spec?', броня игнорируется':''}.</p>`;
+   else if(a===b)out+=`<p class="crit-bad">Критический провал (${a}+${a}) — промах и осложнение: удар по союзнику, поломка оружия, разоружение…</p>`;
+   else out+=s+mod>=ku?'<p class="ok">Попадание — считайте урон (инструмент «Урон»).</p>':`<p class="no">Промах: ${s+mod} &lt; ${ku}.</p>`;
+   return out;}},
+ {id:'ku',title:'КУ — коэффициент уклонения',keys:'ку уклонение защита уворот размер константа попасть по цели',
+  fields:[
+   {k:'size',label:'Размер',type:'sel',options:SIZES.map(s=>({v:s.id,n:`${s.name} (${s.c})`})),def:'medium'},
+   {k:'agi',label:'Проворство',type:'num',min:0,max:12,def:2},
+   {k:'int',label:'Чутьё',type:'num',min:0,max:12,def:1}],
+  compute(v){
+   const c=(SIZES.find(s=>s.id===v.size)||SIZES[2]).c;
+   const half=Math.ceil((+v.int||0)/2);
+   return `<span class="big">${c} + ${+v.agi||0} + ${half} = ${c+(+v.agi||0)+half}</span>
+   <p>КУ = константа размера + Проворство + половина Чутья (вверх). Беззащитный — 6; сбит с ног — вдвое; в укрытии — +4; окружённый — −1 за противника сверх первого.</p>`;}},
+ {id:'dmg',title:'Урон',keys:'урон раны ранение ушиб тяжёлый лёгкий к10 формула сила оружие хват',
+  fields:[
+   {k:'str',label:'Сила',type:'num',min:0,max:12,def:2},
+   {k:'succ',label:'Успехи атаки',type:'num',min:0,max:10,def:1},
+   {k:'w',label:'Урон оружия',type:'num',min:0,max:10,def:3},
+   {k:'grip',label:'Хват',type:'sel',options:[{v:'1',n:'Одноручный'},{v:'2',n:'Двуручный'}],def:'1'},
+   {k:'style',label:'Стиль',type:'sel',options:[{v:'prec',n:'Точный'},{v:'crush',n:'Сокрушающий'}],def:'prec'}],
+  compute(v,rnd){
+   const str=+v.str||0,sb=v.grip==='2'?Math.ceil(1.5*str):str,w=+v.w||0;
+   const n=v.style==='prec'?1+sb+w:sb+(+v.succ||0)+w;
+   const formula=v.style==='prec'
+    ?`[1 + ${v.grip==='2'?'1,5×Сила = '+sb:'Сила '+sb} + урон оружия ${w}] × к10`
+    :`[${sb} + успехи ${+v.succ||0} + урон оружия ${w}] × к10`;
+   const head=`<span class="big">${n} к10</span><p>${formula}</p>
+   <p style="color:var(--faint)">броня вычитается из выпавшего · голова и уязвимые места ×2 (только тяжёлые раны) · конечности ÷2 · дробящее обычно лёгкое</p>`;
+   if(!rnd)return head+'<button class="btn" data-troll>Бросить к10</button>';
+   const d=Array.from({length:Math.max(1,n)},r10),sum=d.reduce((a,b)=>a+b,0);
+   return head+`<div class="tool-roll">${d.join(' + ')} = <b>${sum}</b></div>
+   <p>до вычета брони. В голову — ${sum*2}, по конечности — ${Math.ceil(sum/2)}.</p>`;}},
+ {id:'init',title:'Инициатива',keys:'инициатива порядок хода раунд быстрый полный очередь',
+  fields:[{k:'agi',label:'Проворство',type:'num',min:0,max:12,def:2},{k:'int',label:'Ум',type:'num',min:0,max:12,def:2}],
+  compute(v,rnd){
+   const mod=(+v.agi||0)+(+v.int||0);
+   const head=`<span class="big">к10 + ${mod}</span><p>Инициатива = Проворство + Ум; в начале раунда каждый бросает к10 и прибавляет показатель. Раненые у порога боли — ниже.</p>`;
+   if(!rnd)return head+'<button class="btn" data-troll>Бросить</button>';
+   const x=r10();
+   return head+`<div class="tool-roll">${x} + ${mod} = <b>${x+mod}</b></div>`;}},
+ {id:'speed',title:'Скорость перемещения',keys:'скорость шаг бег рывок перемещение метры двигаться движение',
+  fields:[{k:'agi',label:'Проворство',type:'num',min:0,max:12,def:2}],
+  compute(v){
+   const a=+v.agi||0;
+   return `<span class="big">Шаг ${3+Math.floor(a/2)} · Бег ${6+a} · Рывок ${10+a*3} м</span>
+   <p>Шаг = 3 + Проворство/2 (вниз), действия не тратит · Бег = 6 + Проворство, физическое действие · Рывок = 10 + Проворство×3, полное действие (в цепочке множественных — проверка Проворство + Атлетика против [11 − Выносливость]).</p>`;}},
+ {id:'limit',title:'Предел ран',keys:'предел ран здоровье боль смерть отключка выносливость пороги лечить исцеление',
+  fields:[{k:'e',label:'Выносливость',type:'num',min:0,max:10,def:2}],
+  compute(v){
+   const LIM=['40 + 2к10','70 + 3к10','100 + 4к10','130 + 5к10','160 + 6к10','190 + 7к10','220 + 8к10','250 + 9к10','280 + 10к10','310 + 11к10','340 + 12к10'];
+   const e=clamp(+v.e||0,0,10),avg=51+35*e;
+   return `<span class="big">${LIM[e]}</span>
+   <p>среднее значение — <b>${avg}</b> · боль (все пулы вдвое) — ${Math.floor(avg/2)} · отключка — ${avg} · смерть — ${avg*2}</p>
+   <p style="color:var(--faint)">для конечностей: боль — 10%, отключка — 20%, смерть — 40% от предела. Пока есть тяжёлые раны, лёгкие не лечатся; проверка исцеления — раз в сутки (тяжёлые) и раз в час (лёгкие), пул Выносливости, десятки считаются за 20.</p>`;}},
+ {id:'blood',title:'Чёрная кровь и Проклятье',keys:'чёрная кровь проклятье праведность человечность запас тратить тьма',
+  fields:[{k:'d',label:'Проклятье (10 − Праведность)',type:'num',min:0,max:10,def:2}],
+  compute(v){
+   const D=clamp(+v.d||0,0,10),R=10-D;
+   return `<span class="big">${5+D*2} очков крови</span>
+   <p>запас Чёрной крови = 5 + Проклятье × 2 · Праведность ${R} · потолок параметров: ${D<=5?'5':'значение Проклятья ('+D+')'} · проклятье всегда активно при Праведности ≤ 6${R<=6?' — <b>сейчас активно</b>':''}</p>`;}},
+ {id:'stress',title:'Стресс и Стрессоустойчивость',keys:'стресс устойчивость хладнокровие смелость ужас стекло булат сброс психика',
+  fields:[{k:'c',label:'Хладнокровие',type:'num',min:1,max:5,def:2},{k:'s',label:'Смелость',type:'num',min:1,max:5,def:2}],
+  compute(v){
+   const R=clamp((+v.c||1)+(+v.s||1)+2,0,12);
+   return `<span class="big">${R} — предел стресса</span>
+   <p>Стрессоустойчивость = (Хладнокровие + Смелость) + 2. Шкала: ${STRESS_TIERS.slice(1,Math.min(R,10)+1).join(' → ')}.</p>
+   <p style="color:var(--faint)">источники: сверхусилие (+1), иерархия стресса (1–5 за событие; проверка Хладнокровия со сложностью 6, успех снимает по очку). Отдых: Хладнокровие со сложностью 7, успехи снимают стресс. Действие в согласии с Сутью — −1.</p>`;}},
+ {id:'succ',title:'Сложность и успехи',keys:'сложность успехи таблица вердикт условный безусловный феноменальный провал неудача единицы повтор',
+  fields:[],
+  compute(){
+   return `<p><b>Сложность</b> (успех на выпавшем ≥ сложности):</p>
+   <div class="mini-table">${[[3,'элементарно'],[4,'легко'],[5,'нетрудно'],[6,'обычно'],[7,'непросто'],[8,'трудно'],[9,'почти невозможно']].map(x=>`<span><b>${x[0]}</b> · ${x[1]}</span>`).join('')}</div>
+   <p><b>Успехи</b>:</p>
+   <div class="mini-table">${[['1','условный успех'],['2','умеренный'],['3','безусловный'],['4','исключительный'],['5+','феноменальный']].map(x=>`<span><b>${x[0]}</b> · ${x[1]}</span>`).join('')}</div>
+   <p style="color:var(--faint)">«10» дают два успеха (со специализацией — три). Каждая единица отменяет успех; ноль успехов с единицами — провал с осложнением. Повторная попытка: сложность +1, на 11 — исчерпано.</p>`;}}
+];
+
+/* ═══════════ СОСТОяние ═══════════ */
+const STORE_KEY='skitalec_ozhivshie_koshmary_v2';
+const LEGACY_KEY='skitalec_dark_times_v1';
+let state, view='sheet', selectedPart='torso', migrated=false, editingPregen=null;
+let codexUI={q:'',cat:'all'};
+let xpUI={type:'gain',filter:'all',amount:'',reason:''};
+let rollSel={quality:'',skill:'',bonus:0,diff:6,spec:false};
+let dice={rolling:false,last:null,history:[]};
+let pwUI={powerId:null,level:1,picked:[],editing:null};
+let mobUI=null, toolUI=null, pgKind='mortal', pendingImport=null;
+
+const damnation=c=>clamp(10-(+c.humanity||6),0,10);
+const maxBlood=c=>5+damnation(c)*2;
+const resilience=c=>clamp(((c.virtues&&c.virtues.composure)||0)+((c.virtues&&c.virtues.courage)||0)+2,0,12);
+const ku=c=>11+(c.qualities.agility||0)+Math.ceil((c.qualities.intuition||0)/2);
+const initiative=c=>(c.qualities.agility||0)+(c.qualities.intellect||0);
+const stepSpd=c=>3+Math.floor((c.qualities.agility||0)/2);
+const runSpd=c=>6+(c.qualities.agility||0);
+const dashSpd=c=>10+(c.qualities.agility||0)*3;
+const suggestLimit=c=>51+35*(c.qualities.endurance||0);
+
+function emptyWounds(){return{light:0,heavy:0}}
+function recalcTotal(c){
+  const t={light:0,heavy:0};
+  PARTS.forEach(p=>{t.light+=c.wounds[p.id].light;t.heavy+=c.wounds[p.id].heavy});
+  c.wounds.total=t;
+}
+function defaultCharacter(name){
+  const c={
+    id:uid('char'),name:name||'Безымянный',profileId:'',pregenNote:'',
+    qualities:Object.fromEntries(QUALITIES.map(q=>[q.id,0])),
+    skills:Object.fromEntries(SKILLS.map(s=>[s.id,0])),
+    lore:Object.fromEntries(LORE.map(l=>[l.id,0])),
+    specializations:[],virtues:{conscience:2,composure:2,selfControl:2,courage:2},
+    cursedPowers:[],
+    wounds:{total:emptyWounds(),head:emptyWounds(),torso:emptyWounds(),leftArm:emptyWounds(),rightArm:emptyWounds(),leftLeg:emptyWounds(),rightLeg:emptyWounds()},
+    equipment:[],humanity:6,woundLimit:51,blood:0,stress:0,xp:0,
+    vice:'',essence:'',mask:'',notes:''
+  };
+  c.blood=maxBlood(c);
+  return c;
+}
+function strToEq(s){
+  s=String(s).trim();if(!s)return null;
+  let name=s,qty=1,note='';
+  const di=s.indexOf(' — ');
+  if(di>0){note=s.slice(di+3).trim();s=s.slice(0,di)}
+  const m=s.match(/^(.*?)\s*[×xX]\s*(\d+)$/);
+  if(m){name=m[1];qty=clamp(+m[2],1,99)}
+  name=name.trim();if(!name)return null;
+  return {id:uid('eq'),name,qty,note};
+}
+function eqToStr(it){return it.name+(it.qty>1?' ×'+it.qty:'')+(it.note?' — '+it.note:'')}
+function normalizeCharacter(src){
+  src=src&&typeof src==='object'?src:{};
+  const d=defaultCharacter(typeof src.name==='string'?src.name:undefined);
+  const c={...d,...src,id:src.id||d.id};
+  ['qualities','skills','lore'].forEach(k=>{c[k]={...d[k],...(src[k]||{})}});
+  c.virtues={...d.virtues,...(src.virtues||{})};
+  QUALITIES.forEach(q=>c.qualities[q.id]=clamp(Math.round(+c.qualities[q.id])||0,0,6));
+  SKILLS.forEach(s=>c.skills[s.id]=clamp(Math.round(+c.skills[s.id])||0,0,5));
+  LORE.forEach(l=>c.lore[l.id]=clamp(Math.round(+c.lore[l.id])||0,0,5));
+  VIRTUES.forEach(v=>c.virtues[v.id]=clamp(Math.round(+c.virtues[v.id])||2,1,5));
+  c.humanity=clamp(Math.round(+c.humanity)||baseRightSafe(c),0,10);
+  c.woundLimit=clamp(Math.round(+c.woundLimit)||suggestLimit(c),20,999);
+  c.wounds={...d.wounds};
+  PARTS.forEach(p=>{
+    const w=(src.wounds||{})[p.id]||{};
+    c.wounds[p.id]={light:clamp(Math.round(+w.light)||0,0,99),heavy:clamp(Math.round(+w.heavy)||0,0,99)};
+  });
+  c.specializations=(Array.isArray(src.specializations)?src.specializations:[])
+    .filter(s=>s&&s.skillId&&s.specializationName)
+    .map(s=>({id:s.id||uid('sp'),skillId:String(s.skillId),specializationName:String(s.specializationName).slice(0,40)}));
+  c.cursedPowers=(Array.isArray(src.cursedPowers)?src.cursedPowers:[])
+    .filter(p=>p&&POWERS[p.powerId])
+    .map(p=>({id:p.id||uid('pw'),powerId:p.powerId,
+      level:clamp(Math.round(+p.level)||1,1,5),
+      manifestations:(Array.isArray(p.manifestations)?p.manifestations:[]).filter(m=>typeof m==='string').slice(0,20)}));
+  c.equipment=(Array.isArray(src.equipment)?src.equipment:[])
+    .map(it=>typeof it==='string'?strToEq(it):{id:it.id||uid('eq'),name:String(it.name||'').slice(0,60).trim(),qty:clamp(Math.round(+it.qty)||1,1,99),note:String(it.note||'').slice(0,80)})
+    .filter(it=>it&&it.name);
+  c.blood=clamp(Math.round(+c.blood)||0,0,maxBlood(c));
+  c.stress=clamp(Math.round(+c.stress)||0,0,12);
+  c.xp=Math.round(+c.xp)||0;
+  c.vice=VICES[src.vice]?src.vice:'';
+  c.essence=ESSENCES.some(e=>e[0]===src.essence)?src.essence:'';
+  c.mask=ESSENCES.some(e=>e[0]===src.mask)?src.mask:'';
+  c.notes=String(src.notes||'').slice(0,2000);
+  c.profileId=typeof src.profileId==='string'?src.profileId:'';
+  c.pregenNote=String(src.pregenNote||'').slice(0,120);
+  recalcTotal(c);
+  return c;
+}
+function baseRightSafe(c){return clamp(((c.virtues&&c.virtues.conscience)||2)+((c.virtues&&c.virtues.selfControl)||2)+2,1,10)}
+function normalizeLog(e){
+  if(!e||typeof e!=='object')return null;
+  let type=e.type,amount=Math.abs(Math.round(+e.amount)||0);
+  if(!amount&&e.delta){amount=Math.abs(Math.round(+e.delta)||0);if(type!=='+'&&type!=='-')type=+e.delta>0?'+':'-'}
+  if(type==='gain'||type==='spend')type=type==='gain'?'+':'-';
+  if(type!=='+'&&type!=='-')type='+';
+  return {id:e.id||uid('xp'),charId:String(e.charId||''),ts:+e.ts||Date.now(),type,amount,
+    reason:String(e.reason||e.note||'').slice(0,120)};
+}
+/* твари и NPC */
+function defaultMob(){
+  return {id:uid('mob'),name:'Безымянная тварь',type:'monster',being:'',desc:'',tactics:'',loot:'',size:'medium',
+    quals:{strength:3,agility:2,accuracy:2,endurance:3,charisma:0,cunning:1,perception:2,intellect:0,intuition:2},
+    skills:Object.assign(Object.fromEntries(SKILLS.map(s=>[s.id,0])),{fencing:2,athletics:2,vigilance:2}),
+    woundLimit:80,attacks:[{id:uid('atk'),name:'Когти',pool:4,damage:'к10 — тяжёлые раны',notes:''}],abilities:[]};
+}
+function normalizeMob(m){
+  const d=defaultMob();m=m&&typeof m==='object'?m:{};
+  const out={...d,...m,id:m.id||d.id};
+  out.name=String(out.name||'Безымянная').slice(0,60)||'Безымянная';
+  out.type=['monster','enemy','npc'].includes(out.type)?out.type:'monster';
+  out.being=String(out.being||'').slice(0,40);
+  out.desc=String(out.desc||'').slice(0,1200);
+  out.tactics=String(out.tactics||'').slice(0,600);
+  out.loot=String(out.loot||'').slice(0,120);
+  out.size=SIZES.some(s=>s.id===out.size)?out.size:'medium';
+  out.quals={...d.quals,...(m.quals||{})};
+  out.skills={...d.skills,...(m.skills||{})};
+  QUALITIES.forEach(q=>out.quals[q.id]=clamp(Math.round(+out.quals[q.id])||0,0,12));
+  SKILLS.forEach(s=>out.skills[s.id]=clamp(Math.round(+out.skills[s.id])||0,0,9));
+  out.woundLimit=clamp(Math.round(+out.woundLimit)||80,1,999);
+  out.attacks=(Array.isArray(out.attacks)?out.attacks:[]).slice(0,10).map(a=>({
+    id:a&&a.id?a.id:uid('atk'),
+    name:String((a&&a.name)||'Атака').slice(0,50),
+    pool:clamp(Math.round(+(a&&a.pool))||0,0,20),
+    damage:String((a&&a.damage)||'').slice(0,80),
+    notes:String((a&&a.notes)||'').slice(0,80)}));
+  out.abilities=(Array.isArray(out.abilities)?out.abilities:[]).filter(x=>typeof x==='string'&&x.trim()).map(x=>x.slice(0,80)).slice(0,12);
+  return out;
+}
+const mobKU=m=>{const s=SIZES.find(x=>x.id===m.size)||SIZES[2];return s.c+(m.quals.agility||0)+Math.ceil((m.quals.intuition||0)/2)};
+const mobInit=m=>(m.quals.agility||0)+(m.quals.intellect||0);
+
+function normalizeState(d){
+  d=d&&typeof d==='object'?d:{};
+  let profiles=(Array.isArray(d.profiles)?d.profiles:[]).filter(p=>p&&typeof p==='object')
+    .map(p=>({id:p.id||uid('prof'),name:String(p.name||'Игрок').slice(0,30)}));
+  if(!profiles.length)profiles=[{id:'prof_table',name:'Общий стол'}];
+  const pids=new Set(profiles.map(p=>p.id));
+  const defP=profiles[0].id;
+  let characters=(d.characters||[]).map(c=>{const n=normalizeCharacter(c);if(!pids.has(n.profileId))n.profileId=defP;return n});
+  if(!characters.length)characters=[normalizeCharacter({name:'Безымянный',profileId:defP})];
+  const pregens=(d.pregens||[]).map(c=>{const n=normalizeCharacter(c);if(!pids.has(n.profileId))n.profileId=defP;return n});
+  const bestiary=(d.bestiary||[]).map(normalizeMob);
+  const ids=new Set(characters.map(c=>c.id));
+  const activeProfile=pids.has(d.activeProfileId)?d.activeProfileId:profiles[0].id;
+  const profChars=characters.filter(c=>c.profileId===activeProfile);
+  const activeChar=ids.has(d.activeCharId)?d.activeCharId:(profChars[0]&&profChars[0].id)||characters[0].id;
+  return {version:3,profiles,activeProfileId:activeProfile,characters,activeCharId:activeChar,pregens,bestiary,
+    log:(d.log||[]).map(normalizeLog).filter(l=>l&&ids.has(l.charId))};
+}
+function migrateLegacy(){
+  try{
+    const raw=localStorage.getItem(LEGACY_KEY);if(!raw)return null;
+    const d=JSON.parse(raw);if(!d||!Array.isArray(d.characters))return null;
+    return normalizeState(d);
+  }catch(e){return null}
+}
+function seed(){
+  const prof={id:'prof_table',name:'Общий стол'};
+  const c=defaultCharacter('Фрейя');c.profileId=prof.id;
+  c.vice='wrath';c.essence='Защитник';c.mask='Бунтарь';
+  Object.assign(c.qualities,{agility:1,accuracy:1,endurance:1,perception:1,intuition:1});
+  Object.assign(c.skills,{athletics:1,vigilance:1,survival:1,stealth:1,fencing:1});
+  Object.assign(c.lore,{mysticism:2,medicine:1,animals:1});
+  c.humanity=6;c.woundLimit=86;c.blood=maxBlood(c);
+  c.cursedPowers=[
+    {id:uid('pw'),powerId:'beastStrength',level:1,manifestations:['Недремлющая мощь']},
+    {id:uid('pw'),powerId:'nightbirdWail',level:1,manifestations:['Проклятая быстрота']}];
+  c.equipment=[
+    {id:uid('eq'),name:'Длинный меч',qty:1,note:'отцовский — не подведёт'},
+    {id:uid('eq'),name:'Кожаный дублет',qty:1,note:''},
+    {id:uid('eq'),name:'Фляга',qty:2,note:'на чёрный день'}];
+  c.wounds.torso.light=1;c.xp=6;
+  recalcTotal(c);
+  return {version:3,profiles:[prof],activeProfileId:prof.id,characters:[c],activeCharId:c.id,pregens:[],bestiary:[],log:[
+    {id:uid('xp'),charId:c.id,ts:Date.now()-2*864e5,type:'+',amount:6,reason:'За правду о колодце на перепутье'},
+    {id:uid('xp'),charId:c.id,ts:Date.now()-864e5,type:'-',amount:2,reason:'Обучение у старого фехтовальщика'}]};
+}
+function loadState(){
+  try{
+    const raw=localStorage.getItem(STORE_KEY);
+    if(!raw){
+      const mig=migrateLegacy();
+      if(mig){migrated=true;return mig}
+      return seed();
+    }
+    const d=JSON.parse(raw);
+    if(!d||!Array.isArray(d.characters))return seed();
+    return normalizeState(d);
+  }catch(e){console.warn('Летопись повреждена',e);return seed()}
+}
+function save(){localStorage.setItem(STORE_KEY,JSON.stringify(state))}
+function char(){
+  if(editingPregen){const p=state.pregens.find(x=>x.id===editingPregen);if(p)return p;editingPregen=null}
+  return state.characters.find(c=>c.id===state.activeCharId);
+}
+
+/* ═══════════ ТОСТЫ И МОДАЛКИ ═══════════ */
+function toast(msg,err){
+  const t=document.createElement('div');
+  t.className='toast'+(err?' err':'');t.textContent=msg;
+  $('#toast-root').appendChild(t);
+  setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),320)},3000);
+}
+function openModal(title,bodyHTML){
+  $('#modal-root').innerHTML=
+    `<div class="mb" data-mb="1"><div class="modal" role="dialog" aria-modal="true">
+      <header><h3>${title}</h3><button class="ibtn" data-act="modal-close" title="Закрыть">${icon('x',13)}</button></header>
+      <div class="modal-body">${bodyHTML}</div></div></div>`;
+  document.body.classList.add('locked');
+}
+function closeModal(){$('#modal-root').innerHTML='';document.body.classList.remove('locked');mobUI=null;toolUI=null}
+function armButton(btn){
+  if(btn.dataset.armed){delete btn.dataset.armed;btn.classList.remove('armed');return true}
+  btn.dataset.armed='1';btn.classList.add('armed');
+  const old=btn.innerHTML;btn.innerHTML='точно?';
+  setTimeout(()=>{if(!btn.isConnected||!btn.dataset.armed)return;
+    delete btn.dataset.armed;btn.classList.remove('armed');btn.innerHTML=old},2600);
+  return false;
+}
+
+/* ═══════════ ОБЩИЕ ЧАСТИ ЛИСТА ═══════════ */
+function pipsHTML(group,id,val,max,blood){
+  return `<span class="pips ${blood?'blood':''}">${Array.from({length:max},(_,i)=>
+    `<span class="pip ${i<val?'on':''}" data-act="pip" data-group="${group}" data-id="${id}" data-v="${i+1}" title="Поставить: ${i+1}"></span>`).join('')}</span>`;
+}
+function pipsStatic(val,max,blood){
+  return `<span class="pips static ${blood?'blood':''}">${Array.from({length:max},(_,i)=>
+    `<span class="pip ${i<val?'on':''}"></span>`).join('')}</span>`;
+}
+function statRow(group,def,val){
+  const g=GROUPS[group];
+  return `<div class="stat-row">
+    <span class="stat-name">${esc(def.name)}</span>
+    ${pipsHTML(group,def.id,val,g.max,group==='virtues')}
+    <span class="stat-ctl">
+      <button class="ibtn" data-act="stat" data-kind="dec" data-group="${group}" data-id="${def.id}" ${val<=g.min?'disabled':''} title="Убавить">${icon('minus',11)}</button>
+      <button class="ibtn" data-act="stat" data-kind="inc" data-group="${group}" data-id="${def.id}" ${val>=g.max?'disabled':''} title="Прибавить">${icon('plus',11)}</button>
+      <button class="ibtn" data-act="quick-roll" data-type="${group}" data-id="${def.id}" title="Бросить: ${esc(def.name)}">${icon('die',13)}</button>
+    </span></div>`;
+}
+function defName(group,id){const d=(GROUPS[group]||{list:[]}).list.find(x=>x.id===id);return d?d.name:id}
+function skillSpecs(c,skillId){return c.specializations.filter(s=>s.skillId===skillId)}
+
+function sunsHTML(c){
+  const D=damnation(c);
+  return `<span class="suns">${Array.from({length:10},(_,i)=>{
+    const n=i+1;
+    return `<span class="sun ${n<=D?'dark':'lit'}" data-act="sun" data-i="${n}" title="Проклятье: ${n} · Праведность: ${10-n}"></span>`;
+  }).join('')}</span>`;
+}
+function trackHTML(kind,val,max){
+  return `<div class="track">${Array.from({length:max},(_,i)=>
+    `<span class="cell ${i<val?('on '+kind):''}" data-act="track" data-kind="${kind}" data-v="${i+1}" title="Отметить: ${i+1}"></span>`).join('')}</div>`;
+}
+function asideHTML(c){
+  const D=damnation(c),MB=maxBlood(c),R=resilience(c);
+  const tier=STRESS_TIERS[Math.min(c.stress,10)]||'';
+  const virtues=VIRTUES.map(v=>statRow('virtues',v,c.virtues[v.id])).join('');
+  const L=c.woundLimit;
+  return `<aside class="sheet-aside">
+    <div class="panel name-plate"><input id="charName" value="${esc(c.name)}" maxlength="40" placeholder="Безымянный" aria-label="Имя скитальца"></div>
+    <div class="panel">
+      <div class="counter"><span class="c-label">${icon('eye',14)} Человечность</span>${sunsHTML(c)}</div>
+      <div class="hum-note">Праведность <b>${10-D}</b> · Проклятье <b>${D}</b> · крови не больше <b>${MB}</b></div>
+      <div class="counter">
+        <span class="c-label">${icon('drop',14)} Чёрная кровь</span>
+        ${trackHTML('blood',c.blood,MB)}
+        <button class="ibtn" data-act="track-step" data-kind="blood" data-d="-1" title="Убавить">${icon('minus',11)}</button>
+        <b class="c-num">${c.blood}</b>
+        <button class="ibtn" data-act="track-step" data-kind="blood" data-d="1" title="Прибавить">${icon('plus',11)}</button>
+      </div>
+      <div class="counter">
+        <span class="c-label">${icon('flame',14)} Стресс</span>
+        ${trackHTML('stress',c.stress,R)}
+        <b class="c-num">${c.stress}<span class="tier-tag">${tier?` · ${tier}`:''}</span></b>
+        <button class="ibtn" data-act="stress-essence" title="Сброс по Сути: −1 стресса, если действие было в согласии с Сутью">−С</button>
+      </div>
+      <div class="counter">
+        <span class="c-label">${icon('gem',14)} Опыт</span>
+        <b class="c-num big">${c.xp}</b>
+        <button class="btn btn-ghost" data-act="view" data-view="xp" style="margin-left:auto">летопись</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="sec-title"><h2>${icon('sword',14)} Расчёты</h2><span class="ln"></span><span class="note">от параметров</span></div>
+      <div class="der-grid">
+        <div class="der-item"><span>КУ уклонения</span><b>${ku(c)}</b></div>
+        <div class="der-item"><span>Инициатива</span><b>${initiative(c)}</b></div>
+        <div class="der-item"><span>Шаг</span><b>${stepSpd(c)} м</b></div>
+        <div class="der-item"><span>Бег</span><b>${runSpd(c)} м</b></div>
+        <div class="der-item"><span>Рывок</span><b>${dashSpd(c)} м</b></div>
+        <div class="der-item"><span>Стрессоуст.</span><b>${R}</b></div>
+        <div class="der-item der-wide"><span>Предел ран</span>
+          <span class="wctl">
+            <button class="ibtn" data-act="limit-step" data-d="-1" title="Убавить">${icon('minus',11)}</button>
+            <input type="number" id="woundLimit" value="${L}" min="20" max="999">
+            <button class="ibtn" data-act="limit-step" data-d="1" title="Прибавить">${icon('plus',11)}</button>
+            <button class="ibtn" data-act="limit-auto" title="Установить по Выносливости">${icon('die',12)}</button>
+          </span></div>
+        <div class="der-item der-wide" style="border:none;color:var(--faint);font-style:italic;font-size:12.5px">
+          боль ${Math.floor(L/2)} · отключка ${L} · смерть ${L*2}</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="sec-title"><h2>${icon('heart',14)} Добродетели</h2><span class="ln"></span><span class="note">${GROUPS.virtues.note}</span></div>
+      ${virtues}
+    </div>
+    <div class="panel">
+      <div class="sec-title"><h2>${icon('eye',14)} Тело и раны</h2><span class="ln"></span><span class="note">клик по зоне</span></div>
+      ${figureSVG(c)}
+      ${woundPanelHTML(c)}
+    </div>
+    <div class="panel">
+      <div class="sec-title"><h2>${icon('quill',14)} Заметки</h2><span class="ln"></span></div>
+      <textarea id="charNotes" rows="4" style="width:100%;resize:vertical" placeholder="внешность, привязанности, цели, шрамы души…">${esc(c.notes)}</textarea>
+    </div>
+  </aside>`;
+}
+function figureSVG(c){
+  const paths=PARTS.map(p=>{
+    const w=c.wounds[p.id];
+    const a=Math.min(.85,w.heavy*.22+w.light*.07);
+    const fill=a>0?`rgba(163,53,44,${a.toFixed(2)})`:'#1d1812';
+    const stroke=selectedPart===p.id?'var(--gold)':(w.heavy>0?'var(--blood)':'var(--line-strong)');
+    return `<path class="fig-part" data-act="select-part" data-part="${p.id}" d="${PART_SVG[p.id]}"
+      style="fill:${fill};stroke:${stroke}"><title>${p.name}</title></path>`;
+  }).join('');
+  return `<svg viewBox="0 0 140 244" role="img" aria-label="Схема тела">${paths}</svg>`;
+}
+function woundPanelHTML(c){
+  const w=c.wounds[selectedPart],name=PARTS.find(p=>p.id===selectedPart).name,L=c.woundLimit;
+  return `<div class="wound-panel">
+    <div class="wp-head"><b>${esc(name)}</b><span class="wp-total">всего: ${c.wounds.total.light} лёгк. · ${c.wounds.total.heavy} тяж.</span></div>
+    <div class="wp-row"><span>Лёгкие</span>
+      <span class="wctl"><button class="ibtn" data-act="wound" data-kind="dec" data-sev="light" ${w.light<=0?'disabled':''}>${icon('minus',11)}</button><b>${w.light}</b><button class="ibtn" data-act="wound" data-kind="inc" data-sev="light" ${w.light>=30?'disabled':''}>${icon('plus',11)}</button></span></div>
+    <div class="wp-row"><span>Тяжёлые</span>
+      <span class="wctl"><button class="ibtn" data-act="wound" data-kind="dec" data-sev="heavy" ${w.heavy<=0?'disabled':''}>${icon('minus',11)}</button><b>${w.heavy}</b><button class="ibtn" data-act="wound" data-kind="inc" data-sev="heavy" ${w.heavy>=30?'disabled':''}>${icon('plus',11)}</button></span></div>
+    <div class="wp-thresh">пороги зоны: боль ${Math.floor(L*.1)} · отключка ${Math.floor(L*.2)} · смерть ${Math.floor(L*.4)}</div>
+    <div class="wounds-reset"><button class="link-btn" data-act="wounds-reset">заживить все раны</button></div>
+  </div>`;
+}
+function personaHTML(c){
+  const viceOpts=['<option value="">— род людской —</option>'].concat(
+    Object.entries(VICES).map(([id,v])=>`<option value="${id}" ${c.vice===id?'selected':''}>${v.name} · ${v.being}</option>`)).join('');
+  const essOpts=['<option value="">—</option>'].concat(
+    ESSENCES.map(e=>`<option value="${esc(e[0])}" ${c.essence===e[0]?'selected':''} title="Сброс стресса: ${esc(e[1])}">${esc(e[0])}</option>`)).join('');
+  const maskOpts=['<option value="">—</option>'].concat(
+    ESSENCES.map(e=>`<option value="${esc(e[0])}" ${c.mask===e[0]?'selected':''} title="${esc(e[1])}">${esc(e[0])}</option>`)).join('');
+  return `<div class="panel persona-strip">
+    <div class="sec-title"><h2>${icon('flame',15)} Лик</h2><span class="ln"></span><span class="note">порок · суть · маска</span></div>
+    <div class="ps-row">
+      <label class="ps-field"><span>Порок</span>
+        <select data-persona="vice">${viceOpts}</select>
+        <button class="ibtn" data-act="vice-info" title="Подробности порока" ${c.vice?'':'style="opacity:.35"'}>${icon('info',12)}</button></label>
+      <label class="ps-field"><span>Суть</span><select data-persona="essence">${essOpts}</select></label>
+      <label class="ps-field"><span>Маска</span><select data-persona="mask">${maskOpts}</select></label>
+    </div>
+  </div>`;
+}
+function rollPanelHTML(){
+  const qOpts=QUALITIES.map(q=>`<option value="${q.id}" ${rollSel.quality===q.id?'selected':''}>${q.name}</option>`).join('');
+  const sOpts=[...SKILLS,...LORE].map(s=>`<option value="${s.id}" ${rollSel.skill===s.id?'selected':''}>${s.name}</option>`).join('');
+  const dOpts=[3,4,5,6,7,8,9].map(d=>`<option value="${d}" ${rollSel.diff===d?'selected':''}>${d}</option>`).join('');
+  return `<div class="panel roll-panel">
+    <div class="sec-title"><h2>${icon('die',15)} Испытание</h2><span class="ln"></span><span class="note">пул d10 · успех на сложность</span></div>
+    <div class="roll-controls">
+      <label class="rc">Качество<select data-rollsel="quality"><option value="">—</option>${qOpts}</select></label>
+      <label class="rc">Навык / знание<select data-rollsel="skill"><option value="">—</option>${sOpts}</select></label>
+      <label class="rc">Доп. кости<input type="number" data-rollsel="bonus" value="${rollSel.bonus}" min="-3" max="9" style="width:60px"></label>
+      <label class="rc">Сложность<select data-rollsel="diff">${dOpts}</select></label>
+      <label class="rc" style="flex-direction:row;align-items:center;padding-bottom:8px">
+        <input type="checkbox" data-rollsel="spec" ${rollSel.spec?'checked':''}> Специализация</label>
+      <button class="btn btn-primary" data-act="roll">${icon('die',15)} Бросок</button>
+      <span class="roll-sub" id="poolPreview"></span>
+    </div>
+    <div class="dice-field" id="diceField"></div>
+    <div class="dice-result" id="diceResult"></div>
+    <div class="history" id="diceHistory"></div>
+  </div>`;
+}
+const DEC_PTS='12,1.5 18.2,3.5 22,8.8 22,15.2 18.2,20.5 12,22.5 5.8,20.5 2,15.2 2,8.8 5.8,3.5';
+function dieSVG(v){
+  return `<svg viewBox="0 0 24 24"><polygon points="${DEC_PTS}"/><text x="12" y="15.5" text-anchor="middle">${v}</text></svg>`;
+}
+function currentPool(){
+  const c=char();if(!c)return 0;
+  const q=rollSel.quality?(c.qualities[rollSel.quality]||0):0;
+  const s=rollSel.skill?((c.skills[rollSel.skill]??c.lore[rollSel.skill])||0):0;
+  return q+s+(parseInt(rollSel.bonus)||0);
+}
+function rollLabel(){
+  const parts=[];
+  if(rollSel.quality)parts.push(defName('qualities',rollSel.quality));
+  if(rollSel.skill)parts.push(defName('skills',rollSel.skill)||defName('lore',rollSel.skill));
+  return parts.join(' + ')||'Голая удача';
+}
+function computeRoll(values,diff,spec){
+  let succ=0,ones=0;
+  values.forEach(v=>{if(v===10)succ+=spec?3:2;else if(v>=diff)succ+=1;else if(v===1)ones+=1});
+  const final=Math.max(0,succ-ones);
+  return {succ,ones,final,botch:final===0&&ones>0};
+}
+function resultHTML(L){
+  const vt=verdictText(L.final,L.botch);
+  const math=`успехов: ${L.succ}${L.ones?` − ${L.ones} (единицы)`:''} = ${L.final}`;
+  return `<span class="succ-big ${L.final>0?'':'fail'}">${vt}</span>
+    <span class="roll-sub">${esc(L.label)} · ${L.pool} к10 · сложность ${L.diff}${L.spec?' · специализация':''}${L.virtue?' · добродетель':''}</span>
+    <span class="roll-math">${math}</span>`;
+}
+function effortCandidates(L){
+  return L.values.map((v,i)=>({v,i})).filter(o=>o.v<L.diff).sort((a,b)=>a.v-b.v).slice(0,3).map(o=>o.i);
+}
+function renderDiceField(){
+  const L=dice.last;
+  if(L){
+    const html=L.values.map(v=>{
+      const isSucc=v>=L.diff||v===10;
+      const cls=isSucc?('success'+(v===10?' ten':'')):(v===1?'botch':'');
+      const tilt=((Math.random()*16)-8).toFixed(1);
+      return `<div class="die settled ${cls}" style="--tilt:${tilt}deg">${dieSVG(v)}</div>`;
+    }).join('');
+    $('#diceField').innerHTML=html;
+    let res=resultHTML(L);
+    if(!L.effortUsed&&!L.virtue&&!dice.rolling){
+      const n=effortCandidates(L).length;
+      if(n>0)res+=`<button class="btn btn-danger" data-act="effort" style="margin-left:auto">Сверхусилие · +1 стресс · переброс ${n}</button>`;
+    }
+    $('#diceResult').innerHTML=res;
+  }else{
+    $('#diceField').innerHTML=`<span class="dice-empty">${icon('die',26)}<span>Кости ещё спят.<br>Соберите пул — или бросьте прямо со строки умения.</span></span>`;
+    $('#diceResult').innerHTML='';
+  }
+  renderHistory();
+}
+function renderHistory(){
+  const el=$('#diceHistory');if(!el)return;
+  if(!dice.history.length){el.innerHTML='';return}
+  el.innerHTML='<div class="h-head">Последние броски</div>'+dice.history.map(h=>
+    `<div class="h-row"><span class="h-label">${esc(h.label)}</span>
+     <span class="h-vals">${h.values.map(v=>(v>=h.diff||v===10)?`<b>${v}</b>`:(v===1?`<i>${v}</i>`:v)).join('·')}</span>
+     <span class="h-succ ${h.final>0?'':'fail'}">${h.final}</span></div>`).join('');
+}
+function updatePoolPreview(){
+  const el=$('#poolPreview');if(!el)return;
+  const c=char();if(!c){el.textContent='';return}
+  const pool=currentPool();
+  const parts=[];
+  if(rollSel.quality)parts.push(defName('qualities',rollSel.quality)+' '+(c.qualities[rollSel.quality]||0));
+  if(rollSel.skill){
+    const sv=(c.skills[rollSel.skill]??c.lore[rollSel.skill])||0;
+    parts.push((defName('skills',rollSel.skill)||defName('lore',rollSel.skill))+' '+sv);
+    const specs=skillSpecs(c,rollSel.skill);
+    const cb=document.querySelector('[data-rollsel="spec"]');
+    if(cb){cb.disabled=!specs.length;cb.parentElement.title=specs.length?'Специализации: '+specs.map(s=>s.specializationName).join(', '):'Специализация доступна с уровня 3 умения'}
+  }else{
+    const cb=document.querySelector('[data-rollsel="spec"]');
+    if(cb)cb.disabled=true;
+  }
+  el.textContent=`${pool} ${plural(pool,'кость','кости','костей')}`+(parts.length?' · '+parts.join(' + '):'');
+}
+function animateRoll(pool,label,opts){
+  dice.rolling=true;
+  const field=$('#diceField'),res=$('#diceResult');
+  if(res)res.innerHTML='';
+  field.innerHTML=Array.from({length:pool},(_,i)=>
+    `<div class="die dealing" style="animation-delay:${i*40}ms">${dieSVG(6)}</div>`).join('');
+  const els=[...field.children];
+  els.forEach(el=>el.classList.add('shuffling'));
+  const final=Array.from({length:pool},r10);
+  const iv=setInterval(()=>els.forEach(el=>el.innerHTML=dieSVG(irnd(10)+1)),75);
+  setTimeout(()=>{
+    clearInterval(iv);
+    const r=computeRoll(final,opts.diff,opts.spec);
+    dice.last={label,pool,diff:opts.diff,spec:!!opts.spec,virtue:!!opts.virtue,values:final,effortUsed:false,...r};
+    els.forEach((el,i)=>{
+      const v=final[i],isSucc=v>=opts.diff||v===10;
+      el.classList.remove('shuffling','dealing');el.classList.add('settled');
+      el.style.setProperty('--tilt',((Math.random()*16)-8).toFixed(1)+'deg');
+      el.innerHTML=dieSVG(v);
+      el.classList.toggle('success',isSucc);el.classList.toggle('ten',v===10);
+      el.classList.toggle('botch',v===1);
+    });
+    if(res)res.innerHTML=resultHTML(dice.last);
+    dice.history.unshift(dice.last);
+    if(dice.history.length>8)dice.history.pop();
+    renderHistory();
+    dice.rolling=false;
+    renderDiceField();
+  },650+Math.min(pool*30,550));
+}
+function rollFromPanel(){
+  if(dice.rolling)return;
+  const pool=currentPool();
+  if(pool<1){toast('Нужна хотя бы одна кость — поднимите качество, умение или доп. кости.',1);return}
+  const cb=document.querySelector('[data-rollsel="spec"]');
+  animateRoll(pool,rollLabel(),{diff:rollSel.diff,spec:rollSel.spec&&!(cb&&cb.disabled)});
+}
+function quickRoll(type,id){
+  if(dice.rolling)return;
+  const c=char();
+  if(type==='virtues'){
+    const v=VIRTUES.find(x=>x.id===id),val=c.virtues[id];
+    if(val<1)return;
+    animateRoll(val,v.name,{diff:rollSel.diff,virtue:true});
+    return;
+  }
+  if(type==='qualities'){
+    rollSel.quality=id;rollSel.skill=QPARTNER[id]||'';
+  }else{
+    rollSel.skill=id;rollSel.quality=PARTNER[id]||'';
+  }
+  rollSel.spec=false;
+  syncRollSelects();
+  rollFromPanel();
+}
+function syncRollSelects(){
+  const qs=document.querySelector('[data-rollsel="quality"]'),ss=document.querySelector('[data-rollsel="skill"]');
+  if(qs)qs.value=rollSel.quality;
+  if(ss)ss.value=rollSel.skill;
+  updatePoolPreview();
+}
+function doEffort(){
+  if(dice.rolling||!dice.last||dice.last.effortUsed||dice.last.virtue)return;
+  const c=char();if(!c)return;
+  const idx=effortCandidates(dice.last);
+  if(!idx.length){toast('Перебрасывать нечего — все кости удачны.');return}
+  c.stress=clamp(c.stress+1,0,12);
+  if(c.stress>=resilience(c))toast('Стресс на пределе шкалы — психика на грани срыва.',1);
+  idx.forEach(i=>{dice.last.values[i]=r10()});
+  const r=computeRoll(dice.last.values,dice.last.diff,dice.last.spec);
+  Object.assign(dice.last,r,{effortUsed:true});
+  dice.history[0]=dice.last;
+  save();renderSheet();
+  toast(`Сверхусилие: переброшено костей — ${idx.length}. Цена — 1 стресс.`);
+}
+function abilitiesHTML(c){
+  const q=QUALITIES.map(d=>statRow('qualities',d,c.qualities[d.id])).join('');
+  const s=SKILLS.map(d=>statRow('skills',d,c.skills[d.id])).join('');
+  const l=LORE.map(d=>statRow('lore',d,c.lore[d.id])).join('');
+  const specs=c.specializations.map(sp=>{
+    const sk=SKILLS.find(x=>x.id===sp.skillId)||LORE.find(x=>x.id===sp.skillId);
+    return `<span class="tag">${esc(sk?sk.name:'—')} · ${esc(sp.specializationName)}
+      <button class="ibtn" data-act="spec-del" data-id="${sp.id}" title="Убрать грань">${icon('x',10)}</button></span>`;
+  }).join('')||'<span class="empty">Граней мастерства пока нет — откроются с уровня 3 умения</span>';
+  return `<div class="panel">
+      <div class="sec-title"><h2>${icon('sword',15)} Качества</h2><span class="ln"></span><span class="note">${GROUPS.qualities.note}</span></div>
+      ${q}</div>
+    <div class="two-col">
+      <div class="panel">
+        <div class="sec-title"><h2>${icon('sword',15)} Навыки</h2><span class="ln"></span><span class="note">${GROUPS.skills.note}</span></div>
+        ${s}</div>
+      <div class="panel">
+        <div class="sec-title"><h2>${icon('book',15)} Знания</h2><span class="ln"></span><span class="note">${GROUPS.lore.note}</span></div>
+        ${l}</div>
+    </div>
+    <div class="spec-bar">
+      <div class="sec-title"><h2>${icon('quill',15)} Специализации</h2><span class="ln"></span><span class="note">«10» дают три успеха</span></div>
+      <div class="tags">${specs}</div>
+      <div class="spec-add">
+        <select id="specSkill">${[...SKILLS,...LORE].map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}</select>
+        <input type="text" id="specName" maxlength="40" placeholder="грань мастерства — «длинные клинки»…">
+        <button class="btn" data-act="spec-add">${icon('plus',13)} Добавить</button>
+      </div>
+    </div>`;
+}
+function powersHTML(c){
+  const rows=c.cursedPowers.length?c.cursedPowers.map(pw=>{
+    const def=POWERS[pw.powerId];
+    return `<div class="power-row">
+      <div class="pr-main">
+        <button class="power-name" data-act="power-edit" data-id="${pw.id}" title="Проявления и описание">${esc(def.name)}</button>
+        ${pipsStatic(pw.level,5,true)}
+        <span class="stat-ctl" style="opacity:1">
+          <button class="ibtn" data-act="power-lvl" data-d="-1" data-id="${pw.id}" ${pw.level<=1?'disabled':''} title="Ослабить">${icon('minus',11)}</button>
+          <button class="ibtn" data-act="power-lvl" data-d="1" data-id="${pw.id}" ${pw.level>=5?'disabled':''} title="Усилить">${icon('plus',11)}</button>
+          <button class="ibtn" data-act="power-del" data-id="${pw.id}" title="Отринуть силу">${icon('trash',12)}</button>
+        </span>
+      </div>
+      <div class="pr-manif">
+        ${pw.manifestations.map(m=>`<span class="tag">${esc(m)}</span>`).join('')||'<span class="empty">Проявления не выбраны — сила дремлет без формы</span>'}
+      </div></div>`;
+  }).join(''):'<p class="empty">Кровь пока чиста. Так ли это надолго?</p>';
+  return `<div class="panel">
+    <div class="sec-title"><h2>${icon('drop',15)} Проклятые силы</h2><span class="ln"></span><span class="note">уровень · проявления</span></div>
+    ${rows}
+    <div style="margin-top:12px"><button class="btn" data-act="power-modal">${icon('plus',13)} Принять силу</button></div>
+  </div>`;
+}
+function equipHTML(c){
+  const rows=c.equipment.length?c.equipment.map(it=>`<div class="equip-row">
+      <span class="eq-qty">
+        <button class="ibtn" data-act="eq-qty" data-d="-1" data-id="${it.id}" ${it.qty<=1?'disabled':''}>${icon('minus',10)}</button>
+        <b>×${it.qty}</b>
+        <button class="ibtn" data-act="eq-qty" data-d="1" data-id="${it.id}">${icon('plus',10)}</button>
+      </span>
+      <span class="eq-main"><span class="eq-name">${esc(it.name)}</span>${it.note?`<span class="eq-note">${esc(it.note)}</span>`:''}</span>
+      <button class="ibtn" data-act="eq-del" data-id="${it.id}" title="Выбросить">${icon('trash',12)}</button>
+    </div>`).join(''):'<p class="empty">Котомка пуста — и то ли это мудрость, то ли бедность.</p>';
+  return `<div class="panel">
+    <div class="sec-title"><h2>${icon('hourglass',15)} Снаряжение</h2><span class="ln"></span><span class="note">что станет важным</span></div>
+    ${rows}
+    <div style="margin-top:12px"><button class="btn" data-act="equip-modal">${icon('plus',13)} Положить в котомку</button></div>
+  </div>`;
+}
+function charStripHTML(){
+  const prof=state.activeProfileId;
+  const chars=state.characters.filter(c=>(c.profileId||state.profiles[0].id)===prof);
+  if(!chars.length)return `<div class="char-strip"><span class="empty">У этого профиля пока нет персонажей.</span>
+    <button class="char-tab" data-act="char-modal" style="border-style:dashed">${icon('plus',13)} Новый странник</button></div>`;
+  const tabs=chars.map(c=>`<button class="char-tab ${c.id===state.activeCharId?'active':''}" data-act="char-select" data-id="${c.id}">
+      <span>${esc(c.name)}</span><span class="ct-xp">${icon('gem',11)}${c.xp}</span>
+      ${c.id===state.activeCharId?`<span class="ibtn ct-del" data-act="char-del" title="Удалить скитальца" role="button">${icon('x',11)}</span>`:''}
+    </button>`).join('');
+  return `<div class="char-strip">${tabs}
+    <button class="char-tab" data-act="char-export" title="Выгрузить активного персонажа в JSON">${icon('dl',14)} Выгрузить</button>
+    <button class="char-tab" data-act="char-modal" style="border-style:dashed">${icon('plus',13)} Новый странник</button></div>`;
+}
+function pregenBannerHTML(c){
+  return `<div class="pregen-banner panel">
+    <span class="pb-tag">Преген</span>
+    <input type="text" id="pgName" value="${esc(c.name)}" maxlength="40" aria-label="Имя прегена">
+    <input type="text" id="pgNote" value="${esc(c.pregenNote||'')}" maxlength="80" placeholder="роль в истории…">
+    <button class="btn" data-act="pg-transfer">${icon('users',13)} Передать игроку</button>
+    <button class="ibtn" data-act="pg-del" title="Удалить прегена">${icon('trash',12)}</button>
+    <button class="btn btn-ghost" data-act="pg-done">в кабинет</button>
+  </div>`;
+}
+function renderSheet(){
+  const c=char();
+  if(!c){$('#view-sheet').innerHTML='<p class="empty">Скитальцев нет.</p>';return}
+  const strip=editingPregen?pregenBannerHTML(c):charStripHTML();
+  $('#view-sheet').innerHTML=strip+
+    `<div class="sheet-grid">${asideHTML(c)}
+      <div class="sheet-main">${personaHTML(c)}${rollPanelHTML()}${abilitiesHTML(c)}${powersHTML(c)}${equipHTML(c)}</div></div>`;
+  renderDiceField();
+  updatePoolPreview();
+}
+
+/* ═══════════ КОДЕКС ═══════════ */
+function catName(id){const c=CODEX_CATS.find(c=>c.id===id);return c?c.name:id}
+function fmtBody(body){
+  let out='',list=[];
+  const flush=()=>{if(list.length){out+='<ul>'+list.map(li=>'<li>'+li+'</li>').join('')+'</ul>';list=[]}};
+  body.forEach(l=>{if(l.startsWith('- '))list.push(esc(l.slice(2)));else{flush();out+='<p>'+esc(l)+'</p>'}});
+  flush();return out;
+}
+function markMatches(text,q){
+  if(!q)return esc(text);
+  const nT=norm(text),nq=norm(q);let out='',i=0,idx;
+  while((idx=nT.indexOf(nq,i))>=0){
+    out+=esc(text.slice(i,idx))+'<mark>'+esc(text.slice(idx,idx+q.length))+'</mark>';
+    i=idx+q.length;
+    if(out.length>400)break;
+  }
+  return out+esc(text.slice(i));
+}
+function snippet(a,q){
+  if(!q)return esc(a.summary||'');
+  const hay=a.body.join(' § '),i=norm(hay).indexOf(norm(q));
+  if(i<0)return esc(a.summary||'');
+  const s=Math.max(0,i-55),e=Math.min(hay.length,i+95);
+  return (s>0?'…':'')+esc(hay.slice(s,i))+'<mark>'+esc(hay.slice(i,i+q.length))+'</mark>'+esc(hay.slice(i+q.length,e))+(e<hay.length?'…':'');
+}
+function renderCodexList(){
+  const q=codexUI.q.trim();
+  let items=q?CODEX.filter(a=>norm(a.title+' '+a.body.join(' ')).includes(norm(q)))
+             :CODEX.filter(a=>codexUI.cat==='all'||a.cat===codexUI.cat);
+  $('#codexList').innerHTML=
+    `<div class="codex-count">${q?`Найдено статей: ${items.length}`:`Статей: ${items.length}`}</div>`+
+    (items.length?items.map(a=>`<article class="codex-row" data-act="codex-open" data-id="${CODEX.indexOf(a)}" tabindex="0" role="button">
+        <div class="cr-top"><span class="cr-title">${markMatches(a.title,q)}</span><span class="cr-cat">${catName(a.cat)}</span></div>
+        <p class="cr-sum">${snippet(a,q)}</p></article>`).join('')
+      :'<p class="empty">Кодекс молчит — такого в нём не записано.</p>');
+}
+function renderCodex(){
+  $('#view-codex').innerHTML=`
+    <div class="view-head"><h2>Кодекс Оживших кошмаров</h2><p>Правила сжаты до сути — как заметки на полях дорожной книги.</p></div>
+    <div class="codex-head">
+      <div class="searchbox">${icon('search',16)}<input type="text" id="codexSearch" placeholder="Поиск: десятки, провал, кровь, КУ…" value="${esc(codexUI.q)}"></div>
+      <div class="cat-filter" id="catFilter">
+        <button class="cf-btn ${codexUI.cat==='all'?'active':''}" data-act="cf-cat" data-cat="all">Все</button>
+        ${CODEX_CATS.map(c=>`<button class="cf-btn ${codexUI.cat===c.id?'active':''}" data-act="cf-cat" data-cat="${c.id}">${c.name}</button>`).join('')}
+      </div>
+    </div>
+    <div id="codexList"></div>`;
+  renderCodexList();
+}
+function openCodexArticle(id){
+  const a=CODEX[+id];if(!a)return;
+  openModal(`<span class="cat-tag">${catName(a.cat)}</span>${esc(a.title)}`,fmtBody(a.body));
+}
+function openPowerInfo(pid){
+  const p=POWERS[pid];if(!p)return;
+  openModal(esc(p.name),`<span class="cat-tag">проклятая сила</span><p>${esc(p.flavor)}</p>`+
+    p.manif.map(([lv,n,d])=>`<div class="mrow"><span class="mlv">${'◆'.repeat(lv)}</span><span><b>${esc(n)}</b><p>${esc(d)}</p></span></div>`).join(''));
+}
+
+/* ═══════════ ОПЫТ ═══════════ */
+function calcCost(){
+  const k=$('#calcType')?$('#calcType').value:'skill';
+  const n=clamp(Math.round(+($('#calcTarget')?.value)||0),1,10);
+  const [label,mult]=XP_MULT[k];
+  return {text:`${label} до уровня ${n}: <b>${mult*n}</b> ${plural(mult*n,'очко','очка','очков')} опыта <span style="color:var(--faint)">(${mult} × ${n})</span>`};
+}
+function renderXP(){
+  if(editingPregen){
+    $('#view-xp').innerHTML=`<div class="view-head"><h2>Летопись опыта</h2></div>
+      <div class="panel"><p class="empty">Преген не ведёт летопись — передайте его игроку, и счёт откроется.</p>
+      <button class="btn" data-act="pg-done">в кабинет Сказителя</button></div>`;
+    return;
+  }
+  const c=char();
+  const recs=state.log.filter(r=>r.charId===c.id).sort((a,b)=>b.ts-a.ts);
+  const gained=recs.filter(r=>r.type==='+').reduce((s,r)=>s+r.amount,0);
+  const spent=recs.filter(r=>r.type==='-').reduce((s,r)=>s+r.amount,0);
+  const calc=calcCost();
+  const form=`
+    <div class="btn-group" style="margin-bottom:16px">
+      <button class="bg-btn ${xpUI.type==='gain'?'active':''}" data-act="xp-type" data-type="gain">Получено</button>
+      <button class="bg-btn ${xpUI.type==='spend'?'active spend-act':''}" data-act="xp-type" data-type="spend">Потрачено</button>
+    </div>
+    <div class="form-row"><label for="xpAmount">Сколько очков</label>
+      <input type="number" id="xpAmount" min="1" max="999" value="${esc(xpUI.amount)}" placeholder="1–999"></div>
+    <div class="form-row"><label for="xpReason">За что / на что</label>
+      <input type="text" id="xpReason" maxlength="100" value="${esc(xpUI.reason)}" placeholder="за победу над волколаком, на обучение скрытности…"></div>
+    <button class="btn btn-primary" data-act="xp-commit">${icon('quill',14)} Внести в летопись</button>`;
+  const calcHTML=`
+    <div class="sec-title" style="margin-top:20px"><h2>${icon('gem',14)} Цены развития</h2><span class="ln"></span></div>
+    <div class="calc-row">
+      <select id="calcType">${Object.entries(XP_MULT).map(([k,v])=>`<option value="${k}">${v[0]}</option>`).join('')}</select>
+      <input type="number" id="calcTarget" min="1" max="10" value="3" style="width:64px" title="Приобретаемый уровень">
+      <span class="roll-sub">уровень</span>
+    </div>
+    <div class="calc-out" id="calcOut">${calc.text}</div>`;
+  const filt=recs.filter(r=>xpUI.filter==='all'||r.type===xpUI.filter);
+  const log=filt.length?filt.map(r=>`<div class="log-row">
+      <span class="log-date">${fmtDate(r.ts)}</span>
+      <span class="log-delta ${r.type==='+'?'plus':'minus'}">${r.type}${r.amount}</span>
+      <span class="log-cat">${esc(r.reason||'—')}</span>
+      <button class="ibtn log-del" data-act="xp-del" data-id="${r.id}" title="Вычеркнуть запись">${icon('x',11)}</button>
+    </div>`).join(''):'<p class="empty">Летопись пуста. Сцены ждут.</p>';
+  $('#view-xp').innerHTML=`
+    <div class="view-head"><h2>Летопись опыта</h2><p>${esc(c.name)} — что нажито странствием и во что обошлось.</p></div>
+    <div class="xp-grid">
+      <div class="panel">
+        <div class="xp-balance"><span class="xp-num">${c.xp}</span><span class="xp-cap">${plural(c.xp,'очко','очка','очков')} опыта</span></div>
+        <div class="xp-stats"><span>получено: <b>+${gained}</b></span><span>потрачено: <b>−${spent}</b></span></div>
+        ${form}${calcHTML}
+      </div>
+      <div class="panel">
+        <div class="sec-title"><h2>${icon('book',15)} Хроника</h2><span class="ln"></span>
+          <span class="btn-group" style="margin-left:8px">
+            <button class="bg-btn" style="padding:4px 10px" data-act="xp-filter" data-f="all">все</button>
+            <button class="bg-btn" style="padding:4px 10px" data-act="xp-filter" data-f="+">+</button>
+            <button class="bg-btn" style="padding:4px 10px" data-act="xp-filter" data-f="-">−</button>
+          </span></div>
+        ${log}
+      </div>
+    </div>`;
+  $$('#view-xp [data-f]').forEach(b=>b.classList.toggle('active',b.dataset.f===xpUI.filter));
+}
+function commitXP(){
+  const c=char();if(!c||editingPregen)return;
+  const amount=Math.floor(+($('#xpAmount')?.value||0));
+  if(!(amount>=1&&amount<=999)){toast('Сумма опыта — целое число от 1 до 999.',1);return}
+  xpUI.reason=$('#xpReason').value.trim();
+  const type=xpUI.type==='gain'?'+':'-';
+  state.log.push({id:uid('xp'),charId:c.id,ts:Date.now(),type,amount,reason:xpUI.reason});
+  c.xp+=type==='+'?amount:-amount;save();
+  xpUI.reason='';xpUI.amount='';
+  renderXP();
+  toast(`${type}${amount} опыта внесено в летопись.`);
+}
+
+/* ═══════════ ИНСТРУМЕНТЫ: МОДАЛКА ═══════════ */
+function fieldHTML(f){
+  const v=toolUI.vals;
+  if(f.type==='num')return `<label class="mf">${f.label}<input type="number" data-tf="${f.k}" value="${v[f.k]}" min="${f.min??0}" max="${f.max??99}"></label>`;
+  if(f.type==='sel')return `<label class="mf">${f.label}<select data-tf="${f.k}">${f.options.map(o=>{
+    const val=(o.v!==undefined)?o.v:o,lab=(o.n!==undefined)?o.n:o;
+    return `<option value="${esc(val)}" ${String(v[f.k])===String(val)?'selected':''}>${esc(lab)}</option>`}).join('')}</select></label>`;
+  if(f.type==='chk')return `<label class="mf" style="flex-direction:row;align-items:center;gap:7px"><input type="checkbox" data-tf="${f.k}" ${v[f.k]?'checked':''}>${f.label}</label>`;
+  return '';
+}
+function openTool(id){
+  const T=TOOLS.find(t=>t.id===id);if(!T)return;
+  toolUI={id,vals:Object.fromEntries(T.fields.map(f=>[f.k,f.def]))};
+  openModal(`<span class="cat-tag">инструмент</span>${esc(T.title)}`,
+    `<div id="toolWrap"><div class="tool-fields">${T.fields.map(fieldHTML).join('')}</div><div class="tool-out" id="toolOut"></div></div>`);
+  renderToolOut(false);
+}
+function readToolVals(){
+  const T=TOOLS.find(t=>t.id===toolUI.id);
+  const out={...toolUI.vals};
+  $$('#toolWrap [data-tf]').forEach(el=>{
+    const f=T.fields.find(x=>x.k===el.dataset.tf);if(!f)return;
+    out[el.dataset.tf]=f.type==='chk'?el.checked:(f.type==='num'?(parseInt(el.value)||0):el.value);
+  });
+  toolUI.vals=out;return out;
+}
+function renderToolOut(rnd){
+  if(!toolUI)return;
+  const T=TOOLS.find(t=>t.id===toolUI.id);
+  const out=$('#toolOut');if(!out)return;
+  out.innerHTML=T.compute(readToolVals(),rnd);
+}
+
+/* ═══════════ СКВОЗНОЙ ПОИСК ═══════════ */
+const GCHIPS=['Попадание','КУ','Урон','Инициатива','Сложность','Провал','Предел ран','Стресс','Чёрная кровь','Волколак'];
+function buildIndex(){
+  const ix=[];
+  CODEX.forEach((a,i)=>ix.push({type:'codex',id:String(i),title:a.title,meta:catName(a.cat),
+    hay:norm(a.title+' '+a.summary+' '+a.body.join(' '))}));
+  TOOLS.forEach(t=>ix.push({type:'tool',id:t.id,title:t.title,meta:'формула под рукой',hay:norm(t.title+' '+t.keys)}));
+  Object.entries(POWERS).forEach(([id,p])=>ix.push({type:'power',id,title:p.name,meta:'проклятая сила',
+    hay:norm(p.name+' '+p.flavor+' '+p.manif.map(m=>m[1]+' '+m[2]).join(' '))}));
+  state.bestiary.forEach(m=>ix.push({type:'mob',id:m.id,title:m.name,
+    meta:({monster:'чудовище',enemy:'враг',npc:'NPC'})[m.type]||'тварь',
+    hay:norm(m.name+' '+m.being+' '+m.desc+' '+m.tactics+' '+m.abilities.join(' ')+' '+m.attacks.map(a=>a.name).join(' '))}));
+  const profName=id=>{const p=state.profiles.find(x=>x.id===id);return p?p.name:'—'};
+  state.characters.forEach(c=>ix.push({type:'char',id:c.id,title:c.name,meta:profName(c.profileId),
+    hay:norm(c.name+' '+c.notes+' '+(VICES[c.vice]?VICES[c.vice].name+' '+VICES[c.vice].being:'')+' '+c.essence+' '+c.mask)}));
+  state.pregens.forEach(c=>ix.push({type:'pregen',id:c.id,title:c.name,meta:c.pregenNote||'преген',
+    hay:norm(c.name+' '+c.pregenNote+' '+(VICES[c.vice]?VICES[c.vice].being:''))}));
+  return ix;
+}
+function runSearch(qraw){
+  const q=norm(String(qraw||'').trim());
+  const res=[];
+  if(q){
+    buildIndex().forEach(it=>{
+      const pos=it.hay.indexOf(q);
+      if(pos<0)return;
+      const inTitle=norm(it.title).includes(q);
+      res.push({...it,score:(inTitle?0:pos<12?1:2)*1000+pos});
+    });
+    res.sort((a,b)=>a.score-b.score);
+  }
+  renderGDrop(res,q);
+}
+function renderGDrop(res,q){
+  const d=$('#gdrop');if(!d)return;
+  if(!q){
+    d.innerHTML=`<div class="g-hint">${GCHIPS.map(c=>`<span class="g-chip" data-act="chip" data-q="${esc(c)}">${c}</span>`).join('')}</div>`;
+    d.hidden=false;return;
+  }
+  const groups={};
+  res.forEach(r=>{(groups[r.type]=groups[r.type]||[]).push(r)});
+  const order=[['tool','Инструменты','die'],['codex','Кодекс','book'],['power','Проклятые силы','drop'],
+    ['mob','Твари и NPC','flame'],['char','Персонажи','heart'],['pregen','Прегены','hourglass']];
+  let html='',total=0;
+  order.forEach(([type,label,ic])=>{
+    const arr=groups[type];if(!arr)return;
+    html+=`<div class="g-head">${label}</div>`+arr.slice(0,6).map(r=>{total++;
+      return `<div class="g-item" data-act="go" data-gtype="${type}" data-gid="${esc(r.id)}">${icon(ic,14)}<span class="g-tt">${esc(r.title)}</span><span class="g-meta">${esc(r.meta||'')}</span></div>`;
+    }).join('');
+  });
+  d.innerHTML=total?html:'<div class="g-none">Тьма молчит. Попробуйте: попадание, КУ, урон, провал…</div>';
+  d.hidden=false;
+}
+function hideGDrop(){const d=$('#gdrop');if(d)d.hidden=true}
+
+/* ═══════════ ПРОФИЛИ ═══════════ */
+function renderProfSel(){
+  const sel=$('#profSel');if(!sel)return;
+  sel.innerHTML=state.profiles.map(p=>`<option value="${p.id}" ${p.id===state.activeProfileId?'selected':''}>${esc(p.name)}</option>`).join('');
+}
+function switchProfile(pid){
+  state.activeProfileId=pid;
+  const pc=state.characters.filter(c=>(c.profileId||state.profiles[0].id)===pid);
+  if(!pc.some(c=>c.id===state.activeCharId))state.activeCharId=pc[0]?pc[0].id:state.characters[0].id;
+  editingPregen=null;
+  save();hideGDrop();render();
+}
+function openProfModal(){
+  const rows=state.profiles.map(p=>`<div class="equip-row">
+    <input type="text" value="${esc(p.name)}" maxlength="30" data-pid="${p.id}" style="flex:1">
+    <button class="ibtn" data-act="prof-del" data-id="${p.id}" ${state.profiles.length<=1?'disabled':''} title="Убрать профиль">${icon('trash',12)}</button>
+  </div>`).join('');
+  openModal('Игроки за столом',`
+    ${rows}
+    <div class="spec-add"><input type="text" id="newProfName" maxlength="30" placeholder="имя нового игрока…">
+      <button class="btn" data-act="prof-create">${icon('plus',13)} Добавить</button></div>
+    <p class="empty">Профиль — метка на этом устройстве: переключая, вы фильтруете список персонажей. Для игры на разных компьютерах передавайте свитки через экспорт и импорт.</p>`);
+}
+
+/* ═══════════ КАБИНЕТ СКАЗИТЕЛЯ ═══════════ */
+function applyViceStart(c,viceId,quiet){
+  if(!viceId||!VICES[viceId])return 0;
+  let added=0;
+  VICES[viceId].start.forEach(pid=>{
+    if(!c.cursedPowers.some(p=>p.powerId===pid)){
+      c.cursedPowers.push({id:uid('pw'),powerId:pid,level:1,manifestations:[]});added++;
+    }
+  });
+  if(added&&!quiet)toast('Начальные силы порока добавлены (уровень 1 — распределите пункты по правилам вида).');
+  return added;
+}
+function distBlock(keys){
+  const ids=shuffle([...keys]),map={};
+  const two=Math.random()<.5?1:0;
+  const ones=two?2:5;
+  for(let i=0;i<ones;i++)map[ids[i]]=1;
+  for(let i=0;i<two;i++)map[ids[ones+i]]=2;
+  return map;
+}
+function genPregen(cursed){
+  const c=defaultCharacter(pick(Math.random()<.5?NAMES_F:NAMES_M));
+  Object.assign(c.qualities,distBlock(QUALITIES.map(q=>q.id)));
+  Object.assign(c.skills,distBlock(SKILLS.map(s=>s.id)));
+  Object.assign(c.lore,distBlock(LORE.map(l=>l.id)));
+  const vs=shuffle(VIRTUES.map(v=>v.id));
+  if(Math.random()<.6)vs.forEach(id=>c.virtues[id]=2);
+  else{c.virtues[vs[0]]=3;c.virtues[vs[1]]=2}
+  if(cursed){
+    const vk=pick(Object.keys(VICES));
+    c.vice=vk;applyViceStart(c,vk,true);
+    c.humanity=5+irnd(4);
+  }
+  c.woundLimit=suggestLimit(c);c.blood=maxBlood(c);
+  const eqn=2+irnd(2);
+  for(let i=0;i<eqn;i++)c.equipment.push({id:uid('eq'),name:pick(EQUIP_POOL),qty:1+irnd(2),note:''});
+  recalcTotal(c);
+  return c;
+}
+function renderGM(){
+  const pg=state.pregens,mobs=state.bestiary;
+  const pgRows=pg.length?pg.map(p=>`<div class="gm-row">
+    <span class="tbadge">${p.vice?esc(VICES[p.vice].being):'Смертный'}</span>
+    <b>${esc(p.name)}</b>
+    <span class="gm-meta">${esc(p.pregenNote||'без роли')}</span>
+    <button class="ibtn" data-act="pg-edit" data-id="${p.id}" title="Открыть и править">${icon('quill',13)}</button>
+    <button class="ibtn" data-act="pg-transfer" data-id="${p.id}" title="Передать игроку">${icon('users',13)}</button>
+    <button class="ibtn" data-act="pg-del" data-id="${p.id}" title="Удалить">${icon('trash',12)}</button>
+  </div>`).join(''):'<p class="empty">Прегенов нет. Сгенерируйте первого — он откроется прямо в листе персонажа.</p>';
+  const mobRows=mobs.length?mobs.map(m=>`<div class="gm-row">
+    <span class="tbadge ${esc(m.type)}">${({monster:'Чудовище',enemy:'Враг',npc:'NPC'})[m.type]||'NPC'}</span>
+    <b>${esc(m.name)}</b>
+    <span class="gm-meta">КУ ${mobKU(m)} · раны ${m.woundLimit} · ${esc(m.attacks[0]?m.attacks[0].name:'без атак')}</span>
+    <button class="ibtn" data-act="mob-open" data-id="${m.id}" title="Карточка">${icon('eye',13)}</button>
+    <button class="ibtn" data-act="mob-dup" data-id="${m.id}" title="Дублировать">${icon('plus',13)}</button>
+    <button class="ibtn" data-act="mob-del" data-id="${m.id}" title="Удалить">${icon('trash',12)}</button>
+  </div>`).join(''):'<p class="empty">Тварей нет. Заведите первую — карточка с КУ, ранами и атаками для быстрого броска.</p>';
+  $('#view-gm').innerHTML=`
+    <div class="view-head"><h2>Кабинет Сказителя</h2><p>Прегены для безымянных и кодекс тварей — всё, что нужно за ширмой.</p></div>
+    <div class="gm-grid">
+      <div class="panel">
+        <div class="sec-title"><h2>${icon('users',15)} Прегены</h2><span class="ln"></span><span class="note">передаются игрокам</span></div>
+        ${pgRows}
+        <div style="margin-top:12px"><button class="btn" data-act="pg-new">${icon('plus',13)} Сгенерировать прегена</button></div>
+      </div>
+      <div class="panel">
+        <div class="sec-title"><h2>${icon('flame',15)} Твари и NPC</h2><span class="ln"></span><span class="note">КУ · раны · атаки</span></div>
+        ${mobRows}
+        <div style="margin-top:12px"><button class="btn" data-act="mob-new">${icon('plus',13)} Создать тварь</button></div>
+      </div>
+    </div>`;
+}
+function openPregenModal(){
+  pgKind='mortal';
+  openModal('Сгенерировать прегена',`
+    <div class="form-row"><label>Кто это будет</label>
+      <div class="btn-group">
+        <button class="bg-btn active" data-act="pg-kind" data-k="mortal">Смертный</button>
+        <button class="bg-btn" data-act="pg-kind" data-k="cursed">Проклятый</button>
+      </div></div>
+    <div class="form-row"><label for="pgNameF">Имя (можно оставить пустым)</label>
+      <input type="text" id="pgNameF" maxlength="40" placeholder="придумается само"></div>
+    <div class="form-row"><label for="pgRole">Роль в истории</label>
+      <input type="text" id="pgRole" maxlength="80" placeholder="пьяный сторож, беглая ведьмка, наёмник с тяжёлым прошлым…"></div>
+    <p class="empty">Параметры и снаряжение раскидаются по правилам создания. После генерации преген откроется в листе — доведите до ума и передайте игроку.</p>
+    <div class="modal-actions"><button class="btn btn-primary" data-act="pg-create">Создать</button></div>`);
+}
+function openTransferModal(){
+  const c=char();if(!c)return;
+  openModal('Передать игроку',`
+    <p>Преген <b style="color:var(--ink-strong)">${esc(c.name)}</b> станет полноценным персонажем в летописи выбранного игрока.</p>
+    <div class="form-row"><label for="trProf">Игрок</label>
+      <select id="trProf">${state.profiles.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></div>
+    <div class="form-row"><label for="trName">Имя (можно поменять)</label>
+      <input type="text" id="trName" maxlength="40" value="${esc(c.name)}"></div>
+    <div class="modal-actions"><button class="btn btn-primary" data-act="pg-do-transfer">Передать</button></div>`);
+}
+/* редактор твари */
+function setMobField(path,val){
+  const d=mobUI.draft;
+  if(path.startsWith('q.'))d.quals[path.slice(2)]=clamp(parseInt(val)||0,0,12);
+  else if(path.startsWith('sk.'))d.skills[path.slice(3)]=clamp(parseInt(val)||0,0,9);
+  else if(path==='woundLimit')d.woundLimit=clamp(parseInt(val)||1,1,999);
+  else if(['name','type','being','desc','tactics','loot','size'].includes(path))d[path]=val;
+}
+function refreshMobDerived(){
+  const k=$('#mobKU');if(!k)return;
+  k.textContent=mobKU(mobUI.draft);
+  $('#mobInit').textContent=mobInit(mobUI.draft);
+}
+function renderMobEditor(){
+  const d=mobUI.draft;
+  const qIn=QUALITIES.map(q=>`<label class="mf">${q.name}<input type="number" class="mini" data-mf="q.${q.id}" value="${d.quals[q.id]||0}" min="0" max="12"></label>`).join('');
+  const sIn=SKILLS.map(s=>`<label class="mf">${s.name}<input type="number" class="mini" data-mf="sk.${s.id}" value="${d.skills[s.id]||0}" min="0" max="9"></label>`).join('');
+  const atk=d.attacks.map((a,i)=>`<div class="atk-row">
+    <input type="text" data-ai="${i}" data-af="name" value="${esc(a.name)}" placeholder="название атаки">
+    <input type="number" data-ai="${i}" data-af="pool" value="${a.pool}" min="0" max="20" title="пул к10">
+    <input type="text" data-ai="${i}" data-af="damage" value="${esc(a.damage)}" placeholder="урон: к10, тяжёлые раны">
+    <button class="ibtn" data-act="mob-atk-roll" data-i="${i}" title="Бросить атаку">${icon('die',13)}</button>
+    <button class="ibtn" data-act="mob-atk-del" data-i="${i}" title="Убрать">${icon('x',11)}</button>
+  </div>`).join('');
+  const abl=d.abilities.map((a,i)=>`<span class="tag">${esc(a)}<button class="ibtn" data-act="mob-abl-del" data-i="${i}">${icon('x',10)}</button></span>`).join('');
+  $('#mobWrap').innerHTML=`
+    <div class="mob-grid">
+      <label class="mf">Имя<input type="text" data-mf="name" value="${esc(d.name)}"></label>
+      <label class="mf">Тип<select data-mf="type">
+        <option value="monster" ${d.type==='monster'?'selected':''}>Чудовище</option>
+        <option value="enemy" ${d.type==='enemy'?'selected':''}>Враг</option>
+        <option value="npc" ${d.type==='npc'?'selected':''}>NPC</option></select></label>
+      <label class="mf">Вид нечисти<input type="text" data-mf="being" value="${esc(d.being)}" placeholder="волколак…"></label>
+      <label class="mf">Размер<select data-mf="size">${SIZES.map(s=>`<option value="${s.id}" ${d.size===s.id?'selected':''}>${s.name}</option>`).join('')}</select></label>
+      <div class="mf">КУ<div class="derived" id="mobKU">${mobKU(d)}</div></div>
+      <div class="mf">Инициатива<div class="derived" id="mobInit">${mobInit(d)}</div></div>
+      <label class="mf">Предел ран<input type="number" data-mf="woundLimit" value="${d.woundLimit}" min="1" max="999"></label>
+    </div>
+    <div class="sec-title"><h2 style="font-size:13px">Качества</h2><span class="ln"></span></div>
+    <div class="mob-grid" style="grid-template-columns:repeat(9,1fr);gap:6px">${qIn}</div>
+    <div class="sec-title"><h2 style="font-size:13px">Умения</h2><span class="ln"></span></div>
+    <div class="mob-grid" style="grid-template-columns:repeat(9,1fr);gap:6px">${sIn}</div>
+    <div class="sec-title"><h2 style="font-size:13px">Атаки</h2><span class="ln"></span><button class="ibtn" data-act="mob-atk-add" title="Добавить атаку">${icon('plus',13)}</button></div>
+    ${atk||'<p class="empty">Ни одной атаки.</p>'}
+    <div class="sec-title" style="margin-top:10px"><h2 style="font-size:13px">Способности</h2><span class="ln"></span></div>
+    <div class="tags">${abl||'<span class="empty">Особых способностей нет</span>'}</div>
+    <div class="spec-add"><input type="text" id="ablIn" maxlength="80" placeholder="способность — «Незримая поступь 2: тихий шаг»…"><button class="btn" data-act="mob-abl-add">${icon('plus',13)}</button></div>
+    <div class="form-row" style="margin-top:12px"><label>Описание и повадки</label>
+      <textarea data-mf="desc" rows="3" style="width:100%;resize:vertical">${esc(d.desc)}</textarea></div>
+    <div class="form-row"><label>Тактика в бою</label>
+      <textarea data-mf="tactics" rows="2" style="width:100%;resize:vertical">${esc(d.tactics)}</textarea></div>
+    <div class="form-row"><label>Добыча</label>
+      <input type="text" data-mf="loot" value="${esc(d.loot)}" placeholder="шкура, клык, ключ от амбара…"></div>
+    <div class="modal-actions">
+      <button class="btn" data-act="mob-cancel">Отмена</button>
+      <button class="btn btn-primary" data-act="mob-save">Сохранить в кодекс тварей</button>
+    </div>
+    <div class="tool-roll" id="mobRoll"></div>`;
+}
+function openMobModal(id){
+  const src=id?state.bestiary.find(m=>m.id===id):null;
+  mobUI={isNew:!src,draft:src?JSON.parse(JSON.stringify(src)):defaultMob()};
+  openModal('Карточка твари','<div id="mobWrap"></div>');
+  renderMobEditor();
+}
+
+/* ═══════════ ЭКСПОРТ / ИМПОРТ ═══════════ */
+function exportPayload(chars,withGM){
+  const ids=new Set(chars.map(c=>c.id));
+  const eqConv=c=>({...c,equipment:c.equipment.map(eqToStr)});
+  const pay={
+    version:3,
+    profiles:state.profiles,
+    characters:chars.map(eqConv),
+    activeCharId:ids.has(state.activeCharId)?state.activeCharId:(chars[0]&&chars[0].id)||'',
+    log:state.log.filter(l=>ids.has(l.charId)).map(l=>({ts:l.ts,charId:l.charId,type:l.type,amount:l.amount,reason:l.reason}))
+  };
+  if(withGM){
+    pay.pregens=state.pregens.map(eqConv);
+    pay.bestiary=state.bestiary;
+  }
+  return pay;
+}
+function doExportAll(){
+  download('skitalec-letopis.json',JSON.stringify(exportPayload(state.characters,true),null,2));
+  toast('Летопись скопирована в свиток.');
+}
+function doExportChar(){
+  const c=char();if(!c||editingPregen)return;
+  const pay=exportPayload([c],false);
+  const single={...pay.characters[0]};
+  if(pay.log.length)single.log=pay.log;
+  const fname='skitalec-'+c.name.replace(/[^\wа-яёА-ЯЁ-]+/g,'-').replace(/^-+|-+$/g,'')+'.json';
+  download(fname,JSON.stringify(single,null,2));
+  toast(`«${c.name}» переписан в свиток.`);
+}
+function handleImportText(text){
+  let d;try{d=JSON.parse(text)}catch(e){toast('Свиток повреждён — JSON не читается.',1);return}
+  try{
+    if(Array.isArray(d)){
+      const chars=d.map(normalizeCharacter).filter(c=>c.name);
+      if(!chars.length)throw 0;
+      pendingImport={chars,logs:[],replace:false,pregens:[],bestiary:[]};
+    }else if(d&&typeof d==='object'&&Array.isArray(d.characters)){
+      const chars=d.characters.map(normalizeCharacter).filter(c=>c.name);
+      if(!chars.length)throw 0;
+      const ids=new Set(chars.map(c=>c.id));
+      pendingImport={chars,logs:(d.log||[]).map(normalizeLog).filter(l=>l&&ids.has(l.charId)),replace:true,
+        pregens:Array.isArray(d.pregens)?d.pregens.map(normalizeCharacter):[],
+        bestiary:Array.isArray(d.bestiary)?d.bestiary.map(normalizeMob):[]};
+    }else if(d&&typeof d==='object'&&(d.qualities||d.skills||d.virtues)){
+      const c=normalizeCharacter(d);
+      const logs=(d.log||[]).map(normalizeLog).filter(l=>l&&(!l.charId||l.charId===c.id)).map(l=>({...l,charId:c.id}));
+      pendingImport={chars:[c],logs,replace:false,pregens:[],bestiary:[]};
+    }else throw 0;
+    const names=pendingImport.chars.map(c=>`«${esc(c.name)}»`).join(', ');
+    openModal('Импорт свитка',`
+      <p>В свитке найдено: <b style="color:var(--ink-strong)">${pendingImport.chars.length} ${plural(pendingImport.chars.length,'персонаж','персонажа','персонажей')}</b> — ${names}.</p>
+      <p style="color:var(--dim)">Записей опыта: ${pendingImport.logs.length}. Тварей: ${pendingImport.bestiary.length}. Параметры будут сверены с правилами и достроены.</p>
+      <div class="modal-actions">
+        ${pendingImport.replace?'<button class="btn btn-danger" data-act="imp-replace">Заменить летопись целиком</button>':''}
+        <button class="btn btn-primary" data-act="imp-add">Добавить к текущим</button>
+      </div>`);
+  }catch(e){toast('В свитке не найдено персонажей.',1)}
+}
+function importAdd(){
+  pendingImport.chars.forEach(c=>{
+    if(state.characters.some(x=>x.id===c.id))c.id=uid('char');
+    if(!state.profiles.some(p=>p.id===c.profileId))c.profileId=state.activeProfileId;
+    state.characters.push(c);
+  });
+  pendingImport.logs.forEach(l=>{
+    if(!state.characters.some(x=>x.id===l.charId))return;
+    state.log.push({...l,id:uid('xp')});
+  });
+  pendingImport.pregens.forEach(p=>{p.id=uid('char');state.pregens.push(p)});
+  pendingImport.bestiary.forEach(m=>{m.id=uid('mob');state.bestiary.push(m)});
+  state.activeCharId=pendingImport.chars[0].id;
+  save();closeModal();
+  if(view!=='sheet')switchView('sheet');else render();
+  toast(`В летопись вписано: ${pendingImport.chars.length} ${plural(pendingImport.chars.length,'странник','странника','странников')}.`);
+}
+function importReplace(){
+  editingPregen=null;
+  state=normalizeState(pendingImport);
+  save();closeModal();dice={rolling:false,last:null,history:[]};
+  render();toast('Летопись переписана из свитка.');
+}
+
+/* ═══════════ ОСНОВНЫЕ ДЕЙСТВИЯ ═══════════ */
+function switchView(v){view=v;hideGDrop();window.scrollTo({top:0});render()}
+function createChar(){
+  const name=($('#ncName')?.value||'').trim()||'Безымянный';
+  const c=defaultCharacter(name);
+  c.profileId=state.activeProfileId;
+  const vice=$('#ncVice')?.value||'';
+  if(vice){c.vice=vice;applyViceStart(c,vice)}
+  state.characters.push(c);state.activeCharId=c.id;save();closeModal();
+  if(view!=='sheet')switchView('sheet');else renderSheet();
+  toast(`${name} выходит на дорогу.`);
+}
+function addSpec(){
+  const c=char(),name=($('#specName')?.value||'').trim(),skillId=$('#specSkill').value;
+  if(!name){toast('Дайте грани имя — узкое и живое.',1);return}
+  const lv=(c.skills[skillId]??c.lore[skillId])||0;
+  if(lv<3)toast('По правилам специализация доступна с уровня 3 умения — записана на вырост.');
+  c.specializations.push({id:uid('sp'),skillId,specializationName:name});
+  save();renderSheet();
+}
+
+/* ═══════════ РОУТЕР СОБЫТИЙ ═══════════ */
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#gsearch'))hideGDrop();
+  if(e.target.dataset&&e.target.dataset.mb){closeModal();return}
+  const t=e.target.closest('[data-act]');if(!t)return;
+  const act=t.dataset.act,c=char();
+  switch(act){
+    case 'view':switchView(t.dataset.view);break;
+    case 'modal-close':closeModal();break;
+    /* поиск */
+    case 'chip':{$('#gq').value=t.dataset.q;runSearch(t.dataset.q);break}
+    case 'go':{
+      hideGDrop();
+      const ty=t.dataset.gtype,gid=t.dataset.gid;
+      if(ty==='tool')openTool(gid);
+      else if(ty==='codex')openCodexArticle(gid);
+      else if(ty==='power')openPowerInfo(gid);
+      else if(ty==='mob')openMobModal(gid);
+      else if(ty==='char'){
+        editingPregen=null;
+        const cc=state.characters.find(x=>x.id===gid);
+        if(cc){if(cc.profileId&&state.activeProfileId!==cc.profileId)state.activeProfileId=cc.profileId;
+          state.activeCharId=cc.id;save();switchView('sheet')}
+      }else if(ty==='pregen'){
+        if(state.pregens.some(p=>p.id===gid)){editingPregen=gid;switchView('sheet')}
+      }
+      break;}
+    case 'troll':renderToolOut(true);break;
+    /* персонажи */
+    case 'char-modal':{
+      const viceOpts=['<option value="">— род людской (смертный) —</option>'].concat(
+        Object.entries(VICES).map(([id,v])=>`<option value="${id}">${v.name} · ${v.being}</option>`)).join('');
+      openModal('Новый скиталец',`
+        <div class="form-row"><label for="ncName">Имя</label>
+          <input type="text" id="ncName" maxlength="40" placeholder="Кто идёт сквозь тьму?"></div>
+        <div class="form-row"><label for="ncVice">Порок (для Проклятых)</label>
+          <select id="ncVice">${viceOpts}</select></div>
+        <p class="empty">Параметры начнутся с нуля, добродетели — с двух. Остальное допишет дорога: по 5 пунктов на каждый блок и 40 свободных — по правилам Книги первой.</p>
+        <div class="modal-actions"><button class="btn btn-primary" data-act="char-create">Выйти на дорогу</button></div>`);
+      $('#ncName').focus();break;}
+    case 'char-create':createChar();break;
+    case 'char-select':state.activeCharId=t.dataset.id;save();render();break;
+    case 'char-export':doExportChar();break;
+    case 'char-del':
+      if(!armButton(t))return;
+      state.characters=state.characters.filter(x=>x.id!==t.dataset.id);
+      state.log=state.log.filter(r=>r.charId!==t.dataset.id);
+      if(state.activeCharId===t.dataset.id)state.activeCharId=state.characters[0]?.id;
+      if(!state.characters.length){const d=defaultCharacter('Безымянный');d.profileId=state.activeProfileId;state.characters.push(d);state.activeCharId=d.id}
+      save();render();toast('Свиток предан огню.');
+      break;
+    /* профили */
+    case 'prof-open':openProfModal();break;
+    case 'prof-create':{
+      const nm=($('#newProfName')?.value||'').trim();
+      if(!nm){toast('Дайте игроку имя.',1);break}
+      state.profiles.push({id:uid('prof'),name:nm});
+      save();openProfModal();renderProfSel();break;}
+    case 'prof-del':{
+      if(state.profiles.length<=1)break;
+      const id=t.dataset.id;
+      const rest=state.profiles.filter(p=>p.id!==id);
+      state.characters.forEach(ch=>{if(ch.profileId===id)ch.profileId=rest[0].id});
+      state.pregens.forEach(p=>{if(p.profileId===id)p.profileId=rest[0].id});
+      state.profiles=rest;
+      if(state.activeProfileId===id)state.activeProfileId=rest[0].id;
+      if(!state.characters.some(ch=>ch.id===state.activeCharId))state.activeCharId=state.characters[0].id;
+      save();openProfModal();renderProfSel();break;}
+    /* значения способностей */
+    case 'pip':{
+      const g=t.dataset.group,id=t.dataset.id,v=+t.dataset.v,gd=GROUPS[g];
+      if(g==='virtues')c.virtues[id]=clamp(v,gd.min,gd.max);
+      else c[g][id]=clamp(v,gd.min,gd.max);
+      save();renderSheet();break;}
+    case 'stat':{
+      const g=t.dataset.group,id=t.dataset.id,d=t.dataset.kind==='inc'?1:-1,gd=GROUPS[g];
+      if(g==='virtues')c.virtues[id]=clamp(c.virtues[id]+d,gd.min,gd.max);
+      else c[g][id]=clamp(c[g][id]+d,gd.min,gd.max);
+      save();renderSheet();break;}
+    /* шкала души */
+    case 'sun':{
+      c.humanity=clamp(10-(+t.dataset.i),0,10);
+      c.blood=clamp(c.blood,0,maxBlood(c));
+      save();renderSheet();break;}
+    /* кровь и стресс */
+    case 'track':{
+      const v=+t.dataset.v,k=t.dataset.kind;
+      const max=k==='blood'?maxBlood(c):resilience(c);
+      c[k]=clamp(c[k]===v?v-1:v,0,max);save();renderSheet();break;}
+    case 'track-step':{
+      const k=t.dataset.kind;
+      const max=k==='blood'?maxBlood(c):resilience(c);
+      c[k]=clamp(c[k]+(+t.dataset.d),0,max);save();renderSheet();break;}
+    case 'stress-essence':{
+      if(c.stress<=0){toast('Стресса и так нет — душа чиста.');break}
+      if(!c.essence){toast('Сначала выберите Суть — иначе непонятно, что именно вас лечит.',1);break}
+      c.stress--;save();renderSheet();
+      toast(`Действие в согласии с Сутью «${c.essence}» — стресс снижен.`);break;}
+    /* предел ран */
+    case 'limit-step':c.woundLimit=clamp(c.woundLimit+(+t.dataset.d),20,999);save();renderSheet();break;
+    case 'limit-auto':c.woundLimit=suggestLimit(c);save();renderSheet();
+      toast(`Предел ран установлен по Выносливости: ${c.woundLimit}.`);break;
+    /* раны */
+    case 'select-part':selectedPart=t.dataset.part;renderSheet();break;
+    case 'wound':{
+      const d=t.dataset.kind==='inc'?1:-1,sev=t.dataset.sev;
+      c.wounds[selectedPart][sev]=clamp(c.wounds[selectedPart][sev]+d,0,30);
+      recalcTotal(c);save();renderSheet();break;}
+    case 'wounds-reset':
+      PARTS.forEach(p=>{c.wounds[p.id]={light:0,heavy:0}});
+      recalcTotal(c);save();renderSheet();toast('Раны затянулись — до следующей беды.');
+      break;
+    /* лик */
+    case 'vice-info':if(c.vice){
+      const v=VICES[c.vice];
+      openModal(`${esc(v.name)} · ${esc(v.being)}`,`
+        <span class="cat-tag">порок</span>
+        <p><b style="color:var(--ink-strong)">Достоинство.</b> ${esc(v.adv)}</p>
+        <p><b style="color:var(--ink-strong)">Недостаток.</b> ${esc(v.dis)}</p>
+        <p><b style="color:var(--ink-strong)">Начальные силы.</b> ${v.start.map(id=>esc(POWERS[id].name)).join(', ')}.</p>`);
+      }break;
+    /* специализации */
+    case 'spec-add':addSpec();break;
+    case 'spec-del':
+      c.specializations=c.specializations.filter(s=>s.id!==t.dataset.id);
+      save();renderSheet();break;
+    /* проклятые силы */
+    case 'power-modal':{
+      const ex=null;pwUI={powerId:null,level:1,picked:[],editing:null};
+      const rows=Object.entries(POWERS).map(([id,p])=>
+        `<div class="pw-opt" data-act="pw-pick" data-id="${id}">
+          <div class="pw-top"><b>${esc(p.name)}</b>${c.cursedPowers.some(x=>x.powerId===id)?'<span class="pw-has">уже изучена</span>':''}</div>
+          <p>${esc(p.flavor)}</p></div>`).join('');
+      openModal('Принять силу',`${rows}<div class="pw-detail" id="pwDetail"><p class="empty">Выберите путь, по которому пойдёт ваша кровь.</p></div>
+        <div class="modal-actions"><button class="btn btn-primary" data-act="pw-save">Принять силу</button></div>`);break;}
+    case 'power-edit':{
+      const ex=c.cursedPowers.find(p=>p.id===t.dataset.id);if(!ex)break;
+      pwUI={powerId:ex.powerId,level:ex.level,picked:[...ex.manifestations],editing:ex.id};
+      const rows=Object.entries(POWERS).map(([id,p])=>
+        `<div class="pw-opt ${pwUI.powerId===id?'sel':''}" data-act="pw-pick" data-id="${id}">
+          <div class="pw-top"><b>${esc(p.name)}</b></div><p>${esc(p.flavor)}</p></div>`).join('');
+      openModal('Путь силы',`${rows}<div class="pw-detail" id="pwDetail"></div>
+        <div class="modal-actions"><button class="btn btn-primary" data-act="pw-save">Сохранить путь</button></div>`);
+      $('#pwDetail').innerHTML=powerDetailHTML();break;}
+    case 'pw-pick':
+      pwUI.powerId=t.dataset.id;pwUI.picked=[];
+      $$('#modal-root .pw-opt').forEach(o=>o.classList.toggle('sel',o.dataset.id===pwUI.powerId));
+      $('#pwDetail').innerHTML=powerDetailHTML();break;
+    case 'pw-lvl':
+      pwUI.level=+t.dataset.l;$('#pwDetail').innerHTML=powerDetailHTML();break;
+    case 'pw-toggle':{
+      const n=t.dataset.name;
+      if(pwUI.picked.includes(n))pwUI.picked=pwUI.picked.filter(x=>x!==n);
+      else pwUI.picked.push(n);
+      $('#pwDetail').innerHTML=powerDetailHTML();break;}
+    case 'pw-save':{
+      if(!pwUI.powerId){toast('Сначала выберите силу.',1);break}
+      if(pwUI.editing){
+        const pw=c.cursedPowers.find(p=>p.id===pwUI.editing);
+        if(pw){pw.powerId=pwUI.powerId;pw.level=pwUI.level;pw.manifestations=[...pwUI.picked]}
+      }else{
+        c.cursedPowers.push({id:uid('pw'),powerId:pwUI.powerId,level:pwUI.level,manifestations:[...pwUI.picked]});
+      }
+      save();closeModal();renderSheet();
+      toast(pwUI.editing?'Путь переписан.':'Кровь приняла новую силу.');
+      break;}
+    case 'power-lvl':{
+      const pw=c.cursedPowers.find(p=>p.id===t.dataset.id);
+      pw.level=clamp(pw.level+(+t.dataset.d),1,5);save();renderSheet();break;}
+    case 'power-del':
+      if(!armButton(t))return;
+      c.cursedPowers=c.cursedPowers.filter(p=>p.id!==t.dataset.id);
+      save();renderSheet();toast('Сила отринута — но не забыта.');
+      break;
+    /* снаряжение */
+    case 'equip-modal':
+      openModal('Снаряжение',`
+        <div class="form-row"><label for="eqName">Предмет</label><input type="text" id="eqName" maxlength="60" placeholder="Фонарь с треснувшим стеклом"></div>
+        <div class="form-row"><label for="eqQty">Сколько</label><input type="number" id="eqQty" min="1" max="99" value="1"></div>
+        <div class="form-row"><label for="eqNote">Пометка</label><input type="text" id="eqNote" maxlength="80" placeholder="чей, где взял, чем важно…"></div>
+        <div class="modal-actions"><button class="btn btn-primary" data-act="equip-create">Положить в котомку</button></div>`);
+      $('#eqName').focus();break;
+    case 'equip-create':{
+      const name=($('#eqName')?.value||'').trim();
+      if(!name){toast('Безымянное в котомку не кладут.',1);break}
+      const qty=clamp(Math.floor(+($('#eqQty')?.value||1))||1,1,99);
+      c.equipment.push({id:uid('eq'),name,qty,note:($('#eqNote')?.value||'').trim()});
+      save();closeModal();renderSheet();toast(`${name} — в котомке.`);
+      break;}
+    case 'eq-qty':{
+      const it=c.equipment.find(i=>i.id===t.dataset.id);
+      it.qty=clamp(it.qty+(+t.dataset.d),1,99);save();renderSheet();break;}
+    case 'eq-del':
+      c.equipment=c.equipment.filter(i=>i.id!==t.dataset.id);
+      save();renderSheet();break;
+    /* броски */
+    case 'roll':rollFromPanel();break;
+    case 'effort':doEffort();break;
+    case 'quick-roll':quickRoll(t.dataset.type,t.dataset.id);break;
+    /* кодекс */
+    case 'cf-cat':
+      codexUI.cat=t.dataset.cat;
+      $$('#catFilter .cf-btn').forEach(b=>b.classList.toggle('active',b.dataset.cat===codexUI.cat));
+      renderCodexList();break;
+    case 'codex-open':openCodexArticle(t.dataset.id);break;
+    /* опыт */
+    case 'xp-type':xpUI.type=t.dataset.type;renderXP();break;
+    case 'xp-filter':xpUI.filter=t.dataset.f;renderXP();break;
+    case 'xp-commit':commitXP();break;
+    case 'xp-del':{
+      if(editingPregen)break;
+      const rec=state.log.find(r=>r.id===t.dataset.id);
+      if(!rec)break;
+      const owner=state.characters.find(x=>x.id===rec.charId);
+      if(owner)owner.xp+=rec.type==='+'?-rec.amount:rec.amount;
+      state.log=state.log.filter(r=>r.id!==rec.id);
+      save();renderXP();toast('Строка вычеркнута, опыт возвращён.');
+      break;}
+    /* прегены */
+    case 'pg-new':openPregenModal();break;
+    case 'pg-kind':
+      pgKind=t.dataset.k;
+      $$('#modal-root [data-act="pg-kind"]').forEach(b=>b.classList.toggle('active',b.dataset.k===pgKind));
+      break;
+    case 'pg-create':{
+      const gen=genPregen(pgKind==='cursed');
+      const nm=($('#pgNameF')?.value||'').trim();if(nm)gen.name=nm;
+      const role=($('#pgRole')?.value||'').trim();if(role)gen.pregenNote=role;
+      state.pregens.push(gen);editingPregen=gen.id;save();closeModal();
+      switchView('sheet');toast(`Преген «${gen.name}» готов — правьте и передавайте.`);
+      break;}
+    case 'pg-edit':editingPregen=t.dataset.id;switchView('sheet');break;
+    case 'pg-transfer':
+      if(t.dataset.id)editingPregen=t.dataset.id;
+      if(!editingPregen)break;
+      openTransferModal();break;
+    case 'pg-do-transfer':{
+      const cc=char();if(!cc||!editingPregen)break;
+      const pid=$('#trProf').value;
+      const nm=($('#trName').value||'').trim();
+      if(nm)cc.name=nm;
+      cc.profileId=pid;cc.pregenNote='';
+      state.pregens=state.pregens.filter(p=>p.id!==cc.id);
+      state.characters.push(cc);state.activeCharId=cc.id;state.activeProfileId=pid;
+      editingPregen=null;save();closeModal();
+      const pn=state.profiles.find(p=>p.id===pid);
+      toast(`«${cc.name}» передан игроку «${pn?pn.name:'—'}».`);
+      if(view!=='sheet')switchView('sheet');else renderSheet();
+      break;}
+    case 'pg-del':{
+      if(!armButton(t))return;
+      const id=t.dataset.id||editingPregen;
+      state.pregens=state.pregens.filter(p=>p.id!==id);
+      if(editingPregen===id)editingPregen=null;
+      save();closeModal();
+      if(view==='gm')renderGM();else switchView('gm');
+      toast('Преген стёрт.');
+      break;}
+    case 'pg-done':editingPregen=null;switchView('gm');break;
+    /* твари */
+    case 'mob-new':openMobModal(null);break;
+    case 'mob-open':openMobModal(t.dataset.id);break;
+    case 'mob-dup':{
+      const src=state.bestiary.find(m=>m.id===t.dataset.id);if(!src)break;
+      const copy=JSON.parse(JSON.stringify(src));
+      copy.id=uid('mob');copy.name=src.name+' (копия)';
+      copy.attacks=copy.attacks.map(a=>({...a,id:uid('atk')}));
+      state.bestiary.push(copy);save();renderGM();
+      toast('Тварь размножилась — как они это любят.');break;}
+    case 'mob-del':
+      if(!armButton(t))return;
+      state.bestiary=state.bestiary.filter(m=>m.id!==t.dataset.id);
+      if(mobUI&&mobUI.draft.id===t.dataset.id)closeModal();
+      save();renderGM();toast('Тварь изгнана из кодекса.');
+      break;
+    case 'mob-save':{
+      if(!mobUI)break;
+      const dft=mobUI.draft;
+      if(!String(dft.name||'').trim()){toast('У твари должно быть имя.',1);break}
+      const m=normalizeMob(dft);
+      if(mobUI.isNew)state.bestiary.push(m);
+      else{const i=state.bestiary.findIndex(x=>x.id===m.id);if(i>=0)state.bestiary[i]=m;else state.bestiary.push(m)}
+      save();closeModal();if(view==='gm')renderGM();
+      toast(`«${m.name}» — в кодексе тварей.`);
+      break;}
+    case 'mob-cancel':closeModal();break;
+    case 'mob-atk-add':
+      mobUI.draft.attacks.push({id:uid('atk'),name:'Атака',pool:3,damage:'к10',notes:''});
+      renderMobEditor();break;
+    case 'mob-atk-del':
+      mobUI.draft.attacks.splice(+t.dataset.i,1);renderMobEditor();break;
+    case 'mob-atk-roll':{
+      const a=mobUI.draft.attacks[+t.dataset.i];if(!a)break;
+      const n=clamp(a.pool,1,20);
+      const d=Array.from({length:n},r10);
+      let s=0;d.forEach(x=>{if(x===10)s+=2;else if(x>=6)s++});
+      $('#mobRoll').innerHTML=`«${esc(a.name)}»: ${d.join(' · ')} → <b>${s}</b> ${plural(s,'успех','успеха','успехов')} (сложность 6) против КУ цели.`;
+      break;}
+    case 'mob-abl-add':{
+      const v=($('#ablIn')?.value||'').trim();
+      if(!v)break;
+      mobUI.draft.abilities.push(v);renderMobEditor();break;}
+    case 'mob-abl-del':
+      mobUI.draft.abilities.splice(+t.dataset.i,1);renderMobEditor();break;
+    /* импорт и сброс */
+    case 'imp-replace':importReplace();break;
+    case 'imp-add':importAdd();break;
+    case 'export':doExportAll();break;
+    case 'import':$('#impFile').click();break;
+    case 'reset':
+      if(!armButton(t))return;
+      localStorage.removeItem(STORE_KEY);state=seed();
+      dice={rolling:false,last:null,history:[]};selectedPart='torso';editingPregen=null;
+      render();toast('Летопись стёрта. Всё начинается заново.');
+      break;
+  }
+});
+
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.id==='gq'){runSearch(t.value);return}
+  if(t.id==='charName'){const c=char();if(c){c.name=t.value||'Безымянный';save()}return}
+  if(t.id==='charNotes'){const c=char();if(c){c.notes=t.value;save()}return}
+  if(t.id==='woundLimit'){
+    const c=char();if(!c)return;
+    c.woundLimit=clamp(Math.round(+t.value)||c.woundLimit,20,999);
+    save();return}
+  if(t.id==='pgName'&&editingPregen){const c=char();if(c){c.name=t.value||'Безымянный';save()}return}
+  if(t.id==='pgNote'&&editingPregen){const c=char();if(c){c.pregenNote=t.value;save()}return}
+  if(t.id==='codexSearch'){codexUI.q=t.value;renderCodexList();return}
+  if(t.id==='xpAmount'){xpUI.amount=t.value;return}
+  if(t.id==='xpReason'){xpUI.reason=t.value;return}
+  if(t.id==='calcTarget'||t.id==='calcType'){
+    const el=$('#calcOut');if(el)el.innerHTML=calcCost().text;return}
+  if(t.dataset.rollsel){
+    const k=t.dataset.rollsel;
+    if(k==='spec'){rollSel.spec=t.checked;return}
+    if(k==='bonus')rollSel.bonus=parseInt(t.value)||0;
+    else if(k==='diff')rollSel.diff=parseInt(t.value)||6;
+    else{rollSel[k]=t.value;if(k==='skill')rollSel.spec=false}
+    updatePoolPreview();return}
+  if(t.dataset.tf!==undefined&&t.closest('#toolWrap')){renderToolOut(false);return}
+  if(t.closest('#mobWrap')&&mobUI){
+    if(t.dataset.ai!==undefined){
+      const a=mobUI.draft.attacks[+t.dataset.ai];
+      if(a)a[t.dataset.af]=t.dataset.af==='pool'?clamp(parseInt(t.value)||0,0,20):t.value;
+    }else if(t.dataset.mf)setMobField(t.dataset.mf,t.value);
+    refreshMobDerived();
+  }
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.id==='profSel'){switchProfile(t.value);return}
+  if(t.dataset&&t.dataset.persona){
+    const c=char();if(!c)return;
+    const k=t.dataset.persona;
+    c[k]=t.value;
+    if(k==='vice')applyViceStart(c,t.value);
+    save();renderSheet();return;
+  }
+  if(t.dataset&&t.dataset.tf!==undefined&&t.closest('#toolWrap')){renderToolOut(false);return}
+  if(t.closest&&t.closest('#mobWrap')&&mobUI&&t.dataset.mf){
+    setMobField(t.dataset.mf,t.value);refreshMobDerived();return;
+  }
+  if(t.id==='impFile'&&t.files[0]){
+    const f=t.files[0],rd=new FileReader();
+    rd.onload=()=>handleImportText(rd.result);
+    rd.readAsText(f);t.value='';
+  }
+  if(t.dataset&&t.dataset.pid){
+    const p=state.profiles.find(x=>x.id===t.dataset.pid);
+    if(p){p.name=t.value.trim()||p.name;save();renderProfSel()}
+  }
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){hideGDrop();closeModal();return}
+  if(e.key==='/'&&!e.ctrlKey&&!e.metaKey){
+    const t=e.target;
+    if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'))return;
+    e.preventDefault();$('#gq').focus();$('#gq').select();return;
+  }
+  if(e.key==='Enter'&&e.target.id==='gq'){
+    e.preventDefault();
+    const first=$('#gdrop .g-item');
+    if(first)first.click();else hideGDrop();
+    return;
+  }
+  if(e.key!=='Enter')return;
+  const t=e.target;
+  if(t.id==='ncName'){e.preventDefault();createChar()}
+  else if(t.id==='specName'){e.preventDefault();addSpec()}
+  else if(t.id==='eqName'||t.id==='eqNote'||t.id==='eqQty'){e.preventDefault();document.querySelector('[data-act="equip-create"]')?.click()}
+  else if(t.id==='ablIn'){e.preventDefault();document.querySelector('[data-act="mob-abl-add"]')?.click()}
+  else if(t.closest&&t.closest('.codex-row')){openCodexArticle(t.closest('.codex-row').dataset.id)}
+});
+ $('#gq')?.addEventListener('focus',()=>runSearch($('#gq').value));
+function powerDetailHTML(){
+  const p=POWERS[pwUI.powerId];
+  if(!p)return '<p class="empty">Выберите путь, по которому пойдёт ваша кровь.</p>';
+  const rows=p.manif.map(([lv,n,d])=>{
+    const on=pwUI.picked.includes(n);
+    return `<label class="mrow ${on?'on':''}" data-act="pw-toggle" data-name="${esc(n)}">
+      <span class="mbox"></span>
+      <span class="mlv">${'◆'.repeat(lv)}</span>
+      <span><b>${esc(n)}</b><p>${esc(d)}</p></span></label>`;
+  }).join('');
+  const cnt=pwUI.picked.length,over=cnt>pwUI.level;
+  return `<p>${esc(p.flavor)}</p>
+    <div class="pw-lvl"><span class="lbl">Уровень силы</span>${pipsStatic(pwUI.level,5,true)}
+      <span style="display:flex;gap:4px">
+        ${[1,2,3,4,5].map(n=>`<button class="ibtn" style="width:26px" data-act="pw-lvl" data-l="${n}" ${n===pwUI.level?'style="width:26px;border-color:var(--gold);color:var(--gold)"':''}>${n}</button>`).join('')}
+      </span></div>
+    <div class="pw-count ${over?'over':''}">Отмечено проявлений: ${cnt} · уровень силы позволяет держать активными ${pwUI.level}${over?' — сверх уровня считаются сторонними и дороже в опыте':''}</div>
+    ${rows}`;
+}
+
+/* ═══════════ СТАРТ ═══════════ */
+function renderTabs(){
+  $('#tabs').innerHTML=[
+    ['sheet','Лист','sword'],['codex','Кодекс','book'],['xp','Опыт','gem'],['gm','Сказитель','eye']
+  ].map(([v,n,i])=>`<button class="tab ${view===v?'active':''}" data-act="view" data-view="${v}">${icon(i,15)} ${n}</button>`).join('');
+  /* иконка «игроки» в шапке (статичный шаблон выше) */
+  const pb=document.querySelector('.prof-line .ibtn');
+  if(pb&&!pb.innerHTML)pb.innerHTML=icon('users',14);
+}
+function render(){
+  renderTabs();renderProfSel();
+  $$('.view').forEach(v=>v.hidden=true);
+  $('#view-'+view).hidden=false;
+  if(view==='sheet')renderSheet();
+  if(view==='codex')renderCodex();
+  if(view==='xp')renderXP();
+  if(view==='gm')renderGM();
+}
+state=loadState();
+render();
+if(migrated)setTimeout(()=>toast('Старая летопись перенесена: профили созданы, выдуманные силы отброшены — канон из книги.'),600);
+</script>
+</body>
+</html>
