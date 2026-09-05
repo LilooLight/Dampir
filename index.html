@@ -48,7 +48,7 @@ mark{background:rgba(195,155,74,.25);color:var(--ink-strong);padding:0 2px}
 .gsearch .ic{color:var(--faint)}
 .gsearch input{flex:1;background:transparent;border:none;font:15px 'Spectral',serif;padding:0;color:var(--ink)}
 .gsearch input::placeholder{color:var(--faint);font-style:italic}
-.gsearch kbd{font:600 11px monospace;color:var(--faint);border:1px solid var(--line);padding:1px 7px;border-radius:3px}
+.gsearch kbd{font:600 11px monospace;color:var(--faint);border:1px solid var(--line);padding:1px 7px;border-radius:3px;background:none;border-bottom-width:1px}
 .gdrop{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--panel);
   border:1px solid var(--line-strong);box-shadow:0 24px 60px rgba(0,0,0,.65);
   max-height:min(62vh,500px);overflow:auto;z-index:40}
@@ -59,7 +59,7 @@ mark{background:rgba(195,155,74,.25);color:var(--ink-strong);padding:0 2px}
 .g-tt{font:600 14.5px 'Cormorant',serif;color:var(--ink-strong)}
 .g-meta{margin-left:auto;font-size:11.5px;color:var(--faint);font-style:italic;white-space:nowrap;padding-left:12px}
 .g-hint{display:flex;flex-wrap:wrap;gap:6px;padding:12px 14px}
-.g-chip{border:1px solid var(--line);color:var(--dim);font-size:12.5px;padding:3px 11px;cursor:pointer;transition:all .12s}
+.g-chip{border:1px solid var(--line);color:var(--dim);font-size:12.5px;padding:3px 11px;cursor:pointer;transition:all .12s;background:none}
 .g-chip:hover{color:var(--gold);border-color:var(--gold-soft)}
 .g-none{padding:13px 14px;color:var(--faint);font-style:italic}
 
@@ -305,7 +305,6 @@ input[type=checkbox]{accent-color:var(--gold)}
 .mrow .mlv{color:var(--gold-soft);font-size:11px;letter-spacing:2px;white-space:nowrap}
 .mrow p{color:var(--dim);font-size:12.5px;margin:1px 0 0}
 
-/* инструменты и поиск-калькуляторы */
 .tool-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:6px}
 .tool-out{border-top:1px solid var(--line);margin-top:14px;padding-top:12px;font-size:14.5px}
 .tool-out .big{font:600 22px 'Cormorant SC',serif;color:var(--gold);display:block;margin-bottom:2px}
@@ -360,7 +359,6 @@ input[type=checkbox]{accent-color:var(--gold)}
 .log-del{opacity:.4}
 .log-row:hover .log-del{opacity:1}
 
-/* кабинет сказителя */
 .gm-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:20px;align-items:start}
 .gm-row{display:flex;align-items:center;gap:9px;padding:9px 4px;border-bottom:1px dashed rgba(205,180,130,.1)}
 .gm-row b{font:600 15px 'Cormorant SC',serif;color:var(--ink-strong);white-space:nowrap}
@@ -370,13 +368,27 @@ input[type=checkbox]{accent-color:var(--gold)}
 .tbadge.enemy{color:var(--gold);border-color:var(--gold-soft)}
 .tbadge.npc{color:var(--dim)}
 
-/* редактор твари */
 .mob-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:6px 0 12px}
 .mf{display:flex;flex-direction:column;gap:3px;font:600 10.5px 'Cormorant SC',serif;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
 .mf input,.mf select{padding:4px 7px;font-size:13.5px}
 .mf .mini{width:100%;text-align:center;padding:4px 2px}
 .atk-row{display:grid;grid-template-columns:1.1fr 56px 1.3fr 26px 26px;gap:7px;margin-bottom:6px;align-items:center}
 .derived{font:600 17px 'Cormorant SC',serif;color:var(--gold)}
+
+/* справка */
+.help-toc{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 6px}
+.help-sec{margin-bottom:20px;scroll-margin-top:76px}
+.help-intro{color:var(--dim);font-style:italic;font-size:14.5px;margin-bottom:6px}
+.help-row{display:grid;grid-template-columns:220px 1fr;gap:14px;padding:9px 2px;border-bottom:1px dashed rgba(205,180,130,.1);font-size:14.5px}
+.help-row:last-child{border-bottom:none}
+.help-row>b{font:600 15px 'Cormorant SC',serif;letter-spacing:.03em;color:var(--ink-strong)}
+.help-row p{color:var(--dim)}
+.help-row p b{color:var(--ink-strong);font-weight:500}
+.key-table{width:100%;border-collapse:collapse;font-size:14.5px;margin-top:4px}
+.key-table td{padding:10px 8px;border-bottom:1px dashed rgba(205,180,130,.12);vertical-align:baseline}
+.key-table tr:last-child td{border-bottom:none}
+.key-table td:first-child{width:180px;white-space:nowrap}
+kbd{font:600 11.5px/1.5 monospace;color:var(--ink);background:var(--bg2);border:1px solid var(--line-strong);border-bottom-width:2px;border-radius:4px;padding:1px 7px;white-space:nowrap}
 
 #toast-root{position:fixed;bottom:22px;right:22px;z-index:80;display:flex;flex-direction:column;gap:8px}
 .toast{background:#1c1712;border:1px solid var(--line-strong);border-left:3px solid var(--gold);
@@ -391,6 +403,7 @@ input[type=checkbox]{accent-color:var(--gold)}
 
 @media (max-width:960px){
   .sheet-grid,.two-col,.xp-grid,.gm-grid{grid-template-columns:1fr}
+  .help-row{grid-template-columns:1fr;gap:2px}
   .masthead{align-items:center}
   .prof-line{padding-bottom:0}
 }
@@ -411,7 +424,7 @@ input[type=checkbox]{accent-color:var(--gold)}
     </div>
     <label class="prof-line">Играет
       <select id="profSel" title="Профиль игрока — фильтр списка персонажей"></select>
-      <button class="ibtn" data-act="prof-open" title="Игроки: добавить, переименовать, убрать">${'${'}''}</button>
+      <button class="ibtn" data-act="prof-open" title="Игроки: добавить, переименовать, убрать" aria-label="Игроки"></button>
     </label>
   </header>
 
@@ -430,6 +443,7 @@ input[type=checkbox]{accent-color:var(--gold)}
   <section id="view-codex" class="view" hidden></section>
   <section id="view-xp" class="view" hidden></section>
   <section id="view-gm" class="view" hidden></section>
+  <section id="view-help" class="view" hidden></section>
 
   <footer class="foot">
     <span>Летопись хранится в этом браузере — берегите её, как берегут огонь.</span>
@@ -947,7 +961,77 @@ const TOOLS=[
    <p style="color:var(--faint)">«10» дают два успеха (со специализацией — три). Каждая единица отменяет успех; ноль успехов с единицами — провал с осложнением. Повторная попытка: сложность +1, на 11 — исчерпано.</p>`;}}
 ];
 
-/* ═══════════ СОСТОяние ═══════════ */
+/* ═══════════ СПРАВКА ═══════════ */
+const HELP=[
+ {id:'start',icon:'flame',title:'Начало работы',
+  intro:'Летопись живёт в вашем браузере и сохраняется сама — кнопки «сохранить» здесь нет и не нужно.',
+  items:[
+   ['Пять вкладок','<b>Лист</b> — персонаж и броски; <b>Кодекс</b> — правила; <b>Опыт</b> — летопись очков; <b>Сказитель</b> — прегены и твари; <b>Помощь</b> — этот раздел.'],
+   ['Создать персонажа','На вкладке «Лист» нажмите «Новый странник»: имя и, для Проклятого, порок. Параметры начнутся с нуля — распределите их по правилам Книги первой (по 5 очков на качества, навыки и знания).'],
+   ['Профили игроков','Селектор «Играет» в шапке фильтрует ленту: каждый игрок видит только своих персонажей. Кнопка с иконкой людей рядом — добавить, переименовать или убрать профиль.'],
+   ['Всё сохраняется сразу','Любое изменение — пипс, рана, заметка — пишется в память браузера мгновенно. Закрыли вкладку, пришли завтра — всё на месте.'],
+   ['Перенос на другой компьютер','Внизу страницы: «Экспорт летописи» скачивает весь архив одним JSON-файлом, «Импорт из JSON» — возвращает. Файл можно переслать другу.']
+  ]},
+ {id:'sheet',icon:'sword',title:'Лист персонажа',
+  intro:'Лист разделён на ось слева (душа и тело) и колонку справ (умения, силы, котомка). Почти всё кликается.',
+  items:[
+   ['Лента персонажей','Переключение между своими персонажами, «Выгрузить» — JSON одного героя, крестик — удаление (нажмите ещё раз для подтверждения).'],
+   ['Человечность','Клик по солнцу ставит границу тьмы: слева — Проклятье, справа — Праведность. Проклятье задаёт запас Чёрной крови (5 + Проклятье × 2) и потолок параметров.'],
+   ['Чёрная кровь и стресс','Клик по клетке выставляет значение, повторный клик по той же — на единицу меньше; кнопки ± рядом делают то же. Кнопка «−С» у стресса — сброс по Сути: −1, если действие было в согласии с ней.'],
+   ['Расчёты','КУ, инициатива, шаг, бег и рывок считаются от параметров автоматически. Предел ран правится вручную или кнопкой-костью — подставит значение по Выносливости; под ним показаны пороги боли, отключки и смерти.'],
+   ['Тело и раны','Клик по зоне на фигуре выбирает её — раны ставятся ниже, зоной заливают силуэт. «Заживить все раны» — полный сброс.'],
+   ['Лик: порок, суть, маска','Порок подставит начальные силы вида; кнопка ⓘ покажет его достоинство и недостаток. Суть нужна для сброса стресса, маска — для игры образа.'],
+   ['Испытание','Качество + умение + доп. кости, сложность 3–9 (по умолчанию 6). Чекбокс «Специализация» включается, только если у выбранного умения есть грани — тогда «10» дают три успеха.'],
+   ['Сверхусилие','После неудачного броска появится кнопка: +1 стресса, переброс до трёх худших костей. Для добродетелей Сверхусилие неприменимо.'],
+   ['Быстрый бросок','Кнопка-кость на строке любого качества, умения или добродетели: подставит привычную пару и бросит немедленно.'],
+   ['Пипсы и кнопки','Ромбики — уровни: клик по ромбу ставит значение, ± рядом прибавляют и убавляют. У добродетелей ромбы красные.'],
+   ['Специализации','Записать грань можно всегда — инструмент напомнит, что по правилам они открываются с уровня 3 умения. На подходящей проверке «10» дают три успеха.'],
+   ['Проклятые силы','«Принять силу»: путь, уровень, отметка проявлений (уровень силы ограничивает число активных; лишние — сторонние, дороже в опыте). Нажатие на название силы открывает её для правки.'],
+   ['Снаряжение и заметки','Предметы с количеством и пометками; в свитке они превращаются в строки вида «Фляга ×2 — на чёрный день». Заметки ищутся сквозным поиском.']
+  ]},
+ {id:'xp',icon:'gem',title:'Летопись опыта',
+  items:[
+   ['Внести запись','Выберите «Получено» или «Потрачено», сумму и причину. Баланс персонажа изменится сразу, запись попадёт в хронику.'],
+   ['Калькулятор цен','Тип параметра × приобретаемый уровень: качество 5×N, навык или знание 4×N, добродетель 2×N, Проклятье 5×N, силы 7–8×N.'],
+   ['Хроника','Фильтры «все / + / −» над списком. Вычеркнуть строку — опыт вернётся на баланс.'],
+   ['Прегены','Преген не ведёт летопись — счёт откроется, когда герой будет передан игроку.']
+  ]},
+ {id:'gm',icon:'eye',title:'Кабинет Сказителя',
+  intro:'Всё, что нужно за ширмой: безымянные герои на раздачу и твари на встречу.',
+  items:[
+   ['Преген','«Сгенерировать»: смертный или проклятый — случайные имя, параметры, снаряжение, а для проклятого ещё порок и начальные силы. Откроется в листе с золотым баннером — правьте как обычного персонажа.'],
+   ['Передать игроку','Кнопка с иконкой людей у прегена: выберите профиль и при желании поменяйте имя — герой уйдёт в летопись игрока полноценным персонажем.'],
+   ['Твари и NPC','Карточка: тип (чудовище, враг, NPC), размер (меняет константу КУ), качества (у монстров до 12) и умения. КУ и инициатива считаются на лету.'],
+   ['Атаки твари','Строка атаки: название, пул к10 и описание урона. Кнопка-кость рядом бросает атаку сразу — успехи против КУ цели.'],
+   ['Дублировать','Кнопка «+» у твари создаёт копию — для стаи одинаковых упырей.'],
+   ['Твари в поиске','Карточки находятся сквозным поиском по имени, повадкам и способностям: ищите «волколак» — и бросайте.']
+  ]},
+ {id:'find',icon:'search',title:'Сквозной поиск',
+  intro:'Строка над вкладками — всегда под рукой, хоть посреди боя. Открывается клавишей <kbd>/</kbd>.',
+  items:[
+   ['Что ищет','Инструменты-калькуляторы, статьи кодекса, проявления проклятых сил, тварей, персонажей, прегенов и этот раздел справки.'],
+   ['Формулы под рукой','Наберите «Попадание» — откроется калькулятор: подставьте Точность, умение и КУ цели, нажмите «Бросить» и получите вердикт с критами. Рядом «Урон», «КУ», «Пул проверки», «Предел ран», «Стресс» и другие.'],
+   ['Навигация','<kbd>Enter</kbd> — перейти к первому результату, <kbd>Esc</kbd> — закрыть подсказку. Чипсы под строкой — быстрые подсказки, когда поиск пуст.']
+  ]},
+ {id:'keys',icon:'die',title:'Горячие клавиши',
+  intro:'Работают, пока курсор не в поле ввода и не открыто окно.',
+  keys:[
+   ['<kbd>/</kbd>','сквозной поиск — фокус в строку'],
+   ['<kbd>1</kbd> … <kbd>5</kbd>','вкладки: Лист · Кодекс · Опыт · Сказитель · Помощь'],
+   ['<kbd>И</kbd> / <kbd>B</kbd>','бросок собранного пула на листе персонажа'],
+   ['<kbd>Enter</kbd>','подтвердить в открытой форме: имя, снаряжение, специализация, поиск'],
+   ['<kbd>Esc</kbd>','закрыть модалку или подсказку поиска']
+  ]},
+ {id:'data',icon:'book',title:'Данные и перенос',
+  items:[
+   ['Формат свитка','JSON: персонажи с качествами, навыками, знаниями, добродетелями, силами, ранами и снаряжением; шкала Человечности; летопись опыта; прегены и твари (в полном экспорте).'],
+   ['Одиночный файл','«Выгрузить» на ленте даёт файл одного персонажа с его логом опыта. Импорт принимает и его, и массив персонажей, и полную летопись — предложит «добавить» или «заменить».'],
+   ['Прежние сохранения','Летопись прошлых версий подхватится автоматически при первом запуске: параметры и раны перенесутся, профили создадутся сами.'],
+   ['Осторожнее с огнём','«Стереть летопись» внизу страницы — двухшаговое и необратимое. Перед стиранием экспортируйте архив.']
+  ]}
+];
+
+/* ═══════════ СОСТОЯНИЕ ═══════════ */
 const STORE_KEY='skitalec_ozhivshie_koshmary_v2';
 const LEGACY_KEY='skitalec_dark_times_v1';
 let state, view='sheet', selectedPart='torso', migrated=false, editingPregen=null;
@@ -1000,6 +1084,7 @@ function strToEq(s){
   return {id:uid('eq'),name,qty,note};
 }
 function eqToStr(it){return it.name+(it.qty>1?' ×'+it.qty:'')+(it.note?' — '+it.note:'')}
+function baseRightSafe(c){return clamp(((c.virtues&&c.virtues.conscience)||2)+((c.virtues&&c.virtues.selfControl)||2)+2,1,10)}
 function normalizeCharacter(src){
   src=src&&typeof src==='object'?src:{};
   const d=defaultCharacter(typeof src.name==='string'?src.name:undefined);
@@ -1040,7 +1125,6 @@ function normalizeCharacter(src){
   recalcTotal(c);
   return c;
 }
-function baseRightSafe(c){return clamp(((c.virtues&&c.virtues.conscience)||2)+((c.virtues&&c.virtues.selfControl)||2)+2,1,10)}
 function normalizeLog(e){
   if(!e||typeof e!=='object')return null;
   let type=e.type,amount=Math.abs(Math.round(+e.amount)||0);
@@ -1650,6 +1734,24 @@ function openPowerInfo(pid){
     p.manif.map(([lv,n,d])=>`<div class="mrow"><span class="mlv">${'◆'.repeat(lv)}</span><span><b>${esc(n)}</b><p>${esc(d)}</p></span></div>`).join(''));
 }
 
+/* ═══════════ СПРАВКА: РЕНДЕР ═══════════ */
+function renderHelp(){
+  const toc=`<div class="help-toc">${HELP.map(s=>
+    `<button class="g-chip" data-act="help-jump" data-id="${s.id}">${esc(s.title)}</button>`).join('')}</div>`;
+  const secs=HELP.map(s=>{
+    let body='';
+    if(s.items)body=s.items.map(([t,d])=>`<div class="help-row"><b>${esc(t)}</b><p>${d}</p></div>`).join('');
+    if(s.keys)body=`<table class="key-table">${s.keys.map(([k,d])=>`<tr><td>${k}</td><td style="color:var(--dim)">${d}</td></tr>`).join('')}</table>`;
+    return `<div class="panel help-sec" id="help-${s.id}">
+      <div class="sec-title"><h2>${icon(s.icon,15)} ${esc(s.title)}</h2><span class="ln"></span></div>
+      ${s.intro?`<p class="help-intro">${s.intro}</p>`:''}${body}</div>`;
+  }).join('');
+  $('#view-help').innerHTML=`
+    <div class="view-head"><h2>Как пользоваться летописью</h2>
+      <p>Памятка для новых странников: что где лежит, что нажимать и куда смотреть, когда за окном воет вьюга.</p></div>
+    ${toc}${secs}`;
+}
+
 /* ═══════════ ОПЫТ ═══════════ */
 function calcCost(){
   const k=$('#calcType')?$('#calcType').value:'skill';
@@ -1761,7 +1863,7 @@ function renderToolOut(rnd){
 }
 
 /* ═══════════ СКВОЗНОЙ ПОИСК ═══════════ */
-const GCHIPS=['Попадание','КУ','Урон','Инициатива','Сложность','Провал','Предел ран','Стресс','Чёрная кровь','Волколак'];
+const GCHIPS=['Попадание','КУ','Урон','Инициатива','Сложность','Провал','Предел ран','Стресс','Чёрная кровь','Волколак','Преген'];
 function buildIndex(){
   const ix=[];
   CODEX.forEach((a,i)=>ix.push({type:'codex',id:String(i),title:a.title,meta:catName(a.cat),
@@ -1777,6 +1879,10 @@ function buildIndex(){
     hay:norm(c.name+' '+c.notes+' '+(VICES[c.vice]?VICES[c.vice].name+' '+VICES[c.vice].being:'')+' '+c.essence+' '+c.mask)}));
   state.pregens.forEach(c=>ix.push({type:'pregen',id:c.id,title:c.name,meta:c.pregenNote||'преген',
     hay:norm(c.name+' '+c.pregenNote+' '+(VICES[c.vice]?VICES[c.vice].being:''))}));
+  HELP.forEach(s=>{
+    const hay=norm(s.title+' '+(s.items?s.items.map(i=>i[0]+' '+i[1]).join(' '):'')+(s.keys?s.keys.map(k=>k[0]+' '+k[1]).join(' '):''));
+    ix.push({type:'help',id:s.id,title:s.title,meta:'справка',hay});
+  });
   return ix;
 }
 function runSearch(qraw){
@@ -1802,7 +1908,7 @@ function renderGDrop(res,q){
   const groups={};
   res.forEach(r=>{(groups[r.type]=groups[r.type]||[]).push(r)});
   const order=[['tool','Инструменты','die'],['codex','Кодекс','book'],['power','Проклятые силы','drop'],
-    ['mob','Твари и NPC','flame'],['char','Персонажи','heart'],['pregen','Прегены','hourglass']];
+    ['mob','Твари и NPC','flame'],['char','Персонажи','heart'],['pregen','Прегены','hourglass'],['help','Справка','info']];
   let html='',total=0;
   order.forEach(([type,label,ic])=>{
     const arr=groups[type];if(!arr)return;
@@ -2105,6 +2211,25 @@ function addSpec(){
   c.specializations.push({id:uid('sp'),skillId,specializationName:name});
   save();renderSheet();
 }
+function powerDetailHTML(){
+  const p=POWERS[pwUI.powerId];
+  if(!p)return '<p class="empty">Выберите путь, по которому пойдёт ваша кровь.</p>';
+  const rows=p.manif.map(([lv,n,d])=>{
+    const on=pwUI.picked.includes(n);
+    return `<label class="mrow ${on?'on':''}" data-act="pw-toggle" data-name="${esc(n)}">
+      <span class="mbox"></span>
+      <span class="mlv">${'◆'.repeat(lv)}</span>
+      <span><b>${esc(n)}</b><p>${esc(d)}</p></span></label>`;
+  }).join('');
+  const cnt=pwUI.picked.length,over=cnt>pwUI.level;
+  return `<p>${esc(p.flavor)}</p>
+    <div class="pw-lvl"><span class="lbl">Уровень силы</span>${pipsStatic(pwUI.level,5,true)}
+      <span style="display:flex;gap:4px">
+        ${[1,2,3,4,5].map(n=>`<button class="ibtn" style="width:26px" data-act="pw-lvl" data-l="${n}" ${n===pwUI.level?'style="width:26px;border-color:var(--gold);color:var(--gold)"':''}>${n}</button>`).join('')}
+      </span></div>
+    <div class="pw-count ${over?'over':''}">Отмечено проявлений: ${cnt} · уровень силы позволяет держать активными ${pwUI.level}${over?' — сверх уровня считаются сторонними и дороже в опыте':''}</div>
+    ${rows}`;
+}
 
 /* ═══════════ РОУТЕР СОБЫТИЙ ═══════════ */
 document.addEventListener('click',e=>{
@@ -2115,6 +2240,11 @@ document.addEventListener('click',e=>{
   switch(act){
     case 'view':switchView(t.dataset.view);break;
     case 'modal-close':closeModal();break;
+    /* справка */
+    case 'help-jump':{
+      const el=$('#help-'+t.dataset.id);
+      if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+      break;}
     /* поиск */
     case 'chip':{$('#gq').value=t.dataset.q;runSearch(t.dataset.q);break}
     case 'go':{
@@ -2124,6 +2254,10 @@ document.addEventListener('click',e=>{
       else if(ty==='codex')openCodexArticle(gid);
       else if(ty==='power')openPowerInfo(gid);
       else if(ty==='mob')openMobModal(gid);
+      else if(ty==='help'){
+        switchView('help');
+        setTimeout(()=>{const el=$('#help-'+gid);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})},80);
+      }
       else if(ty==='char'){
         editingPregen=null;
         const cc=state.characters.find(x=>x.id===gid);
@@ -2234,7 +2368,7 @@ document.addEventListener('click',e=>{
       save();renderSheet();break;
     /* проклятые силы */
     case 'power-modal':{
-      const ex=null;pwUI={powerId:null,level:1,picked:[],editing:null};
+      pwUI={powerId:null,level:1,picked:[],editing:null};
       const rows=Object.entries(POWERS).map(([id,p])=>
         `<div class="pw-opt" data-act="pw-pick" data-id="${id}">
           <div class="pw-top"><b>${esc(p.name)}</b>${c.cursedPowers.some(x=>x.powerId===id)?'<span class="pw-has">уже изучена</span>':''}</div>
@@ -2482,52 +2616,44 @@ document.addEventListener('change',e=>{
 });
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){hideGDrop();closeModal();return}
-  if(e.key==='/'&&!e.ctrlKey&&!e.metaKey){
-    const t=e.target;
-    if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'))return;
+  const t=e.target;
+  const inField=el=>el&&(el.tagName==='INPUT'||el.tagName==='TEXTAREA'||el.tagName==='SELECT'||el.isContentEditable);
+  if(e.key==='/'&&!e.ctrlKey&&!e.metaKey&&!e.altKey){
+    if(inField(t))return;
     e.preventDefault();$('#gq').focus();$('#gq').select();return;
   }
-  if(e.key==='Enter'&&e.target.id==='gq'){
+  if(e.key==='Enter'&&t.id==='gq'){
     e.preventDefault();
     const first=$('#gdrop .g-item');
     if(first)first.click();else hideGDrop();
     return;
   }
-  if(e.key!=='Enter')return;
-  const t=e.target;
-  if(t.id==='ncName'){e.preventDefault();createChar()}
-  else if(t.id==='specName'){e.preventDefault();addSpec()}
-  else if(t.id==='eqName'||t.id==='eqNote'||t.id==='eqQty'){e.preventDefault();document.querySelector('[data-act="equip-create"]')?.click()}
-  else if(t.id==='ablIn'){e.preventDefault();document.querySelector('[data-act="mob-abl-add"]')?.click()}
-  else if(t.closest&&t.closest('.codex-row')){openCodexArticle(t.closest('.codex-row').dataset.id)}
+  if(e.key==='Enter'){
+    if(t.id==='ncName'){e.preventDefault();createChar()}
+    else if(t.id==='specName'){e.preventDefault();addSpec()}
+    else if(t.id==='eqName'||t.id==='eqNote'||t.id==='eqQty'){e.preventDefault();document.querySelector('[data-act="equip-create"]')?.click()}
+    else if(t.id==='ablIn'){e.preventDefault();document.querySelector('[data-act="mob-abl-add"]')?.click()}
+    else if(t.closest&&t.closest('.codex-row')){openCodexArticle(t.closest('.codex-row').dataset.id)}
+    return;
+  }
+  /* глобальные горячие клавиши: не в поле ввода, без модификаторов, без открытого окна */
+  if(inField(t))return;
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(document.querySelector('.mb'))return;
+  const VK={'1':'sheet','2':'codex','3':'xp','4':'gm','5':'help'};
+  if(VK[e.key]){e.preventDefault();switchView(VK[e.key]);return}
+  const k=e.key.toLowerCase();
+  if(k==='b'||k==='и'){
+    if(view==='sheet'&&!dice.rolling&&char())rollFromPanel();
+  }
 });
  $('#gq')?.addEventListener('focus',()=>runSearch($('#gq').value));
-function powerDetailHTML(){
-  const p=POWERS[pwUI.powerId];
-  if(!p)return '<p class="empty">Выберите путь, по которому пойдёт ваша кровь.</p>';
-  const rows=p.manif.map(([lv,n,d])=>{
-    const on=pwUI.picked.includes(n);
-    return `<label class="mrow ${on?'on':''}" data-act="pw-toggle" data-name="${esc(n)}">
-      <span class="mbox"></span>
-      <span class="mlv">${'◆'.repeat(lv)}</span>
-      <span><b>${esc(n)}</b><p>${esc(d)}</p></span></label>`;
-  }).join('');
-  const cnt=pwUI.picked.length,over=cnt>pwUI.level;
-  return `<p>${esc(p.flavor)}</p>
-    <div class="pw-lvl"><span class="lbl">Уровень силы</span>${pipsStatic(pwUI.level,5,true)}
-      <span style="display:flex;gap:4px">
-        ${[1,2,3,4,5].map(n=>`<button class="ibtn" style="width:26px" data-act="pw-lvl" data-l="${n}" ${n===pwUI.level?'style="width:26px;border-color:var(--gold);color:var(--gold)"':''}>${n}</button>`).join('')}
-      </span></div>
-    <div class="pw-count ${over?'over':''}">Отмечено проявлений: ${cnt} · уровень силы позволяет держать активными ${pwUI.level}${over?' — сверх уровня считаются сторонними и дороже в опыте':''}</div>
-    ${rows}`;
-}
 
 /* ═══════════ СТАРТ ═══════════ */
 function renderTabs(){
   $('#tabs').innerHTML=[
-    ['sheet','Лист','sword'],['codex','Кодекс','book'],['xp','Опыт','gem'],['gm','Сказитель','eye']
+    ['sheet','Лист','sword'],['codex','Кодекс','book'],['xp','Опыт','gem'],['gm','Сказитель','eye'],['help','Помощь','info']
   ].map(([v,n,i])=>`<button class="tab ${view===v?'active':''}" data-act="view" data-view="${v}">${icon(i,15)} ${n}</button>`).join('');
-  /* иконка «игроки» в шапке (статичный шаблон выше) */
   const pb=document.querySelector('.prof-line .ibtn');
   if(pb&&!pb.innerHTML)pb.innerHTML=icon('users',14);
 }
@@ -2539,6 +2665,7 @@ function render(){
   if(view==='codex')renderCodex();
   if(view==='xp')renderXP();
   if(view==='gm')renderGM();
+  if(view==='help')renderHelp();
 }
 state=loadState();
 render();
