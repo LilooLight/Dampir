@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Скиталец · Тёмные времена — летопись странника</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@500;600;700&family=Cormorant:ital,wght@0,500;0,600;1,500&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0d0a; --panel:#16120d; --panel2:#1b1610; --bg2:#0c0a08;
+  --ink:#d9cbaa; --ink-strong:#efe3c4; --dim:#9b8b6c; --faint:#6e6149;
+  --gold:#c39b4a; --gold-soft:#a5823e; --blood:#a3352c; --blood-deep:#6e1f1a;
+  --line:rgba(205,180,130,.16); --line-strong:rgba(205,180,130,.34);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 'Spectral',serif;min-height:100vh}
+/* зерно старой бумаги + виньетка свечи */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.8 0 0 0 0 0.7 0 0 0 0 0.5 0 0 0 0.045 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 50% 38%, transparent 52%, rgba(0,0,0,.55) 100%)}
+body.locked{overflow:hidden}
+#app{max-width:1180px;margin:0 auto;padding:0 20px 60px;position:relative;z-index:1}
+.ic{flex:none;display:block}
+.ic .f{fill:currentColor;stroke:none}
+button{font:inherit;color:inherit}
+:focus{outline:none}
+:focus-visible{outline:1px solid var(--gold-soft);outline-offset:2px}
+::selection{background:rgba(195,155,74,.3)}
+mark{background:rgba(195,155,74,.25);color:var(--ink-strong);padding:0 2px}
+.empty{color:var(--faint);font-style:italic;padding:10px 0;font-size:14px}
+
+/* ── шапка ─────────────────────────────── */
+.masthead{display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap;padding:28px 0 18px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:14px}
+.brand .sigil{color:var(--gold)}
+.brand h1{font:600 34px/1 'Cormorant SC',serif;letter-spacing:.06em;color:var(--ink-strong)}
+.brand .sub{display:block;font:500 12px 'Cormorant SC',serif;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);margin-top:4px}
+.tabs{margin-left:auto;display:flex;gap:2px}
+.tab{font:600 13px 'Cormorant SC',serif;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
+  padding:10px 16px;border:none;border-bottom:2px solid transparent;background:none;cursor:pointer;
+  display:flex;gap:9px;align-items:center;transition:color .15s}
+.tab:hover{color:var(--ink-strong)}
+.tab.active{color:var(--gold);border-color:var(--gold)}
+
+/* ── панели и заголовки ────────────────── */
+.panel{background:var(--panel);border:1px solid var(--line);padding:16px 18px;position:relative}
+.panel::before,.panel::after{content:'';position:absolute;width:11px;height:11px;pointer-events:none}
+.panel::before{top:-1px;left:-1px;border-top:1px solid var(--gold-soft);border-left:1px solid var(--gold-soft)}
+.panel::after{bottom:-1px;right:-1px;border-bottom:1px solid var(--gold-soft);border-right:1px solid var(--gold-soft)}
+.sec-title{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sec-title h2{font:600 16px 'Cormorant SC',serif;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-strong);display:flex;align-items:center;gap:9px}
+.sec-title h2 .ic{color:var(--gold-soft)}
+.sec-title .ln{flex:1;height:1px;background:var(--line)}
+.sec-title .note{font:500 11.5px 'Cormorant SC',serif;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.view-head{margin:26px 0 4px}
+.view-head h2{font:600 26px 'Cormorant SC',serif;color:var(--ink-strong);letter-spacing:.04em}
+.view-head p{color:var(--dim);font-style:italic;font-size:14.5px}
+
+/* ── кнопки ────────────────────────────── */
+.btn{font:600 12.5px 'Cormorant SC',serif;letter-spacing:.12em;text-transform:uppercase;
+  border:1px solid var(--line-strong);background:transparent;color:var(--ink);
+  padding:8px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:all .15s}
+.btn:hover{border-color:var(--gold);color:var(--gold)}
+.btn-primary{background:var(--gold);border-color:var(--gold);color:#1a130a}
+.btn-primary:hover{background:#d3ab57;color:#1a130a}
+.btn-danger{border-color:var(--blood);color:var(--blood)}
+.btn-danger:hover{border-color:var(--blood);background:rgba(163,53,44,.12);color:#c4574e}
+.btn-ghost{border:none;background:none;color:var(--dim);padding:4px 6px}
+.btn-ghost:hover{color:var(--gold)}
+.ibtn{width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;flex:none;
+  background:transparent;border:1px solid var(--line);color:var(--dim);cursor:pointer;transition:all .12s}
+.ibtn:hover{color:var(--gold);border-color:var(--gold-soft)}
+.ibtn:disabled{opacity:.25;pointer-events:none}
+.ibtn.armed{width:auto;padding:0 8px;border-color:var(--blood);color:var(--blood);
+  font:600 11px 'Cormorant SC',serif;letter-spacing:.08em;text-transform:uppercase}
+.link-btn{background:none;border:none;color:var(--faint);cursor:pointer;font:13px 'Spectral',serif;text-decoration:underline dotted}
+.link-btn:hover{color:var(--gold)}
+input[type=text],input[type=number],select,textarea{
+  background:var(--bg2);border:1px solid var(--line);color:var(--ink);
+  font:14px 'Spectral',serif;padding:7px 10px;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--gold-soft)}
+input::placeholder{color:var(--faint);font-style:italic}
+
+/* ── список персонажей ─────────────────── */
+.char-strip{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.char-tab{display:flex;align-items:center;gap:9px;padding:6px 8px 6px 14px;cursor:pointer;
+  background:var(--panel);border:1px solid var(--line);color:var(--dim);
+  font:600 14px 'Cormorant SC',serif;letter-spacing:.05em;transition:all .15s}
+.char-tab:hover{color:var(--ink)}
+.char-tab.active{color:var(--ink-strong);border-color:var(--gold-soft)}
+.char-tab .ct-xp{display:inline-flex;align-items:center;gap:4px;color:var(--gold);font-size:12px}
+.char-tab .ct-del{opacity:0;transition:opacity .15s}
+.char-tab.active:hover .ct-del{opacity:1}
+
+/* ── лист: сетка ───────────────────────── */
+.sheet-grid{display:grid;grid-template-columns:300px 1fr;gap:22px;margin-top:22px;align-items:start}
+.sheet-aside{display:flex;flex-direction:column;gap:18px}
+.sheet-main{display:flex;flex-direction:column;gap:24px;min-width:0}
+.name-plate input{width:100%;background:transparent;border:none;border-bottom:1px solid transparent;
+  font:600 26px 'Cormorant SC',serif;color:var(--ink-strong);padding:2px 0 6px}
+.name-plate input:hover{border-bottom-color:var(--line)}
+.name-plate input:focus{border-bottom-color:var(--gold-soft)}
+.counter{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(205,180,130,.08)}
+.counter:last-child{border-bottom:none;padding-bottom:2px}
+.counter:first-child{padding-top:2px}
+.c-label{font:600 13px 'Cormorant SC',serif;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);
+  display:flex;gap:8px;align-items:center;width:132px;flex:none}
+.c-label .ic{color:var(--gold-soft)}
+.track{display:flex;gap:3px;flex:1;min-width:0}
+.cell{width:11px;height:16px;border:1px solid var(--line);cursor:pointer;transform:skewX(-8deg);transition:all .12s}
+.cell:hover{border-color:var(--gold-soft)}
+.cell.on.blood{background:var(--blood-deep);border-color:var(--blood)}
+.cell.on.stress{background:#8f6d26;border-color:var(--gold-soft)}
+.c-num{font:500 17px 'Spectral',serif;color:var(--ink-strong);min-width:18px;text-align:center}
+.c-num.big{font:600 24px 'Cormorant SC',serif;color:var(--gold)}
+
+/* добродетели и способности */
+.stat-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;
+  padding:7px 2px;border-bottom:1px solid rgba(205,180,130,.07)}
+.stat-row:last-child{border-bottom:none}
+.stat-name{font:500 15px 'Cormorant SC',serif;letter-spacing:.04em;color:var(--ink)}
+.pips{display:flex;gap:5px}
+.pip{width:9px;height:9px;transform:rotate(45deg);border:1px solid rgba(195,155,74,.38);cursor:pointer;transition:all .12s}
+.pip:hover{border-color:var(--gold)}
+.pip.on{background:var(--gold);border-color:var(--gold)}
+.pips.blood .pip{border-color:rgba(163,53,44,.5)}
+.pips.blood .pip.on{background:var(--blood);border-color:var(--blood)}
+.pips.static .pip{cursor:default}
+.stat-ctl{display:flex;gap:4px;opacity:.5;transition:opacity .15s}
+.stat-row:hover .stat-ctl{opacity:1}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+
+/* специализации / теги */
+.tags{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tag{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);
+  padding:3px 6px 3px 11px;font-size:13px;color:var(--ink);background:var(--bg2)}
+.tag .ibtn{width:16px;height:16px;border:none}
+.spec-add{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.spec-add input{flex:1;min-width:140px}
+.spec-bar{padding:0 4px}
+
+/* проклятые силы */
+.power-row{padding:12px 2px;border-bottom:1px solid rgba(205,180,130,.08)}
+.power-row:last-child{border-bottom:none}
+.pr-main{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.power-name{background:none;border:none;cursor:pointer;padding:0;
+  font:600 17px 'Cormorant SC',serif;letter-spacing:.04em;color:var(--ink-strong);
+  text-decoration:underline dotted rgba(195,155,74,.45);text-underline-offset:4px}
+.power-name:hover{color:var(--gold)}
+.pr-manif{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:9px}
+.manif-add{display:inline-flex;gap:6px;align-items:center}
+.manif-add input{width:170px;padding:4px 9px;font-size:13px}
+
+/* снаряжение */
+.equip-row{display:flex;align-items:center;gap:12px;padding:8px 2px;border-bottom:1px solid rgba(205,180,130,.07)}
+.equip-row:last-child{border-bottom:none}
+.eq-qty{display:flex;align-items:center;gap:6px;flex:none}
+.eq-qty b{font:500 15px 'Spectral',serif;color:var(--ink-strong);min-width:16px;text-align:center}
+.eq-main{flex:1;min-width:0}
+.eq-name{font:500 15.5px 'Cormorant SC',serif;color:var(--ink)}
+.eq-note{display:block;color:var(--dim);font-style:italic;font-size:13px}
+
+/* ── панель испытаний ──────────────────── */
+.roll-controls{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:14px}
+.rc{display:flex;flex-direction:column;gap:4px;font:600 11.5px 'Cormorant SC',serif;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.dice-field{min-height:104px;border:1px solid var(--line);background:var(--bg2);
+  display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center;padding:14px}
+.dice-empty{display:flex;align-items:center;gap:14px;color:var(--faint);font-style:italic;font-size:14.5px}
+.dice-empty .ic{color:rgba(195,155,74,.3)}
+.die{width:36px;height:36px;background:#1e1812;border:1px solid var(--line-strong);border-radius:7px;
+  display:flex;align-items:center;justify-content:center;flex:none;transition:border-color .2s}
+.die svg{width:26px;height:26px;display:block}
+.die circle{fill:#b7a888}
+.die.success{border-color:var(--gold);box-shadow:0 0 0 1px rgba(195,155,74,.4),0 0 16px rgba(195,155,74,.16)}
+.die.success circle{fill:var(--gold)}
+.die.botch{border-color:rgba(163,53,44,.75)}
+.die.botch circle{fill:var(--blood)}
+.die.dealing{animation:deal .28s both}
+@keyframes deal{from{transform:translateY(-22px) rotate(-20deg);opacity:0}}
+.die.shuffling{animation:jitter .12s infinite alternate}
+@keyframes jitter{from{transform:translate(-1px,0) rotate(-2deg)}to{transform:translate(1px,-1px) rotate(2.5deg)}}
+.die.settled{transform:rotate(var(--tilt,0deg))}
+.dice-result{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-top:12px;min-height:30px}
+.succ-big{font:600 24px 'Cormorant SC',serif;color:var(--gold)}
+.succ-big.fail{color:var(--blood)}
+.roll-sub{color:var(--dim);font-size:13.5px;font-style:italic}
+.history{margin-top:14px}
+.h-head{font:600 11.5px 'Cormorant SC',serif;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:4px}
+.h-row{display:flex;gap:12px;align-items:baseline;font-size:13px;color:var(--dim);
+  padding:5px 2px;border-bottom:1px dashed rgba(205,180,130,.08)}
+.h-row:last-child{border-bottom:none}
+.h-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.h-vals{font-variant-numeric:tabular-nums;letter-spacing:.1em;white-space:nowrap}
+.h-vals b{color:var(--gold);font-weight:500}
+.h-vals i{color:var(--blood);font-style:normal}
+.h-succ{min-width:44px;text-align:right;color:var(--gold);font-weight:500}
+.h-succ.fail{color:var(--blood)}
+.roll-sum{color:var(--faint);font-size:13px;font-style:italic;margin-left:auto;padding-bottom:8px}
+
+/* ── витражная фигура ──────────────────── */
+.body-fig svg{display:block;width:100%;max-width:190px;margin:0 auto}
+.fig-part{cursor:pointer;transition:opacity .15s;stroke-width:1.4}
+.fig-part:hover{opacity:.8}
+.wound-panel{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.wp-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px}
+.wp-head b{font:600 15px 'Cormorant SC',serif;letter-spacing:.08em;color:var(--ink-strong);text-transform:uppercase}
+.wp-total{color:var(--dim);font-size:12.5px}
+.wp-row{display:flex;align-items:center;gap:10px;padding:3px 0;font:500 13px 'Cormorant SC',serif;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.wctl{display:flex;align-items:center;gap:7px;margin-left:auto}
+.wctl b{font:500 15px 'Spectral',serif;color:var(--ink-strong);min-width:16px;text-align:center}
+.wounds-reset{margin-top:10px}
+
+/* ── модалки ───────────────────────────── */
+.mb{position:fixed;inset:0;background:rgba(5,4,2,.74);backdrop-filter:blur(3px);
+  display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;animation:fadeIn .18s}
+@keyframes fadeIn{from{opacity:0}}
+.modal{width:min(620px,100%);max-height:86vh;overflow:auto;background:var(--panel);
+  border:1px solid var(--line-strong);position:relative;box-shadow:0 30px 80px rgba(0,0,0,.65);animation:modalIn .2s}
+@keyframes modalIn{from{transform:translateY(10px);opacity:0}}
+.modal::before,.modal::after{content:'';position:absolute;width:12px;height:12px;pointer-events:none}
+.modal::before{top:-1px;left:-1px;border-top:1px solid var(--gold);border-left:1px solid var(--gold)}
+.modal::after{bottom:-1px;right:-1px;border-bottom:1px solid var(--gold);border-right:1px solid var(--gold)}
+.modal>header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 20px;border-bottom:1px solid var(--line)}
+.modal>header h3{font:600 18px 'Cormorant SC',serif;letter-spacing:.06em;color:var(--ink-strong)}
+.modal-body{padding:18px 20px}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+.cat-tag{font:600 11.5px 'Cormorant SC',serif;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-soft);margin-bottom:6px}
+.modal-body p{margin:.6em 0}
+.modal-body ul{margin:.6em 0 .6em 1.25em}
+.modal-body li{margin:.3em 0}
+.form-row{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.form-row label{font:600 12px 'Cormorant SC',serif;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.pw-opt{border:1px solid var(--line);padding:10px 14px;margin-bottom:8px;cursor:pointer;transition:all .12s}
+.pw-opt:hover{border-color:var(--gold-soft)}
+.pw-opt.sel{border-color:var(--gold);background:rgba(195,155,74,.05)}
+.pw-opt.has{opacity:.45;cursor:default}
+.pw-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.pw-top b{font:600 15.5px 'Cormorant SC',serif;color:var(--ink-strong)}
+.pw-has{font:600 11px 'Cormorant SC',serif;letter-spacing:.1em;text-transform:uppercase;color:var(--blood)}
+.pw-opt p{color:var(--dim);font-size:13.5px;margin:3px 0 0}
+.pw-detail{border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+.pw-detail p{color:var(--dim);font-size:14px}
+.pw-lvl{display:flex;align-items:center;gap:10px;margin-top:8px}
+.pw-lvl .lbl{font:600 12px 'Cormorant SC',serif;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+
+/* ── кодекс ────────────────────────────── */
+.codex-head{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:20px 0 10px}
+.searchbox{flex:1;min-width:240px;display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);padding:9px 14px}
+.searchbox .ic{color:var(--faint)}
+.searchbox input{background:transparent;border:none;flex:1;font-size:15px;padding:0}
+.cat-filter{display:flex;flex-wrap:wrap;gap:6px}
+.cf-btn{font:600 12px 'Cormorant SC',serif;letter-spacing:.1em;text-transform:uppercase;
+  padding:6px 12px;border:1px solid var(--line);background:transparent;color:var(--dim);cursor:pointer;transition:all .12s}
+.cf-btn:hover{color:var(--ink)}
+.cf-btn.active{color:var(--gold);border-color:var(--gold-soft)}
+.codex-count{font-size:13px;color:var(--faint);font-style:italic;margin-bottom:6px}
+.codex-row{padding:14px 8px;border-bottom:1px solid rgba(205,180,130,.08);cursor:pointer;transition:background .15s}
+.codex-row:hover{background:rgba(195,155,74,.045)}
+.cr-top{display:flex;justify-content:space-between;gap:14px;align-items:baseline}
+.cr-title{font:600 19px 'Cormorant',serif;color:var(--ink-strong)}
+.codex-row:hover .cr-title{color:var(--gold)}
+.cr-cat{font:600 11px 'Cormorant SC',serif;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);white-space:nowrap}
+.cr-sum{color:var(--dim);font-size:14px;margin-top:3px}
+
+/* ── летопись опыта ────────────────────── */
+.xp-grid{display:grid;grid-template-columns:360px 1fr;gap:22px;margin-top:22px;align-items:start}
+.xp-balance{display:flex;align-items:baseline;gap:12px;margin:4px 0 12px}
+.xp-num{font:600 52px/1 'Cormorant SC',serif;color:var(--gold)}
+.xp-cap{font:600 13px 'Cormorant SC',serif;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.xp-stats{display:flex;gap:20px;font-size:14px;color:var(--dim);
+  border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);padding:10px 2px;margin-bottom:18px}
+.xp-stats b{color:var(--ink-strong);font-weight:500}
+.btn-group{display:flex}
+.bg-btn{flex:1;padding:9px 6px;border:1px solid var(--line);background:transparent;color:var(--dim);cursor:pointer;
+  font:600 12px 'Cormorant SC',serif;letter-spacing:.1em;text-transform:uppercase;transition:all .12s;margin-left:-1px}
+.bg-btn:first-child{margin-left:0}
+.bg-btn:hover{color:var(--ink)}
+.bg-btn.active{color:#1a130a;background:var(--gold);border-color:var(--gold)}
+.bg-btn.active.spend-act{background:var(--blood);border-color:var(--blood);color:#f2e6cf}
+.log-row{display:grid;grid-template-columns:92px 52px 1fr 26px;gap:4px 12px;align-items:baseline;
+  padding:9px 4px;border-bottom:1px dashed rgba(205,180,130,.08);font-size:14px}
+.log-date{color:var(--faint);font-size:12px;font-variant-numeric:tabular-nums}
+.log-delta{font-weight:600;text-align:right}
+.log-delta.plus{color:var(--gold)}
+.log-delta.minus{color:var(--blood)}
+.log-cat{font:500 14.5px 'Cormorant SC',serif;color:var(--ink)}
+.log-note{grid-column:3/4;color:var(--dim);font-style:italic;font-size:13px}
+.log-del{opacity:.4}
+.log-row:hover .log-del{opacity:1}
+
+/* ── тосты, футер ──────────────────────── */
+#toast-root{position:fixed;bottom:22px;right:22px;z-index:80;display:flex;flex-direction:column;gap:8px}
+.toast{background:#1c1712;border:1px solid var(--line-strong);border-left:3px solid var(--gold);
+  padding:10px 16px;color:var(--ink);font-size:14px;max-width:320px;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:toastIn .25s}
+.toast.err{border-left-color:var(--blood)}
+@keyframes toastIn{from{transform:translateY(8px);opacity:0}}
+.toast.out{animation:toastOut .3s forwards}
+@keyframes toastOut{to{opacity:0;transform:translateY(6px)}}
+.foot{margin-top:48px;border-top:1px solid var(--line);padding:14px 0 0;
+  display:flex;gap:18px;justify-content:space-between;flex-wrap:wrap;font-size:13px;color:var(--faint)}
+.foot .btns{display:flex;gap:14px}
+
+@media (max-width:960px){
+  .sheet-grid,.two-col,.xp-grid{grid-template-columns:1fr}
+  .masthead{align-items:center}
+  .tabs{margin-left:0}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="masthead">
+    <div class="brand">
+      <svg class="sigil" width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3">
+        <path d="M20 3 33 20 20 37 7 20z"/><path d="M20 10 27 20 20 30 13 20z"/><circle cx="20" cy="20" r="1.8" fill="currentColor" stroke="none"/>
+        <path d="M20 3v-2M20 39v-2M7 20H4M36 20h-3" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <h1>Скиталец</h1>
+        <span class="sub">Тёмные времена · летопись странника</span>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs"></nav>
+  </header>
+
+  <section id="view-sheet" class="view"></section>
+  <section id="view-codex" class="view" hidden></section>
+  <section id="view-xp" class="view" hidden></section>
+
+  <footer class="foot">
+    <span>Летопись хранится в этом браузере — берегите её, как берегут огонь.</span>
+    <span class="btns">
+      <button class="link-btn" data-act="export">Экспорт</button>
+      <button class="link-btn" data-act="import">Импорт</button>
+      <button class="link-btn" data-act="reset" id="resetBtn">Стереть летопись</button>
+      <input type="file" id="impFile" accept=".json,application/json" hidden>
+    </span>
+  </footer>
+</div>
+
+<div id="modal-root"></div>
+<div id="toast-root"></div>
+
+<script>
+'use strict';
+/* ═══════════════ УТИЛИТЫ ═══════════════ */
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>String(s).toLowerCase().replace(/ё/g,'е');
+const uid=p=>p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function plural(n,a,b,c){n=Math.abs(n)%100;const d=n%10;if(n>10&&n<20)return c;if(d>1&&d<5)return b;if(d===1)return a;return c}
+const fmtDate=ts=>new Date(ts).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+
+/* ═══════════════ ИКОНКИ (инлайн-SVG) ═══════════════ */
+const ICONS={
+  die:'<rect x="3.5" y="3.5" width="17" height="17" rx="3.5"/><circle class="f" cx="8.5" cy="8.5" r="1.4"/><circle class="f" cx="12" cy="12" r="1.4"/><circle class="f" cx="15.5" cy="15.5" r="1.4"/>',
+  eye:'<path d="M2.5 12S6.5 5.5 12 5.5 21.5 12 21.5 12 17.5 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/>',
+  book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+  drop:'<path d="M12 3.5s6.5 7.2 6.5 11.3a6.5 6.5 0 0 1-13 0C5.5 10.7 12 3.5 12 3.5z"/>',
+  flame:'<path d="M12 2.5c1 4-4.5 5.5-4.5 10a4.5 4.5 0 0 0 9 0c0-2.5-1-4-2-5.5-.3 1.4-1 2.2-2 2.5.6-2.4.2-4.8-.5-7z"/>',
+  gem:'<path d="M12 2.5l6.5 6.5L12 21.5 5.5 9z"/><path d="M5.5 9h13"/><path d="M12 2.5 9 9l3 12.5L15 9z"/>',
+  quill:'<path d="M20.5 3.5c-7 .5-11.5 4-13.5 10L4 20.5l7-3c6-2 9-7 9.5-14z"/><path d="M8 16l7.5-7.5"/>',
+  sword:'<path d="M19.5 4.5 9.5 14.5"/><path d="M19.5 4.5 19 9m.5-4.5L15 5"/><path d="M7.5 13.5l3 3"/><path d="M9.5 16.5 5 21l-2-2 4.5-4.5z"/>',
+  heart:'<path d="M12 20.5S4 15 4 9.5A4.5 4.5 0 0 1 12 6.7 4.5 4.5 0 0 1 20 9.5c0 5.5-8 11-8 11z"/>',
+  hourglass:'<path d="M6 3h12M6 21h12"/><path d="M8 3v3l4 5 4-5V3M8 21v-3l4-5 4 5v3"/>',
+  search:'<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.4-4.4"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  minus:'<path d="M5 12h14"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  trash:'<path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 13h9l1-13"/><path d="M10 11v5.5M14 11v5.5"/>'
+};
+function icon(n,s=16){return `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ICONS[n]}</svg>`}
+
+/* ═══════════════ ИГРОВЫЕ ДАННЫЕ ═══════════════ */
+const QUALITIES=[
+  {id:'strength',name:'Сила'},{id:'agility',name:'Ловкость'},{id:'accuracy',name:'Точность'},
+  {id:'endurance',name:'Стойкость'},{id:'charisma',name:'Обаяние'},{id:'cunning',name:'Хитрость'},
+  {id:'perception',name:'Восприятие'},{id:'intellect',name:'Рассудок'},{id:'intuition',name:'Чутьё'}
+];
+const SKILLS=[
+  {id:'athletics',name:'Атлетика'},{id:'vigilance',name:'Бдительность'},{id:'survival',name:'Выживание'},
+  {id:'eloquence',name:'Красноречие'},{id:'sleightOfHand',name:'Ловкость рук'},{id:'craft',name:'Ремесло'},
+  {id:'stealth',name:'Скрытность'},{id:'shooting',name:'Стрельба'},{id:'fencing',name:'Фехтование'}
+];
+const LORE=[
+  {id:'analysis',name:'Разбор'},{id:'animals',name:'Звери'},{id:'art',name:'Искусство'},
+  {id:'medicine',name:'Лекарство'},{id:'customs',name:'Обычаи'},{id:'mysticism',name:'Мистицизм'},
+  {id:'trickery',name:'Трюкачество'},{id:'scholarship',name:'Учёность'},{id:'empathy',name:'Сочувствие'}
+];
+const VIRTUES=[
+  {id:'conscience',name:'Совесть'},{id:'composure',name:'Хладнокровие'},
+  {id:'selfControl',name:'Самообладание'},{id:'courage',name:'Мужество'}
+];
+const GROUPS={
+  qualities:{list:QUALITIES,min:0,max:6,note:'основа · 0–5+'},
+  skills:{list:SKILLS,min:0,max:5,note:'ремесло · 0–5'},
+  lore:{list:LORE,min:0,max:5,note:'понимание · 0–5'},
+  virtues:{list:VIRTUES,min:1,max:5,note:'столп · 1–5'}
+};
+/* привычная пара «качество + навык/знание» для быстрого броска */
+const PARTNER={athletics:'strength',vigilance:'perception',survival:'intuition',eloquence:'charisma',
+  sleightOfHand:'cunning',craft:'intellect',stealth:'agility',shooting:'accuracy',fencing:'agility',
+  analysis:'intellect',animals:'intuition',art:'intellect',medicine:'intellect',customs:'charisma',
+  mysticism:'intuition',trickery:'cunning',scholarship:'intellect',empathy:'charisma'};
+
+const PARTS=[
+  {id:'head',name:'Голова'},{id:'torso',name:'Торс'},{id:'leftArm',name:'Левая рука'},
+  {id:'rightArm',name:'Правая рука'},{id:'leftLeg',name:'Левая нога'},{id:'rightLeg',name:'Правая нога'}
+];
+/* витражная фигура: контуры зон тела */
+const PART_SVG={
+  head:'M70 8c10 0 17 7 17 17 0 8-4 15-10 20l-7 5-7-5c-6-5-10-12-10-20 0-10 7-17 17-17z',
+  torso:'M50 54h40l6 14-4 30-8 44H56l-8-44-4-30z',
+  rightArm:'M44 60 28 70l-7 40 3 42 10-1 2-34 8-30z',
+  leftArm:'M96 60l16 10 7 40-3 42-10-1-2-34-8-30z',
+  rightLeg:'M50 146h16l-1 46-4 44H48l-2-44z',
+  leftLeg:'M74 146h16l-1 46 4 44h-13l-4-44z'
+};
+
+const POWERS=[
+  {id:'bloodCall',name:'Зов крови',desc:'Дать телу больше, чем оно может: рывок, стальная хватка, заглушённая боль. Цена — очко чёрной крови и разбитые после сосуды.'},
+  {id:'darkSight',name:'Тёмное зрение',desc:'Видеть во мраке, как в сумерках; на высоких уровнях — следить за теплом сквозь стены.'},
+  {id:'graveWhisper',name:'Шёпот могил',desc:'Задать вопрос тому, кто недавно умер. Ответы коротки и не любят повторов.'},
+  {id:'unseenStep',name:'Незримый шаг',desc:'На миг стать тенью: пройти за спину, сойти с дороги, исчезнуть из вида.'},
+  {id:'beastMark',name:'Клеймо зверя',desc:'Чутьё и ярость хищника; на высших уровнях зверь выходит наружу.'},
+  {id:'borderVoice',name:'Голос из-за грани',desc:'Вложить в слова повеление: стой, спи, забудь.'},
+  {id:'glamour',name:'Морок',desc:'Накинуть на мир тонкую ткань лжи: фальшивый свет, чужой силуэт, дверь, которой не было.'},
+  {id:'rustLot',name:'Ржавый жребий',desc:'Испортить чужую удачу: рука дрогнет, конь оступится, фитиль погаснет.'}
+];
+const XP_CATS={
+  gain:[['scene','Пройденная сцена'],['truth','Найденная истина'],['loss','Утрата и поражение'],['loot','Добыча'],['other','Прочее']],
+  spend:[['quality','Подъём качества'],['skill','Обучение навыку'],['lore','Изучение знаний'],['virtue','Укрепление добродетели'],['power','Проклятая сила'],['gear','Снаряжение и услуги'],['other','Прочее']]
+};
+
+/* ═══════════════ КОДЕКС (справочник) ═══════════════ */
+const CODEX_CATS=[
+  {id:'basis',name:'Основы'},{id:'rolls',name:'Испытания'},{id:'char',name:'Персонаж'},
+  {id:'wounds',name:'Раны и смерть'},{id:'dark',name:'Чёрная кровь'},{id:'xp',name:'Опыт'},
+  {id:'combat',name:'Стычки'},{id:'gear',name:'Снаряжение'}
+];
+const CODEX=[
+{cat:'basis',title:'Время, когда померкло солнце',summary:'Мир, тон и ставки игры.',body:[
+'Мир стоит на пороге бесконечной ночи. Дороги заросли, города сжались до островков света, а между ними лежат земли, где хозяйничают голод, волки и то, что старше волков. Те, кто всё же идёт, — скитальцы: носители чужих писем, дети забытых обетов, последние знатоки троп.',
+'Скиталец не спасает мир. Скиталец перевозит через реку ребёнка, находит зерно для деревни и не отдаёт свою тень тому, кто попросит вежливо. Малые дела против большой тьмы — таков тон этой игры.',
+'- Тон: мрачное странствие с проблесками тепла.',
+'- Ставки: еда, свет, память и имена.',
+'- Правила служат истории, а не наоборот.']},
+{cat:'basis',title:'Как проходит игра',summary:'Сцены, странствия и роль Ведущего.',body:[
+'Одному из игроков принадлежит роль Ведущего: он описывает мир, играет за всех прочих и решает, когда испытание неизбежно. Остальные ведут своих скитальцев — говорят их словами и бросают за них кости.',
+'Игра движется сценами. Сцена — это одно место, одно желание и одно препятствие. Ведущий задаёт сцену, игроки объявляют действия, стол вместе решает, чем и как действовать. Когда напряжение исчерпано, сцена закрывается — и начинается странствие к следующей.',
+'Сессия — это несколько сцен и одна общая ночь. Хроника между сессиями ведётся на листе: раны, опыт и найденное переносятся дальше.']},
+{cat:'basis',title:'Золотое правило стола',summary:'Правила — договорённость, а не закон.',body:[
+'Всё, что написано в кодексе, — договорённость, а не закон. Если правило ломает настроение сцены — измените его и запишите перемену в хронику стола.',
+'Два вопроса перед любым испытанием: «что ты хочешь получить?» и «что готов отдать?». Если на второй вопрос ответа нет — его задаст мир. Тьма всегда берёт оплату.']},
+{cat:'rolls',title:'Испытание',summary:'Пул d6: качество + навык, успех на шестёрку.',body:[
+'Когда исход действия неочевиден и провал что-то меняет, бросают испытание. Соберите пул: значение подходящего качества плюс уровень подходящего навыка или знания. Помощь друга, превосходное снаряжение или удачные обстоятельства добавляют по одной кости — не больше двух-трёх за раз.',
+'Бросьте пул шестигранных костей. Каждая шестёрка — успех. Одного успеха достаточно, чтобы задуманное удалось; каждый следующий успех сверх первого — усиление результата, преимущество, которое игрок описывает сам.',
+'Если ни качества, ни ремесла для дела нет — бросают две кости «на голую удачу», договорившись об этом с Ведущим до броска.']},
+{cat:'rolls',title:'Провал и цена',summary:'Провал двигает историю: мир отвечает.',body:[
+'Провал никогда не означает «ничего не происходит». Это значит: мир отвечает. Сторож просыпается, мост подмывает, спутник запоминает вашу неловкость. Ведущий вводит осложнение — и история движется дальше.',
+'Единица на любой кости — зерно беды: даже при общем успехе она обещает мелкую цену. Сломавшийся шнурок, лишний свидетель, лицо, которое вас запомнило. Ведущий вправе взыскать это зерно позже.']},
+{cat:'rolls',title:'Помощь и соперничество',summary:'Союзники дают кости, противники бросают навстречу.',body:[
+'Союзник может помочь: он описывает, что именно делает, и добавляет одну кость в ваш пул. Помогать можно раз в сцену на каждого союзника — иначе сцена превращается в кузницу костей.',
+'Если два скитальца (или скиталец и противник) действуют друг против друга, оба бросают пулы. Побеждает больший счёт успехов; проигравший получает то, чего добивался победитель, — в урезанном или обратном виде.']},
+{cat:'char',title:'Качества',summary:'Врождённая основа скитальца: девять граней.',body:[
+'Качества — это врождённая основа скитальца, то, что не выучишь за одну ночь. Они измеряются от 0 до 5, а у редких исключительных людей доходят до 6.',
+'- Сила — поднять, удержать, сломать, вынести.',
+'- Ловкость — уклониться, взобраться, не оступиться.',
+'- Точность — попасть, вложить, направить руку.',
+'- Стойкость — терпеть холод, голод, боль и страх.',
+'- Обаяние — быть услышанным, поверенным, прощённым.',
+'- Хитрость — заметить выход там, где его нет.',
+'- Восприятие — услышать шаг за стеной, увидеть ложь.',
+'- Рассудок — знать, вспомнить, сложить два и два.',
+'- Чутьё — почувствовать раньше, чем увидеть.']},
+{cat:'char',title:'Навыки',summary:'Ремесло рук и привычек, нажитое дорогой.',body:[
+'Навыки — ремесло рук и привычек, нажитое дорогой. При испытании они складываются с качеством.',
+'- Атлетика — бег, прыжок, силовая борьба (со Силой или Ловкостью).',
+'- Бдительность — караул, засада, чтение местности (с Восприятием).',
+'- Выживание — костёр, тропы, зверь и непогода (с Чутьём или Стойкостью).',
+'- Красноречие — убеждать, торговаться, лгать в лицо (с Обаянием).',
+'- Ловкость рук — карман, отмычка, жуликая просьба (с Ловкостью или Хитростью).',
+'- Ремесло — починить, смастерить, подделать (с Рассудком).',
+'- Скрытность — тень, тихий шаг, чужая одежда (с Ловкостью).',
+'- Стрельба — лук, арбалет, метательный нож (с Точностью).',
+'- Фехтование — клинок, посох, драка на близкой руке (с Ловкостью или Силой).']},
+{cat:'char',title:'Знания',summary:'Тёмные и светлые области понимания.',body:[
+'Знания — области понимания, которые скиталец вынес из книг, дорог и чужих углов. В городе и против людей они порой весят больше клинка.',
+'- Разбор — определить, из чего сделано и как устроено.',
+'- Звери — повадки, следы, язык собак и ворон.',
+'- Искусство — герб, икона, почерк эпохи; что скажет статуя.',
+'- Лекарство — раны, яды, лихорадка и руки, которые не дрожат.',
+'- Обычаи — законы, чужбина, как войти в дом и не оскорбить очаг.',
+'- Мистицизм — приметы, обряды, то, что ищет щелей в мире.',
+'- Трюкачество — карты, кости, суеверья и уловки толпы.',
+'- Учёность — хроники, языки мёртвых, счёт и письмо.',
+'- Сочувствие — чужая боль, чужой страх; где болит и почему.']},
+{cat:'char',title:'Специализации',summary:'Узкая грань навыка и лишняя кость.',body:[
+'Специализация — узкая грань навыка: «ночные тропы» в Скрытности, «длинные клинки» в Фехтовании, «штопаные раны» в Лекарстве. У одного навыка может быть несколько граней, но каждая из них — одна.',
+'Когда Ведущий признаёт, что специализация применима к испытанию, добавьте в пул одну дополнительную кость. Специализации записываются на листе и открываются за опыт.']},
+{cat:'char',title:'Добродетели',summary:'Четыре столпа против искушения и страха.',body:[
+'Добродетели — четыре столпа, на которых скиталец держится, когда мир качается: Совесть, Хладнокровие, Самообладание и Мужество. Каждый измеряется от 1 до 5.',
+'Когда сцена бьёт в столп — искушением, паникой, отчаянием, — Ведущий может попросить проверку добродетели: бросьте столько костей, каков её уровень. Успех позволяет поступить по своему стержню; провал — и обстоятельства решают за вас.']},
+{cat:'wounds',title:'Раны',summary:'Шесть зон тела, лёгкие и тяжёлые раны.',body:[
+'Тело разделено на шесть зон: голова, торс, руки и ноги. Раны бывают лёгкие и тяжёлые; все они записываются на листе.',
+'Лёгкая рана — боль и помеха: опишите, как она мешает. Тяжёлая рана в зоне, задействованной в испытании, отнимает одну кость от пула. Три тяжёлые раны на теле — предел: скиталец падает без сознания, а четвёртая ставит его на грань смерти.',
+'При получении тяжёлой раны бросьте Стойкость: успех — держитесь на ногах до конца сцены, провал — падаете и выбываете из неё.']},
+{cat:'wounds',title:'Лечение',summary:'Ночь, руки знахаря и цена ошибки.',body:[
+'Лёгкие раны заживают сами: одна — за ночь привала. Тяжёлые требуют рук: успешное испытание Лекарства закрывает одну тяжёлую рану за день ухода; без лечения тяжёлая рана не уходит неделями.',
+'Лекарства, чистые бинты и тёплый очаг добавляют кость к такому испытанию. Неудачное лечение — воспаление: Ведущий превращает рану в шрам на всю жизнь.']},
+{cat:'dark',title:'Чёрная кровь',summary:'Запас силы проклятых и его медленное возвращение.',body:[
+'У тех, кто принял метку, кровь темнеет до черноты. Чёрная кровь — запас силы проклятых: она тратится, чтобы творить их, и измеряется очками от 0 до 10.',
+'Кровь возвращается медленно: одно очко за полночный сон у огня — и ещё одно, если скиталец принял предложенную тьмой дань. Тратить кровь до дна — значит слышать её голос всё отчётливее: Ведущий может попросить проверку Хладнокровия.']},
+{cat:'dark',title:'Проклятые силы',summary:'Восемь путей, вбитых в плоть.',body:[
+'Проклятая сила — это путь, вбитый в плоть. Сила изучается по уровню от 1 до 5; уровень определяет и мощь, и цену. Вот известные пути:',
+'- Зов крови — рывок, стальная хватка, заглушённая боль.',
+'- Тёмное зрение — мрак как сумерки, тепло сквозь стены.',
+'- Шёпот могил — вопрос тому, кто недавно умер.',
+'- Незримый шаг — на миг стать тенью.',
+'- Клеймо зверя — чутьё и ярость хищника.',
+'- Голос из-за грани — слова-повеления: стой, спи, забудь.',
+'- Морок — тонкая ткань лжи поверх мира.',
+'- Ржавый жребий — испорченная чужая удача.']},
+{cat:'dark',title:'Проявления',summary:'Конкретные формы, которые приняла сила.',body:[
+'Проявления — конкретные формы, которые приняла ваша сила: не абстрактная мощь, а привычное чудо. «Пожатие пепла», «Слепая лошадь», «Дверь, которой не было» — каждое проявление записывается на листе рядом с силой.',
+'Проявление должно быть узким и живым: одно действие, одна картинка. Новые проявления открываются по мере роста силы или покупаются за опыт — с ведома Ведущего.']},
+{cat:'dark',title:'Стресс',summary:'Накопленный ужас, что душит мастерство.',body:[
+'Стресс — накопленный ужас и усталость души; он измеряется от 0 до 10 и записывается на листе. Его приносят свидетели проклятий, тяжёлые раны, ночи без сна и вещи, которые лучше было не открывать.',
+'Стресс душит мастерство: при 4 и больше — минус одна кость ко всем испытаниям, при 8 и больше — минус две. Сбрасывается отдыхом в безопасности, добротой спутников и проверками добродетелей в трудный час.']},
+{cat:'xp',title:'Опыт',summary:'За риск, истину и утрату — рост.',body:[
+'Опыт — валюта роста. В конце сцены, где скиталец рисковал, узнал важную истину или потерял что-то значимое, Ведущий назначает 1–3 очка опыта. Поражения и утраты учат не хуже побед.',
+'Тратить опыт можно между сценами или в привале: поднять навык или знание на уровень, открыть специализацию, обучиться проклятой силе, укрепить добродетель. Качества растут медленнее всего — они меняются только через историю: наставника, клятву, испытание жизни.']},
+{cat:'xp',title:'Хроника',summary:'Каждое очко — строка в летописи.',body:[
+'Каждое получение и каждая трата опыта записывается в летопись: когда, за что, сколько. Летопись — это биография силы: глядя на неё, легко увидеть, чем ваш скиталец жил и чем платил за рост.',
+'Не стесняйтесь пометок: «истина о колодце», «выучил у старого фехтовальщика», «заплатил знахарке». Через месяц игры это станет лучшей историей стола.']},
+{cat:'combat',title:'Стычка',summary:'Сцена вместо сетки: описание против описания.',body:[
+'Бой в Скитальце — это сцена, а не сетка. Порядок ходов не считается: каждый в свой черёд описывает действие, и стол следит, чтобы все успели. Ведущий отвечает миром: стражники не ждут очереди.',
+'Атака — обычное испытание: Точность со Стрельбой, Ловкость с Фехтованием, Сила с Атлетикой в захвате. Успех достигает цели; успехи сверх первого усиливают удар или переводят бой в выгодное положение.']},
+{cat:'combat',title:'Урон и броня',summary:'Сколько успехов — столько беды.',body:[
+'Кулак и дубина оставляют лёгкие раны. Три и более успехов на атаке — или оружие войны: клинок, арбалет, топор — оставляют тяжёлую рану в зоне, которую выбирает атакующий (Ведущий может назначить её сам по описанию удара).',
+'Броня — кольчуга, кожаный панцирь, тяжёлый плащ — гасит первую тяжёлую рану в сцене, после чего рвётся и теряет силу. Щит позволяет раз за сцену заменить полученную рану на потерю щита и отступление.']},
+{cat:'gear',title:'Котомка',summary:'Записывайте то, что станет важным.',body:[
+'Снаряжение записывается списком: название, количество, короткая пометка. Не учитывайте каждый сухарь — записывайте то, что станет важным: верёвка, фляга, отцовский нож, чужое кольцо.',
+'Превосходный инструмент делает затею вероятнее: добавьте одну кость, когда снаряжение прямо помогает. Освещение, ночёвка и еда — валюта странствий; Ведущий помнит, что всё кончается.']}
+];
+
+/* ═══════════════ СОСТОЯНИЕ ═══════════════ */
+const STORE_KEY='skitalec_dark_times_v1';
+let state, view='sheet', selectedPart='torso';
+let codexUI={q:'',cat:'all'};
+let xpUI={type:'gain',filter:'all'};
+let rollSel={quality:'',skill:'',bonus:0,threshold:6};
+let dice={rolling:false,history:[],last:null};
+let powerPick={id:null,level:2};
+
+function emptyWounds(){return {light:0,heavy:0}}
+function defaultCharacter(name){
+  return {
+    id:uid('char'), name:name||'Безымянный',
+    qualities:Object.fromEntries(QUALITIES.map(q=>[q.id,1])),
+    skills:Object.fromEntries(SKILLS.map(s=>[s.id,0])),
+    lore:Object.fromEntries(LORE.map(l=>[l.id,0])),
+    specializations:[],
+    virtues:{conscience:2,composure:2,selfControl:2,courage:2},
+    cursedPowers:[],
+    wounds:{total:emptyWounds(),head:emptyWounds(),torso:emptyWounds(),leftArm:emptyWounds(),rightArm:emptyWounds(),leftLeg:emptyWounds(),rightLeg:emptyWounds()},
+    equipment:[], blood:5, stress:0, xp:0
+  };
+}
+function recalcTotal(c){
+  const t={light:0,heavy:0};
+  PARTS.forEach(p=>{t.light+=c.wounds[p.id].light;t.heavy+=c.wounds[p.id].heavy});
+  c.wounds.total=t;
+}
+function normalizeCharacter(c){
+  const d=defaultCharacter(typeof c.name==='string'?c.name:undefined);
+  const out={...d,...c};
+  out.qualities={...d.qualities,...(c.qualities||{})};
+  out.skills={...d.skills,...(c.skills||{})};
+  out.lore={...d.lore,...(c.lore||{})};
+  out.virtues={...d.virtues,...(c.virtues||{})};
+  out.wounds={...d.wounds,...(c.wounds||{}),total:emptyWounds()};
+  PARTS.forEach(p=>{out.wounds[p.id]={light:0,heavy:0,...((c.wounds||{})[p.id]||{})}});
+  QUALITIES.forEach(q=>out.qualities[q.id]=clamp(Math.round(+out.qualities[q.id]||0),0,6));
+  SKILLS.forEach(s=>out.skills[s.id]=clamp(Math.round(+out.skills[s.id]||0),0,5));
+  LORE.forEach(l=>out.lore[l.id]=clamp(Math.round(+out.lore[l.id]||0),0,5));
+  VIRTUES.forEach(v=>out.virtues[v.id]=clamp(Math.round(+out.virtues[v.id]||1),1,5));
+  out.specializations=Array.isArray(c.specializations)?c.specializations:[];
+  out.cursedPowers=Array.isArray(c.cursedPowers)?c.cursedPowers:[];
+  out.equipment=Array.isArray(c.equipment)?c.equipment:[];
+  out.blood=clamp(Math.round(+out.blood||0),0,10);
+  out.stress=clamp(Math.round(+out.stress||0),0,10);
+  out.xp=Math.round(+out.xp||0);
+  recalcTotal(out);
+  return out;
+}
+/* первый запуск — готовый скиталец из примера */
+function seed(){
+  const c=defaultCharacter('Фрейя');
+  Object.assign(c.qualities,{strength:2,agility:3,accuracy:2,endurance:3,charisma:1,cunning:1,perception:2,intellect:2,intuition:1});
+  Object.assign(c.skills,{athletics:2,vigilance:1,survival:2,eloquence:0,sleightOfHand:0,craft:0,stealth:2,shooting:1,fencing:2});
+  Object.assign(c.lore,{analysis:1,animals:1,art:0,medicine:1,customs:0,mysticism:2,trickery:0,scholarship:0,empathy:1});
+  c.specializations=[{id:uid('sp'),skillId:'stealth',specializationName:'Ночные тропы'}];
+  c.cursedPowers=[{id:uid('pw'),powerId:'darkSight',level:2,manifestations:['Глаза совы','След тепла за стеной']}];
+  c.wounds.leftArm.light=1;
+  c.equipment=[
+    {id:uid('eq'),name:'Длинный нож',qty:1,note:'Отцовский — не подведёт'},
+    {id:uid('eq'),name:'Фляга чёрной крови',qty:2,note:'На самый чёрный день'}
+  ];
+  c.xp=4;
+  recalcTotal(c);
+  return {characters:[c],activeCharId:c.id,log:[
+    {id:uid('xp'),charId:c.id,ts:Date.now()-86400000*2,delta:6,type:'gain',cat:'truth',note:'Правда о колодце на перепутье'},
+    {id:uid('xp'),charId:c.id,ts:Date.now()-86400000,delta:-2,type:'spend',cat:'skill',note:'Тени — у старого фехтовальщика'}
+  ]};
+}
+function normalizeState(d){
+  let characters=(d.characters||[]).map(normalizeCharacter);
+  if(!characters.length){characters=[defaultCharacter('Безымянный')]}
+  const active=characters.some(c=>c.id===d.activeCharId)?d.activeCharId:characters[0].id;
+  return {characters,activeCharId:active,log:Array.isArray(d.log)?d.log:[]};
+}
+function loadState(){
+  try{
+    const raw=localStorage.getItem(STORE_KEY);
+    if(!raw)return seed();
+    const d=JSON.parse(raw);
+    if(!d||!Array.isArray(d.characters))return seed();
+    return normalizeState(d);
+  }catch(e){console.warn('Летопись повреждена, начинаем новую',e);return seed()}
+}
+function save(){localStorage.setItem(STORE_KEY,JSON.stringify(state))}
+const char=()=>state.characters.find(c=>c.id===state.activeCharId);
+
+/* ═══════════════ ТОСТЫ И МОДАЛКИ ═══════════════ */
+function toast(msg,err){
+  const t=document.createElement('div');
+  t.className='toast'+(err?' err':'');t.textContent=msg;
+  $('#toast-root').appendChild(t);
+  setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),320)},2800);
+}
+function openModal(title,bodyHTML){
+  $('#modal-root').innerHTML=
+    `<div class="mb" data-mb="1"><div class="modal" role="dialog" aria-modal="true">
+      <header><h3>${title}</h3><button class="ibtn" data-act="modal-close" title="Закрыть">${icon('x',13)}</button></header>
+      <div class="modal-body">${bodyHTML}</div></div></div>`;
+  document.body.classList.add('locked');
+}
+function closeModal(){$('#modal-root').innerHTML='';document.body.classList.remove('locked')}
+/* двухшаговое подтверждение прямо на кнопке */
+function armButton(btn){
+  if(btn.dataset.armed){delete btn.dataset.armed;btn.classList.remove('armed');return true}
+  btn.dataset.armed='1';btn.classList.add('armed');
+  const old=btn.innerHTML;btn.innerHTML='точно?';
+  setTimeout(()=>{if(!btn.isConnected||!btn.dataset.armed)return;
+    delete btn.dataset.armed;btn.classList.remove('armed');btn.innerHTML=old},2600);
+  return false;
+}
+
+/* ═══════════════ ОБЩИЕ ЧАСТИ РАЗМЕТКИ ═══════════════ */
+function pipsHTML(group,id,val,max){
+  return `<span class="pips">${Array.from({length:max},(_,i)=>
+    `<span class="pip ${i<val?'on':''}" data-act="pip" data-group="${group}" data-id="${id}" data-v="${i+1}" title="Поставить: ${i+1}"></span>`).join('')}</span>`;
+}
+function pipsStatic(val,max,blood){
+  return `<span class="pips static ${blood?'blood':''}">${Array.from({length:max},(_,i)=>
+    `<span class="pip ${i<val?'on':''}"></span>`).join('')}</span>`;
+}
+function statRow(group,def,val){
+  const g=GROUPS[group];
+  const rollBtn=group!=='virtues'
+    ?`<button class="ibtn" data-act="quick-roll" data-type="${group}" data-id="${def.id}" title="Бросить: ${esc(def.name)}">${icon('die',13)}</button>`:'';
+  return `<div class="stat-row">
+    <span class="stat-name">${esc(def.name)}</span>
+    ${pipsHTML(group,def.id,val,g.max)}
+    <span class="stat-ctl">
+      <button class="ibtn" data-act="stat" data-kind="dec" data-group="${group}" data-id="${def.id}" ${val<=g.min?'disabled':''} title="Убавить">${icon('minus',11)}</button>
+      <button class="ibtn" data-act="stat" data-kind="inc" data-group="${group}" data-id="${def.id}" ${val>=g.max?'disabled':''} title="Прибавить">${icon('plus',11)}</button>
+      ${rollBtn}
+    </span></div>`;
+}
+function defName(group,id){const d=(GROUPS[group]||{list:[]}).list.find(x=>x.id===id);return d?d.name:id}
+
+/* ═══════════════ ЛИСТ ПЕРСОНАЖА ═══════════════ */
+function counterHTML(ic,name,kind,val){
+  return `<div class="counter">
+    <span class="c-label">${icon(ic,14)} ${name}</span>
+    <div class="track">${Array.from({length:10},(_,i)=>
+      `<span class="cell ${i<val?('on '+kind):''}" data-act="track" data-kind="${kind}" data-v="${i+1}" title="Отметить: ${i+1}"></span>`).join('')}</div>
+    <button class="ibtn" data-act="track-step" data-kind="${kind}" data-d="-1" title="Убавить">${icon('minus',11)}</button>
+    <b class="c-num">${val}</b>
+    <button class="ibtn" data-act="track-step" data-kind="${kind}" data-d="1" title="Прибавить">${icon('plus',11)}</button>
+  </div>`;
+}
+function figureSVG(c){
+  const paths=PARTS.map(p=>{
+    const w=c.wounds[p.id];
+    const a=Math.min(.85,w.heavy*.22+w.light*.07);
+    const fill=a>0?`rgba(163,53,44,${a.toFixed(2)})`:'#1d1812';
+    const stroke=selectedPart===p.id?'var(--gold)':(w.heavy>0?'var(--blood)':'var(--line-strong)');
+    return `<path class="fig-part ${selectedPart===p.id?'sel':''}" data-act="select-part" data-part="${p.id}" d="${PART_SVG[p.id]}"
+      style="fill:${fill};stroke:${stroke}"><title>${p.name}</title></path>`;
+  }).join('');
+  return `<svg viewBox="0 0 140 244" role="img" aria-label="Схема тела">${paths}</svg>`;
+}
+function woundPanelHTML(c){
+  const w=c.wounds[selectedPart], name=PARTS.find(p=>p.id===selectedPart).name;
+  return `<div class="wound-panel">
+    <div class="wp-head"><b>${esc(name)}</b><span class="wp-total">всего: ${c.wounds.total.light} лёгк. · ${c.wounds.total.heavy} тяж.</span></div>
+    <div class="wp-row"><span>Лёгкие</span>
+      <span class="wctl"><button class="ibtn" data-act="wound" data-kind="dec" data-sev="light" ${w.light<=0?'disabled':''}>${icon('minus',11)}</button><b>${w.light}</b><button class="ibtn" data-act="wound" data-kind="inc" data-sev="light" ${w.light>=8?'disabled':''}>${icon('plus',11)}</button></span></div>
+    <div class="wp-row"><span>Тяжёлые</span>
+      <span class="wctl"><button class="ibtn" data-act="wound" data-kind="dec" data-sev="heavy" ${w.heavy<=0?'disabled':''}>${icon('minus',11)}</button><b>${w.heavy}</b><button class="ibtn" data-act="wound" data-kind="inc" data-sev="heavy" ${w.heavy>=8?'disabled':''}>${icon('plus',11)}</button></span></div>
+    <div class="wounds-reset"><button class="link-btn" data-act="wounds-reset">заживить все раны</button></div>
+  </div>`;
+}
+function asideHTML(c){
+  const virtues=VIRTUES.map(v=>statRow('virtues',v,c.virtues[v.id])).join('');
+  return `<aside class="sheet-aside">
+    <div class="panel name-plate"><input id="charName" value="${esc(c.name)}" maxlength="40" placeholder="Безымянный" aria-label="Имя скитальца"></div>
+    <div class="panel">
+      ${counterHTML('drop','Чёрная кровь','blood',c.blood)}
+      ${counterHTML('flame','Стресс','stress',c.stress)}
+      <div class="counter">
+        <span class="c-label">${icon('gem',14)} Опыт</span>
+        <b class="c-num big">${c.xp}</b>
+        <button class="btn btn-ghost" data-act="view" data-view="xp" style="margin-left:auto">летопись</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="sec-title"><h2>${icon('heart',14)} Добродетели</h2><span class="ln"></span><span class="note">${GROUPS.virtues.note}</span></div>
+      ${virtues}
+    </div>
+    <div class="panel">
+      <div class="sec-title"><h2>${icon('eye',14)} Тело и раны</h2><span class="ln"></span><span class="note">клик по зоне</span></div>
+      ${figureSVG(c)}
+      ${woundPanelHTML(c)}
+    </div>
+  </aside>`;
+}
+function rollPanelHTML(){
+  const qOpts=QUALITIES.map(q=>`<option value="${q.id}" ${rollSel.quality===q.id?'selected':''}>${q.name}</option>`).join('');
+  const sOpts=[...SKILLS,...LORE].map(s=>`<option value="${s.id}" ${rollSel.skill===s.id?'selected':''}>${s.name}</option>`).join('');
+  return `<div class="panel roll-panel">
+    <div class="sec-title"><h2>${icon('die',15)} Испытание</h2><span class="ln"></span><span class="note">пул d6 · успех на 6</span></div>
+    <div class="roll-controls">
+      <label class="rc">Качество<select data-rollsel="quality"><option value="">—</option>${qOpts}</select></label>
+      <label class="rc">Навык / знание<select data-rollsel="skill"><option value="">—</option>${sOpts}</select></label>
+      <label class="rc">Доп. кости<input type="number" data-rollsel="bonus" value="${rollSel.bonus}" min="-3" max="9" style="width:64px"></label>
+      <label class="rc">Успех на<select data-rollsel="threshold"><option value="6" ${rollSel.threshold===6?'selected':''}>6</option><option value="5" ${rollSel.threshold===5?'selected':''}>5–6</option></select></label>
+      <button class="btn btn-primary" data-act="roll">${icon('die',15)} Испытание</button>
+      <span class="roll-sum" id="poolPreview"></span>
+    </div>
+    <div class="dice-field" id="diceField"></div>
+    <div class="dice-result" id="diceResult"></div>
+    <div class="history" id="diceHistory"></div>
+  </div>`;
+}
+function dieSVG(v){
+  const P={1:[[12,12]],2:[[8,8],[16,16]],3:[[8,8],[12,12],[16,16]],
+    4:[[7.5,7.5],[16.5,7.5],[7.5,16.5],[16.5,16.5]],
+    5:[[7.5,7.5],[16.5,7.5],[12,12],[7.5,16.5],[16.5,16.5]],
+    6:[[7.5,6.5],[16.5,6.5],[7.5,12],[16.5,12],[7.5,17.5],[16.5,17.5]]};
+  return `<svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="4" fill="none" stroke="rgba(215,196,158,.22)" stroke-width="1"/>${P[v].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="1.7"/>`).join('')}</svg>`;
+}
+function resultHTML(L){
+  const succTxt=L.succ>0?`${L.succ} ${plural(L.succ,'успех','успеха','успехов')}`:'Провал';
+  return `<span class="succ-big ${L.succ?'':'fail'}">${succTxt}</span>
+    <span class="roll-sub">${esc(L.label)} · ${L.pool} ${plural(L.pool,'кость','кости','костей')} · порог ${L.threshold}+</span>`;
+}
+function diceFieldHTML(){
+  if(dice.last){
+    return `<div class="field dice-field" id="diceField">${dice.last.values.map(v=>{
+      const cls=v>=dice.last.threshold?'success':(v===1?'botch':'');
+      const tilt=((Math.random()*16)-8).toFixed(1);
+      return `<div class="die settled ${cls}" style="--tilt:${tilt}deg">${dieSVG(v)}</div>`}).join('')}</div>
+      <div class="dice-result" id="diceResult">${resultHTML(dice.last)}</div>`;
+  }
+  return `<div class="field dice-field" id="diceField">
+    <span class="dice-empty">${icon('die',26)}<span>Кости ещё спят. Соберите пул — или бросьте прямо со строки умения.</span></span></div>
+    <div class="dice-result" id="diceResult"></div>`;
+}
+function renderHistory(){
+  const el=$('#diceHistory');if(!el)return;
+  if(!dice.history.length){el.innerHTML='';return}
+  el.innerHTML=`<div class="h-head">Последние броски</div>`+dice.history.map(h=>
+    `<div class="h-row"><span class="h-label">${esc(h.label)}</span>
+     <span class="h-vals">${h.values.map(v=>v>=h.threshold?`<b>${v}</b>`:(v===1?`<i>${v}</i>`:v)).join('·')}</span>
+     <span class="h-succ ${h.succ?'':'fail'}">${h.succ}</span></div>`).join('');
+}
+function updatePoolPreview(){
+  const el=$('#poolPreview');if(!el)return;
+  const c=char();if(!c){el.textContent='';return}
+  const q=rollSel.quality?(c.qualities[rollSel.quality]||0):0;
+  const s=rollSel.skill?(c.skills[rollSel.skill]??c.lore[rollSel.skill]??0):0;
+  const pool=q+s+(parseInt(rollSel.bonus)||0);
+  const parts=[];
+  if(rollSel.quality)parts.push(defName('qualities',rollSel.quality)+' '+q);
+  if(rollSel.skill)parts.push((defName('skills',rollSel.skill)||defName('lore',rollSel.skill))+' '+s);
+  el.textContent=`${pool} ${plural(pool,'кость','кости','костей')}`+(parts.length?' · '+parts.join(' + '):'');
+}
+function abilitiesHTML(c){
+  const q=QUALITIES.map(d=>statRow('qualities',d,c.qualities[d.id])).join('');
+  const s=SKILLS.map(d=>statRow('skills',d,c.skills[d.id])).join('');
+  const l=LORE.map(d=>statRow('lore',d,c.lore[d.id])).join('');
+  const specs=c.specializations.map(sp=>{
+    const sk=SKILLS.find(x=>x.id===sp.skillId);
+    return `<span class="tag">${esc(sk?sk.name:'—')} · ${esc(sp.specializationName)}
+      <button class="ibtn" data-act="spec-del" data-id="${sp.id}" title="Убрать грань">${icon('x',10)}</button></span>`;
+  }).join('')||'<span class="empty">Граней мастерства пока нет</span>';
+  return `<div class="panel">
+      <div class="sec-title"><h2>${icon('sword',15)} Качества</h2><span class="ln"></span><span class="note">${GROUPS.qualities.note}</span></div>
+      ${q}</div>
+    <div class="two-col">
+      <div class="panel">
+        <div class="sec-title"><h2>${icon('sword',15)} Навыки</h2><span class="ln"></span><span class="note">${GROUPS.skills.note}</span></div>
+        ${s}</div>
+      <div class="panel">
+        <div class="sec-title"><h2>${icon('book',15)} Знания</h2><span class="ln"></span><span class="note">${GROUPS.lore.note}</span></div>
+        ${l}</div>
+    </div>
+    <div class="spec-bar">
+      <div class="sec-title"><h2>${icon('quill',15)} Специализации</h2><span class="ln"></span><span class="note">применима — плюс кость</span></div>
+      <div class="tags">${specs}</div>
+      <div class="spec-add">
+        <select id="specSkill">${SKILLS.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}</select>
+        <input type="text" id="specName" maxlength="40" placeholder="грань мастерства — «ночные тропы»…">
+        <button class="btn" data-act="spec-add">${icon('plus',13)} Добавить</button>
+      </div>
+    </div>`;
+}
+function powersHTML(c){
+  const rows=c.cursedPowers.length?c.cursedPowers.map(pw=>{
+    const def=POWERS.find(p=>p.id===pw.powerId)||{name:'Забытая сила',desc:''};
+    return `<div class="power-row">
+      <div class="pr-main">
+        <button class="power-name" data-act="power-info" data-id="${pw.powerId}" title="Описание силы">${esc(def.name)}</button>
+        ${pipsStatic(pw.level,5,true)}
+        <span class="stat-ctl" style="opacity:1">
+          <button class="ibtn" data-act="power-lvl" data-d="-1" data-id="${pw.id}" ${pw.level<=1?'disabled':''} title="Ослабить">${icon('minus',11)}</button>
+          <button class="ibtn" data-act="power-lvl" data-d="1" data-id="${pw.id}" ${pw.level>=5?'disabled':''} title="Усилить">${icon('plus',11)}</button>
+          <button class="ibtn" data-act="power-del" data-id="${pw.id}" title="Отринуть силу">${icon('trash',12)}</button>
+        </span>
+      </div>
+      <div class="pr-manif">
+        ${pw.manifestations.map((m,i)=>`<span class="tag">${esc(m)}
+          <button class="ibtn" data-act="manif-del" data-id="${pw.id}" data-i="${i}" title="Убрать проявление">${icon('x',10)}</button></span>`).join('')}
+        <span class="manif-add">
+          <input type="text" class="manif-input" data-powerid="${pw.id}" maxlength="40" placeholder="новое проявление…">
+          <button class="ibtn" data-act="manif-add" data-id="${pw.id}" title="Записать проявление">${icon('plus',12)}</button>
+        </span>
+      </div></div>`;
+  }).join(''):'<p class="empty">Кровь пока чиста. Так ли это надолго?</p>';
+  return `<div class="panel">
+    <div class="sec-title"><h2>${icon('drop',15)} Проклятые силы</h2><span class="ln"></span><span class="note">уровень · проявления</span></div>
+    ${rows}
+    <div style="margin-top:12px"><button class="btn" data-act="power-modal">${icon('plus',13)} Принять силу</button></div>
+  </div>`;
+}
+function equipHTML(c){
+  const rows=c.equipment.length?c.equipment.map(it=>`<div class="equip-row">
+      <span class="eq-qty">
+        <button class="ibtn" data-act="eq-qty" data-d="-1" data-id="${it.id}" ${it.qty<=1?'disabled':''}>${icon('minus',10)}</button>
+        <b>×${it.qty}</b>
+        <button class="ibtn" data-act="eq-qty" data-d="1" data-id="${it.id}">${icon('plus',10)}</button>
+      </span>
+      <span class="eq-main"><span class="eq-name">${esc(it.name)}</span>${it.note?`<span class="eq-note">${esc(it.note)}</span>`:''}</span>
+      <button class="ibtn" data-act="eq-del" data-id="${it.id}" title="Выбросить">${icon('trash',12)}</button>
+    </div>`).join(''):'<p class="empty">Котомка пуста — и то ли это мудрость, то ли бедность.</p>';
+  return `<div class="panel">
+    <div class="sec-title"><h2>${icon('hourglass',15)} Снаряжение</h2><span class="ln"></span><span class="note">что станет важным</span></div>
+    ${rows}
+    <div style="margin-top:12px"><button class="btn" data-act="equip-modal">${icon('plus',13)} Положить в котомку</button></div>
+  </div>`;
+}
+function charStripHTML(){
+  const tabs=state.characters.map(c=>`<button class="char-tab ${c.id===state.activeCharId?'active':''}" data-act="char-select" data-id="${c.id}">
+      <span>${esc(c.name)}</span><span class="ct-xp">${icon('gem',11)}${c.xp}</span>
+      ${c.id===state.activeCharId?`<span class="ibtn ct-del" data-act="char-del" title="Удалить скитальца" role="button">${icon('x',11)}</span>`:''}
+    </button>`).join('');
+  return `<div class="char-strip">${tabs}
+    <button class="char-tab" data-act="char-modal" style="border-style:dashed">${icon('plus',13)} Новый странник</button></div>`;
+}
+function renderSheet(){
+  const c=char();
+  if(!c){$('#view-sheet').innerHTML='<p class="empty">Скитальцев нет.</p>';return}
+  $('#view-sheet').innerHTML=charStripHTML()+
+    `<div class="sheet-grid">${asideHTML(c)}<div class="sheet-main">${rollPanelHTML()}${diceFieldHTML()}${abilitiesHTML(c)}${powersHTML(c)}${equipHTML(c)}</div></div>`;
+  renderHistory();updatePoolPreview();
+}
+
+/* ── бросок костей ── */
+function currentPool(){
+  const c=char();
+  const q=rollSel.quality?(c.qualities[rollSel.quality]||0):0;
+  const s=rollSel.skill?(c.skills[rollSel.skill]??c.lore[rollSel.skill]??0):0;
+  return q+s+(parseInt(rollSel.bonus)||0);
+}
+function rollLabel(){
+  const parts=[];
+  if(rollSel.quality)parts.push(defName('qualities',rollSel.quality));
+  if(rollSel.skill)parts.push(defName('skills',rollSel.skill)||defName('lore',rollSel.skill));
+  return parts.join(' + ')||'Голая удача';
+}
+function animateRoll(pool,label,threshold){
+  dice.rolling=true;
+  const field=$('#diceField'),res=$('#diceResult');
+  if(res)res.innerHTML='';
+  field.innerHTML=Array.from({length:pool},(_,i)=>
+    `<div class="die dealing" style="animation-delay:${i*40}ms">${dieSVG(6)}</div>`).join('');
+  const els=[...field.children];
+  els.forEach(el=>el.classList.add('shuffling'));
+  const final=Array.from({length:pool},()=>1+Math.floor(Math.random()*6));
+  const iv=setInterval(()=>els.forEach(el=>el.innerHTML=dieSVG(1+Math.floor(Math.random()*6))),75);
+  setTimeout(()=>{
+    clearInterval(iv);
+    els.forEach((el,i)=>{
+      const v=final[i];
+      el.classList.remove('shuffling');el.classList.add('settled');
+      el.style.setProperty('--tilt',((Math.random()*16)-8).toFixed(1)+'deg');
+      el.innerHTML=dieSVG(v);
+      if(v>=threshold)el.classList.add('success');else if(v===1)el.classList.add('botch');
+    });
+    const succ=final.filter(v=>v>=threshold).length;
+    dice.last={label,pool,threshold,values:final,succ};
+    if(res)res.innerHTML=resultHTML(dice.last);
+    dice.history.unshift(dice.last);
+    if(dice.history.length>8)dice.history.pop();
+    renderHistory();
+    dice.rolling=false;
+  },650+Math.min(pool*30,550));
+}
+function rollFromPanel(){
+  if(dice.rolling)return;
+  const pool=currentPool();
+  if(pool<1){toast('Нужна хотя бы одна кость — поднимите качество или навык.',1);return}
+  animateRoll(pool,rollLabel(),rollSel.threshold);
+}
+function syncRollSelects(){
+  const qs=$('#rollQuality'),ss=$('#rollSkill');
+  if(qs)qs.value=rollSel.quality;
+  if(ss)ss.value=rollSel.skill;
+  updatePoolPreview();
+}
+
+/* ═══════════════ КОДЕКС ═══════════════ */
+function catName(id){const c=CODEX_CATS.find(c=>c.id===id);return c?c.name:id}
+function fmtBody(body){
+  let out='',list=[];
+  const flush=()=>{if(list.length){out+='<ul>'+list.map(li=>'<li>'+li+'</li>').join('')+'</ul>';list=[]}};
+  body.forEach(l=>{if(l.startsWith('- '))list.push(esc(l.slice(2)));else{flush();out+='<p>'+esc(l)+'</p>'}});
+  flush();return out;
+}
+function markMatches(text,q){
+  if(!q)return esc(text);
+  const nText=norm(text),nq=norm(q);let out='',i=0,idx;
+  while((idx=nText.indexOf(nq,i))>=0){
+    out+=esc(text.slice(i,idx))+'<mark>'+esc(text.slice(idx,idx+q.length))+'</mark>';
+    i=idx+q.length;
+    if(out.length>400)break;
+  }
+  return out+esc(text.slice(i));
+}
+function snippet(a,q){
+  if(!q)return esc(a.summary||'');
+  const hay=a.body.join(' § '),i=norm(hay).indexOf(norm(q));
+  if(i<0)return esc(a.summary||'');
+  const s=Math.max(0,i-55),e=Math.min(hay.length,i+95);
+  return (s>0?'…':'')+esc(hay.slice(s,i))+'<mark>'+esc(hay.slice(i,i+q.length))+'</mark>'+esc(hay.slice(i+q.length,e))+(e<hay.length?'…':'');
+}
+function renderCodexList(){
+  const q=codexUI.q.trim();
+  let items=q?CODEX.filter(a=>norm(a.title+' '+a.body.join(' ')).includes(norm(q)))
+             :CODEX.filter(a=>codexUI.cat==='all'||a.cat===codexUI.cat);
+  $('#codexList').innerHTML=
+    `<div class="codex-count">${q?`Найдено статей: ${items.length}`:`Статей: ${items.length}`}</div>`+
+    (items.length?items.map(a=>`<article class="codex-row" data-act="codex-open" data-id="${CODEX.indexOf(a)}" tabindex="0" role="button">
+        <div class="cr-top"><span class="cr-title">${markMatches(a.title,q)}</span><span class="cr-cat">${catName(a.cat)}</span></div>
+        <p class="cr-sum">${snippet(a,q)}</p></article>`).join('')
+      :'<p class="empty">Кодекс молчит — такого в нём не записано.</p>');
+}
+function renderCodex(){
+  $('#view-codex').innerHTML=`
+    <div class="view-head"><h2>Кодекс Тёмных времён</h2><p>Правила сжаты до сути — как заметки на полях дорожной книги.</p></div>
+    <div class="codex-head">
+      <div class="searchbox">${icon('search',16)}<input type="text" id="codexSearch" placeholder="Поиск: раны, кровь, опыт, шестёрки…" value="${esc(codexUI.q)}"></div>
+      <div class="cat-filter" id="catFilter">
+        <button class="cf-btn ${codexUI.cat==='all'?'active':''}" data-act="cf-cat" data-cat="all">Все</button>
+        ${CODEX_CATS.map(c=>`<button class="cf-btn ${codexUI.cat===c.id?'active':''}" data-act="cf-cat" data-cat="${c.id}">${c.name}</button>`).join('')}
+      </div>
+    </div>
+    <div id="codexList"></div>`;
+  renderCodexList();
+}
+function openCodexArticle(id){
+  const a=CODEX[+id];if(!a)return;
+  openModal(`<span style="display:block;font:600 11.5px 'Cormorant SC',serif;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-soft)">${catName(a.cat)}</span>${esc(a.title)}`,
+    fmtBody(a.body));
+}
+
+/* ═══════════════ ЛЕТОПИСЬ ОПЫТА ═══════════════ */
+function renderXP(){
+  const c=char();
+  const recs=state.log.filter(r=>r.charId===c.id).sort((a,b)=>b.ts-a.ts);
+  const gained=recs.filter(r=>r.delta>0).reduce((s,r)=>s+r.delta,0);
+  const spent=recs.filter(r=>r.delta<0).reduce((s,r)=>s+r.delta,0);
+  const cats=XP_CATS[xpUI.type];
+  if(!cats.some(x=>x[0]===xpUI.cat))xpUI.cat=cats[0][0];
+  const form=`
+    <div class="btn-group" style="margin-bottom:16px">
+      <button class="bg-btn ${xpUI.type==='gain'?'active':''}" data-act="xp-type" data-type="gain">Получено</button>
+      <button class="bg-btn ${xpUI.type==='spend'?'active spend-act':''}" data-act="xp-type" data-type="spend">Потрачено</button>
+    </div>
+    <div class="form-row"><label for="xpCat">За что</label>
+      <select id="xpCat">${cats.map(x=>`<option value="${x[0]}" ${xpUI.cat===x[0]?'selected':''}>${x[1]}</option>`).join('')}</select></div>
+    <div class="form-row"><label for="xpAmount">Сколько очков</label>
+      <input type="number" id="xpAmount" min="1" max="999" value="${esc(xpUI.amount||'')}" placeholder="1–999"></div>
+    <div class="form-row"><label for="xpNote">Пометка в летописи</label>
+      <input type="text" id="xpNote" maxlength="80" value="${esc(xpUI.note||'')}" placeholder="истина о колодце, уплаты знахарке…"></div>
+    <button class="btn btn-primary" data-act="xp-commit">${icon('quill',14)} Внести в летопись</button>`;
+  const filt=recs.filter(r=>xpUI.filter==='all'||(xpUI.filter==='gain'?r.delta>0:r.delta<0));
+  const log=filt.length?filt.map(r=>{
+    const cat=(XP_CATS[r.type]||[]).find(x=>x[0]===r.cat);
+    return `<div class="log-row">
+      <span class="log-date">${fmtDate(r.ts)}</span>
+      <span class="log-delta ${r.delta>0?'plus':'minus'}">${r.delta>0?'+':''}${r.delta}</span>
+      <span class="log-cat">${esc(cat?cat[1]:'—')}</span>
+      <button class="ibtn log-del" data-act="xp-del" data-id="${r.id}" title="Вычеркнуть запись">${icon('x',11)}</button>
+      ${r.note?`<span class="log-note">${esc(r.note)}</span>`:''}
+    </div>`}).join(''):'<p class="empty">Летопись пуста. Сцены ждут.</p>';
+  $('#view-xp').innerHTML=`
+    <div class="view-head"><h2>Летопись опыта</h2><p>${esc(c.name)} — что нажито странствием и во что обошлось.</p></div>
+    <div class="xp-grid">
+      <div class="panel">
+        <div class="xp-balance"><span class="xp-num">${c.xp}</span><span class="xp-cap">${plural(c.xp,'очко','очка','очков')} опыта</span></div>
+        <div class="xp-stats"><span>получено: <b>+${gained}</b></span><span>потрачено: <b>−${Math.abs(spent)}</b></span></div>
+        ${form}
+      </div>
+      <div class="panel">
+        <div class="sec-title"><h2>${icon('book',15)} Хроника</h2><span class="ln"></span>
+          <span class="btn-group" style="margin-left:8px">
+            <button class="bg-btn" style="padding:4px 10px" data-act="xp-filter" data-f="all">все</button>
+            <button class="bg-btn" style="padding:4px 10px" data-act="xp-filter" data-f="gain">+</button>
+            <button class="bg-btn" style="padding:4px 10px" data-act="xp-filter" data-f="spend">−</button>
+          </span></div>
+        ${log}
+      </div>
+    </div>`;
+  $$('#view-xp [data-f]').forEach(b=>b.classList.toggle('active',b.dataset.f===xpUI.filter));
+}
+
+/* ═══════════════ МОДАЛКИ ДЕЙСТВИЙ ═══════════════ */
+function openCharModal(){
+  openModal('Новый скиталец',`
+    <div class="form-row"><label for="ncName">Имя</label>
+      <input type="text" id="ncName" maxlength="40" placeholder="Кто идёт сквозь тьму?"></div>
+    <p class="empty">Качества начнут с единицы, ремёсла — с нуля. Остальное допишет дорога.</p>
+    <div class="modal-actions"><button class="btn btn-primary" data-act="char-create">Выйти на дорогу</button></div>`);
+  $('#ncName').focus();
+}
+function openEquipModal(){
+  openModal('Снаряжение',`
+    <div class="form-row"><label for="eqName">Предмет</label><input type="text" id="eqName" maxlength="60" placeholder="Фонарь с треснувшим стеклом"></div>
+    <div class="form-row"><label for="eqQty">Сколько</label><input type="number" id="eqQty" min="1" max="99" value="1"></div>
+    <div class="form-row"><label for="eqNote">Пометка</label><input type="text" id="eqNote" maxlength="80" placeholder="чей, где взял, чем важно…"></div>
+    <div class="modal-actions"><button class="btn btn-primary" data-act="equip-create">Положить в котомку</button></div>`);
+  $('#eqName').focus();
+}
+function powerDetailHTML(){
+  const p=POWERS.find(x=>x.id===powerPick.id);
+  if(!p)return '<p class="empty">Выберите путь, по которому пойдёт ваша кровь.</p>';
+  return `<span class="cat-tag">${esc(p.name)}</span><p>${esc(p.desc)}</p>
+    <div class="pw-lvl"><span class="lbl">Уровень</span>${pipsStatic(powerPick.level,5,true)}
+      <span style="display:flex;gap:4px;margin-left:6px">
+        ${[1,2,3,4,5].map(n=>`<button class="ibtn" style="width:26px" data-act="power-pick-lvl" data-l="${n}" ${n===powerPick.level?'style="width:26px;border-color:var(--gold);color:var(--gold)"':''}>${n}</button>`).join('')}
+      </span></div>`;
+}
+function openPowerModal(){
+  powerPick={id:null,level:2};
+  const c=char();
+  const rows=POWERS.map(p=>{
+    const has=c.cursedPowers.some(x=>x.powerId===p.id);
+    return `<div class="pw-opt ${has?'has':''}" data-act="power-pick" data-id="${p.id}">
+      <div class="pw-top"><b>${esc(p.name)}</b>${has?'<span class="pw-has">уже изучена</span>':''}</div>
+      <p>${esc(p.desc)}</p></div>`;
+  }).join('');
+  openModal('Принять силу',`${rows}<div class="pw-detail" id="pwDetail">${powerDetailHTML()}</div>
+    <div class="modal-actions"><button class="btn btn-primary" data-act="power-add">Принять силу</button></div>`);
+}
+function openPowerInfo(powerId){
+  const c=char(),pw=c.cursedPowers.find(x=>x.powerId===powerId);if(!pw)return;
+  const def=POWERS.find(p=>p.id===powerId)||{name:'Забытая сила',desc:'Путь утерян даже для кодекса.'};
+  openModal(esc(def.name),`
+    <span class="cat-tag">проклятая сила · уровень ${pw.level} из 5</span>
+    <p>${esc(def.desc)}</p>
+    <p style="color:var(--dim);font-size:14px">Проявления, которые приняла ваша сила:</p>
+    ${pw.manifestations.length?'<ul>'+pw.manifestations.map(m=>`<li>${esc(m)}</li>`).join('')+'</ul>':'<p class="empty">Пока ни одного — сила дремлет без формы.</p>'}`);
+}
+
+/* ═══════════════ ДЕЙСТВИЯ ═══════════════ */
+function switchView(v){view=v;window.scrollTo({top:0});render()}
+function createChar(){
+  const name=($('#ncName')?.value||'').trim()||'Безымянный';
+  const c=defaultCharacter(name);
+  state.characters.push(c);state.activeCharId=c.id;save();closeModal();
+  if(view!=='sheet')switchView('sheet');else renderSheet();
+  toast(`${name} выходит на дорогу.`);
+}
+function addSpec(){
+  const c=char(),name=($('#specName')?.value||'').trim();
+  if(!name){toast('Дайте грани имя — узкое и живое.',1);return}
+  c.specializations.push({id:uid('sp'),skillId:$('#specSkill').value,specializationName:name});
+  save();renderSheet();
+}
+function addManif(pwId,val){
+  const c=char(),pw=c.cursedPowers.find(p=>p.id===pwId);
+  const name=(val||'').trim();
+  if(!pw||!name)return;
+  pw.manifestations.push(name);save();renderSheet();
+}
+function commitXP(){
+  const c=char();
+  const amount=Math.floor(+($('#xpAmount')?.value||0));
+  if(!(amount>=1&&amount<=999)){toast('Сумма опыта — целое число от 1 до 999.',1);return}
+  xpUI.cat=$('#xpCat').value;xpUI.note=$('#xpNote').value.trim();
+  const delta=xpUI.type==='gain'?amount:-amount;
+  state.log.push({id:uid('xp'),charId:c.id,ts:Date.now(),delta,type:xpUI.type,cat:xpUI.cat,note:xpUI.note});
+  c.xp+=delta;save();
+  xpUI.note='';xpUI.amount='';
+  renderXP();
+  toast(`${delta>0?'+':''}${delta} опыта внесено в летопись.`);
+}
+
+/* ═══════════════ РОУТЕР СОБЫТИЙ ═══════════════ */
+document.addEventListener('click',e=>{
+  const mb=e.target.dataset&&e.target.dataset.mb;
+  if(mb){closeModal();return}
+  const t=e.target.closest('[data-act]');if(!t)return;
+  const act=t.dataset.act,c=char();
+  switch(act){
+    case 'view':switchView(t.dataset.view);break;
+    case 'modal-close':closeModal();break;
+    /* персонажи */
+    case 'char-modal':openCharModal();break;
+    case 'char-create':createChar();break;
+    case 'char-select':state.activeCharId=t.dataset.id;save();render();break;
+    case 'char-del':
+      if(!armButton(t))return;
+      state.characters=state.characters.filter(x=>x.id!==t.dataset.id);
+      state.log=state.log.filter(r=>r.charId!==t.dataset.id);
+      if(state.activeCharId===t.dataset.id)state.activeCharId=state.characters[0]?.id;
+      if(!state.characters.length){const d=defaultCharacter('Безымянный');state.characters.push(d);state.activeCharId=d.id}
+      save();render();toast('Свиток предан огню.');
+      break;
+    /* значения способностей */
+    case 'pip':{
+      const g=t.dataset.group,id=t.dataset.id,v=+t.dataset.v,gd=GROUPS[g];
+      const cur=g==='virtues'?c.virtues[id]:c[g][id];
+      const nv=clamp(v,gd.min,gd.max);
+      if(g==='virtues')c.virtues[id]=nv===cur&&v===cur?nv:nv;else c[g][id]=nv;
+      if(g==='virtues'&&nv===cur){/* повторный клик по тому же пипсу ничего не меняет */}
+      save();renderSheet();break;}
+    case 'stat':{
+      const g=t.dataset.group,id=t.dataset.id,d=t.dataset.kind==='inc'?1:-1,gd=GROUPS[g];
+      if(g==='virtues')c.virtues[id]=clamp(c.virtues[id]+d,gd.min,gd.max);
+      else c[g][id]=clamp(c[g][id]+d,gd.min,gd.max);
+      save();renderSheet();break;}
+    /* кровь и стресс */
+    case 'track':{
+      const v=+t.dataset.v,k=t.dataset.kind;
+      c[k]=(c[k]===v)?v-1:v;c[k]=clamp(c[k],0,10);save();renderSheet();break;}
+    case 'track-step':{
+      const k=t.dataset.kind;c[k]=clamp(c[k]+(+t.dataset.d),0,10);save();renderSheet();break;}
+    /* раны */
+    case 'select-part':selectedPart=t.dataset.part;renderSheet();break;
+    case 'wound':{
+      const d=t.dataset.kind==='inc'?1:-1,sev=t.dataset.sev;
+      c.wounds[selectedPart][sev]=clamp(c.wounds[selectedPart][sev]+d,0,8);
+      recalcTotal(c);save();renderSheet();break;}
+    case 'wounds-reset':
+      PARTS.forEach(p=>{c.wounds[p.id]={light:0,heavy:0}});
+      recalcTotal(c);save();renderSheet();toast('Раны затянулись — до следующей беды.');
+      break;
+    /* специализации */
+    case 'spec-add':addSpec();break;
+    case 'spec-del':
+      c.specializations=c.specializations.filter(s=>s.id!==t.dataset.id);
+      save();renderSheet();break;
+    /* проклятые силы */
+    case 'power-modal':openPowerModal();break;
+    case 'power-info':openPowerInfo(t.dataset.id);break;
+    case 'power-pick':
+      if(t.classList.contains('has'))break;
+      powerPick.id=t.dataset.id;
+      $$('#modal-root .pw-opt').forEach(o=>o.classList.toggle('sel',o.dataset.id===powerPick.id));
+      $('#pwDetail').innerHTML=powerDetailHTML();
+      break;
+    case 'power-pick-lvl':
+      powerPick.level=+t.dataset.l;$('#pwDetail').innerHTML=powerDetailHTML();break;
+    case 'power-add':{
+      if(!powerPick.id){toast('Сначала выберите силу.',1);break}
+      c.cursedPowers.push({id:uid('pw'),powerId:powerPick.id,level:powerPick.level,manifestations:[]});
+      save();closeModal();renderSheet();toast('Кровь приняла новую силу.');
+      break;}
+    case 'power-lvl':{
+      const pw=c.cursedPowers.find(p=>p.id===t.dataset.id);
+      pw.level=clamp(pw.level+(+t.dataset.d),1,5);save();renderSheet();break;}
+    case 'power-del':
+      if(!armButton(t))return;
+      c.cursedPowers=c.cursedPowers.filter(p=>p.id!==t.dataset.id);
+      save();renderSheet();toast('Сила отринута — но не забыта.');
+      break;
+    case 'manif-add':addManif(t.dataset.id,t.parentElement.querySelector('input').value);break;
+    case 'manif-del':{
+      const pw=c.cursedPowers.find(p=>p.id===t.dataset.id);
+      pw.manifestations.splice(+t.dataset.i,1);save();renderSheet();break;}
+    /* снаряжение */
+    case 'equip-modal':openEquipModal();break;
+    case 'equip-create':{
+      const name=($('#eqName')?.value||'').trim();
+      if(!name){toast('Безымянное в котомку не кладут.',1);break}
+      const qty=clamp(Math.floor(+($('#eqQty')?.value||1))||1,1,99);
+      c.equipment.push({id:uid('eq'),name,qty,note:($('#eqNote')?.value||'').trim()});
+      save();closeModal();renderSheet();toast(`${name} — в котомке.`);
+      break;}
+    case 'eq-qty':{
+      const it=c.equipment.find(i=>i.id===t.dataset.id);
+      it.qty=clamp(it.qty+(+t.dataset.d),1,99);save();renderSheet();break;}
+    case 'eq-del':
+      c.equipment=c.equipment.filter(i=>i.id!==t.dataset.id);
+      save();renderSheet();break;
+    /* броски */
+    case 'roll':rollFromPanel();break;
+    case 'quick-roll':{
+      if(dice.rolling)break;
+      const type=t.dataset.type,id=t.dataset.id;
+      if(type==='qualities'){rollSel.quality=id;rollSel.skill=''}
+      else{rollSel.skill=id;rollSel.quality=PARTNER[id]||''}
+      syncRollSelects();rollFromPanel();break;}
+    /* кодекс */
+    case 'cf-cat':
+      codexUI.cat=t.dataset.cat;
+      $$('#catFilter .cf-btn').forEach(b=>b.classList.toggle('active',b.dataset.cat===codexUI.cat));
+      renderCodexList();break;
+    case 'codex-open':openCodexArticle(t.dataset.id);break;
+    /* опыт */
+    case 'xp-type':xpUI.type=t.dataset.type;renderXP();break;
+    case 'xp-filter':xpUI.filter=t.dataset.f;renderXP();break;
+    case 'xp-commit':commitXP();break;
+    case 'xp-del':{
+      const rec=state.log.find(r=>r.id===t.dataset.id);
+      if(!rec)break;
+      const owner=state.characters.find(x=>x.id===rec.charId);
+      if(owner)owner.xp-=rec.delta;
+      state.log=state.log.filter(r=>r.id!==rec.id);
+      save();renderXP();toast('Строка вычеркнута, опыт возвращён.');
+      break;}
+    /* файлы */
+    case 'export':{
+      const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);a.download='skitalec-letopis.json';a.click();
+      URL.revokeObjectURL(a.href);toast('Летопись скопирована в свиток.');
+      break;}
+    case 'import':$('#impFile').click();break;
+    case 'reset':
+      if(!armButton(t))return;
+      localStorage.removeItem(STORE_KEY);state=seed();dice={rolling:false,history:[],last:null};
+      render();toast('Летопись стёрта. Всё начинается заново.');
+      break;
+  }
+});
+
+/* изменения без перезагрузки страницы */
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.id==='charName'){const c=char();if(c){c.name=t.value||'Безымянный';save()}return}
+  if(t.id==='codexSearch'){codexUI.q=t.value;renderCodexList();return}
+  if(t.id==='xpAmount'){xpUI.amount=t.value;return}
+  if(t.id==='xpNote'){xpUI.note=t.value;return}
+  if(t.dataset.rollsel){
+    const k=t.dataset.rollsel;
+    rollSel[k]=(k==='bonus'||k==='threshold')?(parseInt(t.value)||0):t.value;
+    updatePoolPreview();
+  }
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeModal();return}
+  if(e.key!=='Enter')return;
+  const t=e.target;
+  if(t.id==='ncName'){e.preventDefault();createChar()}
+  else if(t.id==='specName'){e.preventDefault();addSpec()}
+  else if(t.id==='eqName'||t.id==='eqNote'||t.id==='eqQty'){e.preventDefault();document.querySelector('[data-act="equip-create"]')?.click()}
+  else if(t.classList&&t.classList.contains('manif-input')){e.preventDefault();addManif(t.dataset.powerid,t.value)}
+  else if(t.closest&&t.closest('.codex-row')){openCodexArticle(t.closest('.codex-row').dataset.id)}
+});
+document.addEventListener('change',e=>{
+  if(e.target.id==='impFile'&&e.target.files[0]){
+    const f=e.target.files[0],rd=new FileReader();
+    rd.onload=()=>{
+      try{
+        const d=JSON.parse(rd.result);
+        if(!d||!Array.isArray(d.characters))throw new Error('bad');
+        state=normalizeState(d);save();dice={rolling:false,history:[],last:null};
+        render();toast('Летопись восстановлена из свитка.');
+      }catch(err){toast('Свиток повреждён — летопись не принята.',1)}
+    };
+    rd.readAsText(f);e.target.value='';
+  }
+});
+
+/* ═══════════════ СТАРТ ═══════════════ */
+function renderTabs(){
+  $('#tabs').innerHTML=[
+    ['sheet','Лист','sword'],['codex','Кодекс','book'],['xp','Опыт','gem']
+  ].map(([v,n,i])=>`<button class="tab ${view===v?'active':''}" data-act="view" data-view="${v}">${icon(i,15)} ${n}</button>`).join('');
+}
+function render(){
+  renderTabs();
+  $$('.view').forEach(v=>v.hidden=true);
+  $('#view-'+view).hidden=false;
+  if(view==='sheet')renderSheet();
+  if(view==='codex')renderCodex();
+  if(view==='xp')renderXP();
+}
+state=loadState();
+render();
+</script>
+</body>
+</html>
