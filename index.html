@@ -1,133 +1,92 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-t="d">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Скиталец · Тёмные времена — настольный помощник</title>
-  
-  <!-- Подключаем шрифты Google -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
-  
-  <!-- Подключаем внешние стили -->
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Скиталец · Ожившие кошмары — летопись странника</title>
+<script>try{if(localStorage.getItem('skit_theme')==='l')document.documentElement.setAttribute('data-t','l')}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@500;600;700&family=Cormorant:ital,wght@0,500;0,600;1,500&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles-a.css">
+<link rel="stylesheet" href="styles-b.css">
+<link rel="stylesheet" href="styles-c.css">
+<style>.theme-btn{margin-left:2px}</style>
 </head>
 <body>
-
-<div class="wrap">
-  
-  <!-- ===== ШАПКА ===== -->
-  <header class="site-head">
-    <svg class="emblem" viewBox="0 0 64 64" aria-hidden="true">
-      <g fill="none" stroke="currentColor" stroke-width="1.4">
-        <path d="M32 3 57 32 32 61 7 32Z"/>
-        <path d="M32 17v29"/>
-        <path d="M23 27h18"/>
-      </g>
-      <path d="M32 10l4 7h-8z" fill="currentColor"/>
-      <circle cx="32" cy="49" r="2" fill="currentColor"/>
-    </svg>
-    <div>
-      <h1>Скиталец</h1>
-      <p class="sub">Тёмные времена · настольный помощник мастера и отряда</p>
+<div id="app">
+  <header class="masthead">
+    <div class="brand">
+      <svg class="sigil" width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3">
+        <circle cx="20" cy="20" r="13"/><path d="M20 7v-4M20 37v-4M33 20h4M3 20h4" stroke-linecap="round"/>
+        <path d="M20 12l2.6 5.4 6 .8-4.4 4.2 1.1 5.9-5.3-2.9-5.3 2.9 1.1-5.9-4.4-4.2 6-.8z" fill="currentColor" stroke="none" opacity=".85"/>
+      </svg>
+      <div>
+        <h1>Скиталец</h1>
+        <span class="sub">Ожившие кошмары · летопись странника</span>
+      </div>
     </div>
-    <button class="help-btn" id="helpBtn">?</button>
+    <div class="prof-line">
+      <span>Играет</span>
+      <select id="profSel" title="Профиль игрока — фильтр списка персонажей"></select>
+      <button class="ibtn" id="profBtn" data-act="prof-open" title="Игроки: добавить, переименовать, убрать" aria-label="Игроки"></button>
+      <button class="ibtn theme-btn" id="themeBtn" data-act="theme" title="Светлая и тёмная тема" aria-label="Сменить тему"></button>
+    </div>
   </header>
 
-  <div class="rule-orn"><span class="diam" data-diamond></span></div>
-
-  <!-- ===== НАВИГАЦИЯ ПО ВКЛАДКАМ ===== -->
-  <nav class="tabs" id="tabs">
-    <button class="tab active" data-tab="sheet">Лист персонажа</button>
-    <button class="tab" data-tab="ref">Справочник</button>
-    <button class="tab" data-tab="xp">Трекер опыта</button>
-  </nav>
-
-  <!-- ===== ВКЛАДКА 1: ЛИСТ ПЕРСОНАЖА ===== -->
-  <section id="panel-sheet" class="tab-panel">
-    <div class="char-manager" id="charManager">
-      <select id="charSelect" aria-label="Выбор персонажа"></select>
-      <button class="btn gold" id="charNew">+ Создать</button>
-      <button class="btn danger" id="charDelete">✕ Удалить</button>
-      <button class="btn" id="charExport">Экспорт JSON</button>
-      <button class="btn" id="charImport">Импорт JSON</button>
-      <input type="file" id="charImportFile" accept=".json" hidden>
-      <button class="btn danger" id="charReset">Сбросить всё</button>
+  <div class="gbar">
+    <div class="gsearch" id="gsearch">
+      <svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.4-4.4"/></svg>
+      <input type="text" id="gq" placeholder="Сквозной поиск: попадание, КУ, урон, провал, тварь…  ( / )" autocomplete="off">
+      <kbd>/</kbd>
+      <div class="gdrop" id="gdrop" hidden></div>
     </div>
-    <div id="sheetContainer"></div>
-  </section>
-
-  <!-- ===== ВКЛАДКА 2: СПРАВОЧНИК ===== -->
-  <section id="panel-ref" class="tab-panel hidden">
-    <div class="toolbar">
-      <div class="search-wrap">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <circle cx="10.5" cy="10.5" r="6"/>
-          <line x1="15" y1="15" x2="20" y2="20"/>
-        </svg>
-        <input type="text" id="refSearch" placeholder="Поиск по названию и описанию…">
-      </div>
-      <select id="refCat" aria-label="Фильтр по категориям">
-        <option value="all">Все категории</option>
-      </select>
-    </div>
-    <div id="refList"></div>
-  </section>
-
-  <!-- ===== ВКЛАДКА 3: ТРЕКЕР ОПЫТА ===== -->
-  <section id="panel-xp" class="tab-panel hidden">
-    <div class="toolbar">
-      <form id="charForm" style="display:flex;gap:.7rem;flex:1;flex-wrap:wrap;">
-        <input type="text" id="charNameInput" placeholder="Имя нового скитальца…" maxlength="40">
-        <button class="btn gold" type="submit">Принять в отряд</button>
-      </form>
-      <div>
-        <button class="btn" id="exportBtn">Экспорт JSON</button>
-        <button class="btn" id="importBtn">Импорт JSON</button>
-        <button class="btn danger" id="resetBtn">Сбросить данные</button>
-        <input type="file" id="importFile" accept=".json" hidden>
-      </div>
-    </div>
-
-    <h2 class="sec-title"><span class="diam" data-diamond></span>Отряд</h2>
-    <div id="charList" class="char-list"></div>
-
-    <h2 class="sec-title">
-      <span class="diam" data-diamond></span>Летопись опыта
-      <span class="side">
-        <span class="log-count" id="logCount"></span>
-        <select id="logCharFilter" aria-label="Фильтр летописи по персонажу"></select>
-      </span>
-    </h2>
-    <div id="logWrap"></div>
-  </section>
-
-  <!-- ===== ПОДВАЛ ===== -->
-  <footer>Все данные хранятся только в вашем браузере — мастер может спать спокойно.</footer>
-</div>
-
-<!-- ===== МОДАЛЬНОЕ ОКНО (общее) ===== -->
-<div class="overlay hidden" id="overlay">
-  <div class="modal" role="dialog">
-    <div class="modal-head">
-      <h2 id="modalTitle"></h2>
-      <button class="icon-btn" id="modalClose">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <line x1="6" y1="6" x2="18" y2="18"/>
-          <line x1="18" y1="6" x2="6" y2="18"/>
-        </svg>
-      </button>
-    </div>
-    <div class="modal-body" id="modalBody"></div>
   </div>
+
+  <nav class="tabs" id="tabs"></nav>
+
+  <section id="view-sheet" class="view"></section>
+  <section id="view-codex" class="view" hidden></section>
+  <section id="view-xp" class="view" hidden></section>
+  <section id="view-gm" class="view" hidden></section>
+  <section id="view-help" class="view" hidden></section>
+
+  <footer class="foot">
+    <span>Летопись хранится в этом браузере — берегите её, как берегут огонь.</span>
+    <span class="btns">
+      <button class="link-btn" data-act="export">Экспорт летописи</button>
+      <button class="link-btn" data-act="import">Импорт из JSON</button>
+      <button class="link-btn" data-act="reset" id="resetBtn">Стереть летопись</button>
+      <input type="file" id="impFile" accept=".json,application/json" hidden>
+    </span>
+  </footer>
 </div>
 
-<!-- ===== КОНТЕЙНЕР ДЛЯ ТОСТОВ ===== -->
-<div class="toasts" id="toasts"></div>
+<div id="modal-root"></div>
+<div id="toast-root"></div>
 
-<!-- ===== ПОДКЛЮЧАЕМ ВНЕШНИЙ СКРИПТ ===== -->
-<script src="app.js"></script>
-
+<script src="data-a.js"></script>
+<script src="data-b.js"></script>
+<script src="data-c.js"></script>
+<script src="data-d.js"></script>
+<script src="app-a.js"></script>
+<script src="app-b.js"></script>
+<script src="app-c.js"></script>
+<script src="app-d.js"></script>
+<script src="app-e.js"></script>
+<script>
+window.addEventListener('load',function(){
+  var need=['data-a','data-b','data-c','data-d','app-a','app-b','app-c','app-d','app-e'];
+  var got=window.__skit||[];
+  var miss=need.filter(function(n){return got.indexOf(n)<0});
+  if(!miss.length)return;
+  var m=document.createElement('div');
+  m.className='errbox';
+  m.innerHTML='<b>Не все файлы на месте.</b><br>Отсутствуют: <b>'+
+    miss.map(function(n){return n+'.js'}).join(', ')+
+    '</b><br>Все файлы должны лежать в одной папке с index.html (корень репозитория Dampir). Обновите страницу (Ctrl+F5).';
+  document.getElementById('app').appendChild(m);
+});
+</script>
 </body>
 </html>
