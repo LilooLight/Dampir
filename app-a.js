@@ -1,4 +1,4 @@
-/* ═ Скиталец · app-a.js — утилиты, хранилище, расчёты ═ */
+/* ═ Скиталец · app-a.js — утилиты, хранилище, расчёты, кошелёк опыта ═ */
 'use strict';
 window.__skit=(window.__skit||[]);window.__skit.push('app-a');
 
@@ -76,7 +76,7 @@ function defaultCharacter(name){
   cursedPowers:[],
   wounds:{total:emptyWounds(),head:emptyWounds(),torso:emptyWounds(),leftArm:emptyWounds(),rightArm:emptyWounds(),leftLeg:emptyWounds(),rightLeg:emptyWounds()},
   equipment:[],humanity:6,woundLimit:51,blood:0,stress:0,xp:0,vice:'',essence:'',mask:'',notes:'',
-  portrait:'',token:''};
+  portrait:'',token:'',creating:true};
  c.blood=maxBlood(c);return c;}
 
 function strToEq(s){
@@ -126,9 +126,11 @@ function normalizeCharacter(src){
  c.notes=String(src.notes||'').slice(0,2000);
  c.profileId=typeof src.profileId==='string'?src.profileId:'';
  c.pregenNote=String(src.pregenNote||'').slice(0,120);
- /* портрет до 512px (~400К символов base64), токен 128×128 (~120К) */
+ /* портрет до 512px, токен 128×128 */
  c.portrait=okImg(src.portrait)&&src.portrait.length<400000?src.portrait:'';
  c.token=okImg(src.token)&&src.token.length<120000?src.token:'';
+ /* старые сохранения создавались до режима создания — они уже «за созданием» */
+ c.creating=typeof src.creating==='boolean'?src.creating:false;
  recalcTotal(c);return c;}
 
 function normalizeLog(e){
@@ -177,7 +179,6 @@ function normalizeState(d){
  if(!profiles.length)profiles=[{id:'prof_table',name:'Общий стол'}];
  const pids=new Set(profiles.map(p=>p.id));
  const defP=profiles[0].id;
- /* локации */
  let locations=(Array.isArray(d.locations)?d.locations:[]).filter(l=>l&&typeof l==='object')
   .map(l=>({id:typeof l.id==='string'&&l.id?l.id:uid('loc'),
    name:String(l.name||'Локация').slice(0,60)||'Локация',note:String(l.note||'').slice(0,200)}));
@@ -206,6 +207,7 @@ function migrateLegacy(){
 function seed(){
  const prof={id:'prof_table',name:'Общий стол'};
  const c=defaultCharacter('Фрейя');c.profileId=prof.id;
+ c.creating=false;
  c.vice='wrath';c.essence='Защитник';c.mask='Бунтарь';
  Object.assign(c.qualities,{agility:1,accuracy:1,endurance:1,perception:1,intuition:1});
  Object.assign(c.skills,{athletics:1,vigilance:1,survival:1,stealth:1,fencing:1});
@@ -241,6 +243,21 @@ function save(){
 function char(){
  if(editingPregen){const p=state.pregens.find(x=>x.id===editingPregen);if(p)return p;editingPregen=null}
  return state.characters.find(c=>c.id===state.activeCharId);}
+
+/* ── кошелёк опыта: списание за повышения ── */
+function chargeXP(c,mult,newVal,label){
+ if(!c||c.creating)return true;
+ const cost=Math.max(1,Math.round(mult))*Math.max(1,newVal);
+ if(c.xp<cost){
+  toast('Не хватает опыта: нужно '+cost+' '+plural(cost,'очко','очка','очков')+' ('+esc(label)+' до '+newVal+'), доступно '+c.xp+'. Сказитель выдаст в конце сцены — вкладка «Опыт».',1);
+  return false;}
+ c.xp-=cost;
+ state.log.push({id:uid('xp'),charId:c.id,ts:Date.now(),type:'-',amount:cost,reason:label+' — до уровня '+newVal});
+ save();
+ toast('−'+cost+' XP: '+label+' до '+newVal+'. Осталось: '+c.xp+'.');
+ return true;}
+/* видовая сила — из начального списка порока, сторонняя — прочие */
+const powerMult=(c,powerId)=>(c.vice&&VICES[c.vice]&&VICES[c.vice].start.includes(powerId))?XP_MULT.powerKind[1]:XP_MULT.powerSide[1];
 
 /* ── тема ── */
 function themeIcon(){const b=$('#themeBtn');if(b)b.innerHTML=document.documentElement.getAttribute('data-t')==='l'?'☾':'☀'}
