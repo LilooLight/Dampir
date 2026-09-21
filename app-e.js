@@ -1,6 +1,12 @@
-/* ═ Скиталец · app-e.js — события, поиск, запуск ═ */
+/* ═ Скиталец · app-e.js — события, поиск, кошелёк опыта, запуск ═ */
 'use strict';
 window.__skit.push('app-e');
+
+/* цены развития из книги: множитель × приобретаемый уровень.
+   var, а не const — чтобы не спорить с возможными объявлениями в других файлах */
+var XP_MULT=window.XP_MULT||{
+ quality:['Качество',5],skill:['Навык / Знание',4],virtue:['Добродетель',2],
+ damnation:['Проклятье',5],powerKind:['Видовая сила',7],powerSide:['Сторонняя сила',8]};
 
 function renderTabs(){
  $('#tabs').innerHTML=[['sheet','Лист','sword'],['codex','Кодекс','book'],['xp','Опыт','gem'],['gm','Сказитель','eye'],['help','Помощь','info']]
@@ -23,9 +29,11 @@ function createChar(){
  c.profileId=state.activeProfileId;
  const vice=$('#ncVice')?.value||'';
  if(vice){c.vice=vice;applyViceStart(c,vice)}
+ c.xp+=40;
+ state.log.push({id:uid('xp'),charId:c.id,ts:Date.now(),type:'+',amount:40,reason:'Свободные пункты на создании персонажа'});
  state.characters.push(c);state.activeCharId=c.id;save();closeModal();
  if(view!=='sheet')switchView('sheet');else renderSheet();
- toast(name+' выходит на дорогу.');}
+ toast(name+' выходит на дорогу. В кошельке — 40 пунктов на создание.');}
 function addSpec(){
  const c=char(),name=($('#specName')?.value||'').trim(),skillId=$('#specSkill').value;
  if(!name){toast('Дайте грани имя — узкое и живое.',1);return}
@@ -121,6 +129,11 @@ document.addEventListener('click',e=>{
    else if(ty==='pregen'){if(state.pregens.some(p=>p.id===gid)){editingPregen=gid;switchView('sheet')}}
    break}
   case 'troll':renderToolOut(true);break;
+  /* завершение создания: дальше повышения — за опыт */
+  case 'create-done':{
+   if(!c)break;
+   c.creating=false;save();renderSheet();
+   toast('Создание завершено. Теперь повышения — за опыт: множитель × новый уровень.');break}
   /* портреты и токены */
   case 'portrait-open':openPortraitModal();break;
   case 'img-up-land':uploadPortrait();break;
@@ -216,7 +229,7 @@ document.addEventListener('click',e=>{
    openModal('Новый скиталец',
     '<div class="form-row"><label for="ncName">Имя</label><input type="text" id="ncName" maxlength="40" placeholder="Кто идёт сквозь тьму?"></div>'+
     '<div class="form-row"><label for="ncVice">Порок (для Проклятых)</label><select id="ncVice">'+vo+'</select></div>'+
-    '<p class="empty">Параметры начнутся с нуля, добродетели — с двух. Остальное допишет дорога: по 5 пунктов на каждый блок и 40 свободных — по правилам Книги первой.</p>'+
+    '<p class="empty">В кошельке появится 40 свободных пунктов: распределите их по правилам (по 5 на качества, навыки и знания; добродетели; силы), затем нажмите «Завершить создание». После этого повышения — за опыт.</p>'+
     '<div class="modal-actions"><button class="btn btn-primary" data-act="char-create">Выйти на дорогу</button></div>');
    $('#ncName').focus();break}
   case 'char-create':createChar();break;
@@ -244,15 +257,27 @@ document.addEventListener('click',e=>{
    if(state.activeProfileId===id)state.activeProfileId=rest[0].id;
    if(!state.characters.some(ch=>ch.id===state.activeCharId))state.activeCharId=state.characters[0].id;
    save();openProfModal();renderProfSel();break}
+  /* параметры: повышение — за опыт, понижение — бесплатно */
   case 'pip':{
    const g=t.dataset.group,id=t.dataset.id,v=+t.dataset.v,gd=GROUPS[g];
-   if(g==='virtues')c.virtues[id]=clamp(v,gd.min,gd.max);else c[g][id]=clamp(v,gd.min,gd.max);
+   const cur=g==='virtues'?c.virtues[id]:c[g][id];
+   const nv=clamp(v,gd.min,gd.max);
+   if(nv>cur){
+    const mult=g==='virtues'?XP_MULT.virtue[1]:(g==='qualities'?XP_MULT.quality[1]:XP_MULT.skill[1]);
+    if(!chargeXP(c,mult,nv,defName(g,id))){renderSheet();break}}
+   if(g==='virtues')c.virtues[id]=nv;else c[g][id]=nv;
    save();renderSheet();break}
   case 'stat':{
    const g=t.dataset.group,id=t.dataset.id,d=t.dataset.kind==='inc'?1:-1,gd=GROUPS[g];
-   if(g==='virtues')c.virtues[id]=clamp(c.virtues[id]+d,gd.min,gd.max);else c[g][id]=clamp(c[g][id]+d,gd.min,gd.max);
+   if(d>0){
+    const cur=g==='virtues'?c.virtues[id]:c[g][id];
+    const mult=g==='virtues'?XP_MULT.virtue[1]:(g==='qualities'?XP_MULT.quality[1]:XP_MULT.skill[1]);
+    if(!chargeXP(c,mult,cur+1,defName(g,id))){renderSheet();break}}
+   if(g==='virtues')c.virtues[id]=clamp(c.virtues[id]+d,gd.min,gd.max);
+   else c[g][id]=clamp(c[g][id]+d,gd.min,gd.max);
    save();renderSheet();break}
   case 'sun':
+   /* Праведность и Проклятье меняются через историю — бесплатно */
    c.humanity=clamp(10-(+t.dataset.i),0,10);
    c.blood=clamp(c.blood,0,maxBlood(c));
    save();renderSheet();break;
@@ -322,7 +347,11 @@ document.addEventListener('click',e=>{
    toast(pwUI.editing?'Путь переписан.':'Кровь приняла новую силу.');break}
   case 'power-lvl':{
    const pw=c.cursedPowers.find(p=>p.id===t.dataset.id);
-   pw.level=clamp(pw.level+(+t.dataset.d),1,5);save();renderSheet();break}
+   const d=+t.dataset.d;
+   if(d>0){
+    const mult=powerMult(c,pw.powerId);
+    if(!chargeXP(c,mult,pw.level+1,'Сила: '+POWERS[pw.powerId].name)){renderSheet();break}}
+   pw.level=clamp(pw.level+d,1,5);save();renderSheet();break}
   case 'power-del':
    if(!armButton(t))return;
    c.cursedPowers=c.cursedPowers.filter(p=>p.id!==t.dataset.id);
@@ -374,8 +403,9 @@ document.addEventListener('click',e=>{
    const gen=genPregen(pgKind==='cursed');
    const nm=($('#pgNameF')?.value||'').trim();if(nm)gen.name=nm;
    const role=($('#pgRole')?.value||'').trim();if(role)gen.pregenNote=role;
+   gen.xp+=40;
    state.pregens.push(gen);editingPregen=gen.id;save();closeModal();
-   switchView('sheet');toast('Преген «'+gen.name+'» готов — правьте и передавайте.');break}
+   switchView('sheet');toast('Преген «'+gen.name+'» готов: в кошельке 40 пунктов, режим создания открыт — правьте и передавайте.');break}
   case 'pg-edit':editingPregen=t.dataset.id;switchView('sheet');break;
   case 'pg-transfer':
    if(t.dataset.id)editingPregen=t.dataset.id;
@@ -388,9 +418,10 @@ document.addEventListener('click',e=>{
    cc.profileId=pid;cc.pregenNote='';
    state.pregens=state.pregens.filter(p=>p.id!==cc.id);
    state.characters.push(cc);state.activeCharId=cc.id;state.activeProfileId=pid;
+   if(cc.xp>0)state.log.push({id:uid('xp'),charId:cc.id,ts:Date.now(),type:'+',amount:cc.xp,reason:'Кошелёк прегена при передаче игроку'});
    editingPregen=null;save();closeModal();
    const pn=state.profiles.find(p=>p.id===pid);
-   toast('«'+cc.name+'» передан игроку «'+(pn?pn.name:'—')+'».');
+   toast('«'+cc.name+'» передан игроку «'+(pn?pn.name:'—')+'». Режим создания ещё открыт — игрок расставит очки сам и нажмёт «Завершить создание».');
    if(view!=='sheet')switchView('sheet');else renderSheet();break}
   case 'pg-del':{
    if(!armButton(t))return;
@@ -483,6 +514,7 @@ document.addEventListener('keydown',e=>{
   else if(t.id==='locNameIn'){e.preventDefault();document.querySelector('[data-act="loc-add"]')?.click()}
   else if(t.id==='locNameE'){e.preventDefault();document.querySelector('[data-act="loc-save"]')?.click()}
   else if(t.id==='packCount'){e.preventDefault();document.querySelector('[data-act="mob-pack-do"]')?.click()}
+  else if(t.id==='xpAmount'||t.id==='xpReason'){e.preventDefault();commitXP()}
   else if(t.closest&&t.closest('.codex-row')){openCodexArticle(t.closest('.codex-row').dataset.id)}
   return}
  if(inField(t))return;
