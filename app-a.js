@@ -1,6 +1,6 @@
 /* ═ Скиталец · app-a.js — утилиты, хранилище, расчёты ═ */
 'use strict';
-window.__skit.push('app-a');
+window.__skit=(window.__skit||[]);window.__skit.push('app-a');
 
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
@@ -75,7 +75,8 @@ function defaultCharacter(name){
   specializations:[],virtues:{conscience:2,composure:2,selfControl:2,courage:2},
   cursedPowers:[],
   wounds:{total:emptyWounds(),head:emptyWounds(),torso:emptyWounds(),leftArm:emptyWounds(),rightArm:emptyWounds(),leftLeg:emptyWounds(),rightLeg:emptyWounds()},
-  equipment:[],humanity:6,woundLimit:51,blood:0,stress:0,xp:0,vice:'',essence:'',mask:'',notes:''};
+  equipment:[],humanity:6,woundLimit:51,blood:0,stress:0,xp:0,vice:'',essence:'',mask:'',notes:'',
+  portrait:'',token:''};
  c.blood=maxBlood(c);return c;}
 
 function strToEq(s){
@@ -90,6 +91,7 @@ function strToEq(s){
 const eqToStr=it=>it.name+(it.qty>1?' ×'+it.qty:'')+(it.note?' — '+it.note:'');
 function baseRightSafe(c){return clamp(((c.virtues&&c.virtues.conscience)||2)+((c.virtues&&c.virtues.selfControl)||2)+2,1,10)}
 
+const okImg=v=>typeof v==='string'&&v.startsWith('data:image');
 function normalizeCharacter(src){
  src=src&&typeof src==='object'?src:{};
  const d=defaultCharacter(typeof src.name==='string'?src.name:undefined);
@@ -124,6 +126,9 @@ function normalizeCharacter(src){
  c.notes=String(src.notes||'').slice(0,2000);
  c.profileId=typeof src.profileId==='string'?src.profileId:'';
  c.pregenNote=String(src.pregenNote||'').slice(0,120);
+ /* портрет до 512px (~400К символов base64), токен 128×128 (~120К) */
+ c.portrait=okImg(src.portrait)&&src.portrait.length<400000?src.portrait:'';
+ c.token=okImg(src.token)&&src.token.length<120000?src.token:'';
  recalcTotal(c);return c;}
 
 function normalizeLog(e){
@@ -136,7 +141,7 @@ function normalizeLog(e){
   reason:String(e.reason||e.note||'').slice(0,120)};}
 
 function defaultMob(){
- return {id:uid('mob'),name:'Безымянная тварь',type:'monster',being:'',desc:'',tactics:'',loot:'',size:'medium',
+ return {id:uid('mob'),name:'Безымянная тварь',type:'monster',being:'',desc:'',tactics:'',loot:'',size:'medium',locId:'',
   quals:{strength:3,agility:2,accuracy:2,endurance:3,charisma:0,cunning:1,perception:2,intellect:0,intuition:2},
   skills:Object.assign(Object.fromEntries(SKILLS.map(s=>[s.id,0])),{fencing:2,athletics:2,vigilance:2}),
   woundLimit:80,attacks:[{id:uid('atk'),name:'Когти',pool:4,damage:'к10 — тяжёлые раны',notes:''}],abilities:[]};}
@@ -150,6 +155,7 @@ function normalizeMob(m){
  out.tactics=String(out.tactics||'').slice(0,600);
  out.loot=String(out.loot||'').slice(0,120);
  out.size=SIZES.some(s=>s.id===out.size)?out.size:'medium';
+ out.locId=typeof out.locId==='string'?out.locId:'';
  out.quals={...d.quals,...(m.quals||{})};
  out.skills={...d.skills,...(m.skills||{})};
  QUALITIES.forEach(q=>out.quals[q.id]=clamp(Math.round(+out.quals[q.id])||0,0,12));
@@ -171,15 +177,23 @@ function normalizeState(d){
  if(!profiles.length)profiles=[{id:'prof_table',name:'Общий стол'}];
  const pids=new Set(profiles.map(p=>p.id));
  const defP=profiles[0].id;
+ /* локации */
+ let locations=(Array.isArray(d.locations)?d.locations:[]).filter(l=>l&&typeof l==='object')
+  .map(l=>({id:typeof l.id==='string'&&l.id?l.id:uid('loc'),
+   name:String(l.name||'Локация').slice(0,60)||'Локация',note:String(l.note||'').slice(0,200)}));
+ const seen=new Set();
+ locations=locations.filter(l=>!seen.has(l.id)&&seen.add(l.id));
+ const lids=new Set(locations.map(l=>l.id));
  let characters=(d.characters||[]).map(c=>{const n=normalizeCharacter(c);if(!pids.has(n.profileId))n.profileId=defP;return n});
  if(!characters.length)characters=[normalizeCharacter({name:'Безымянный',profileId:defP})];
  const pregens=(d.pregens||[]).map(c=>{const n=normalizeCharacter(c);if(!pids.has(n.profileId))n.profileId=defP;return n});
  const bestiary=(d.bestiary||[]).map(normalizeMob);
+ bestiary.forEach(m=>{if(m.locId&&!lids.has(m.locId))m.locId=''});
  const ids=new Set(characters.map(c=>c.id));
  const activeProfile=pids.has(d.activeProfileId)?d.activeProfileId:profiles[0].id;
  const profChars=characters.filter(c=>c.profileId===activeProfile);
  const activeChar=ids.has(d.activeCharId)?d.activeCharId:(profChars[0]&&profChars[0].id)||characters[0].id;
- return {version:3,profiles,activeProfileId:activeProfile,characters,activeCharId:activeChar,pregens,bestiary,
+ return {version:3,profiles,activeProfileId:activeProfile,characters,activeCharId:activeChar,pregens,bestiary,locations,
   log:(d.log||[]).map(normalizeLog).filter(l=>l&&ids.has(l.charId))};}
 
 function migrateLegacy(){
@@ -205,7 +219,7 @@ function seed(){
   {id:uid('eq'),name:'Кожаный дублет',qty:1,note:''},
   {id:uid('eq'),name:'Фляга',qty:2,note:'на чёрный день'}];
  c.wounds.torso.light=1;c.xp=6;recalcTotal(c);
- return {version:3,profiles:[prof],activeProfileId:prof.id,characters:[c],activeCharId:c.id,pregens:[],bestiary:[],log:[
+ return {version:3,profiles:[prof],activeProfileId:prof.id,characters:[c],activeCharId:c.id,pregens:[],bestiary:[],locations:[],log:[
   {id:uid('xp'),charId:c.id,ts:Date.now()-2*864e5,type:'+',amount:6,reason:'За правду о колодце на перепутье'},
   {id:uid('xp'),charId:c.id,ts:Date.now()-864e5,type:'-',amount:2,reason:'Обучение у старого фехтовальщика'}]};}
 
@@ -221,7 +235,9 @@ function loadState(){
   if(!d||!Array.isArray(d.characters))return seed();
   return normalizeState(d);
  }catch(e){console.warn('Летопись повреждена',e);return seed()}}
-function save(){localStorage.setItem(STORE_KEY,JSON.stringify(state))}
+function save(){
+ try{localStorage.setItem(STORE_KEY,JSON.stringify(state))}
+ catch(e){toast('Память браузера переполнена — вероятно, портрет слишком велик. Уменьшите его или удалите лишние изображения.',1)}}
 function char(){
  if(editingPregen){const p=state.pregens.find(x=>x.id===editingPregen);if(p)return p;editingPregen=null}
  return state.characters.find(c=>c.id===state.activeCharId);}
