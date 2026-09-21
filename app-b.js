@@ -1,4 +1,4 @@
-/* ═ Скиталец · app-b.js — лист персонажа: отрисовка, броски, портреты ═ */
+/* ═ Скиталец · app-b.js — лист персонажа: отрисовка, броски, портреты, кошелёк опыта ═ */
 'use strict';
 window.__skit.push('app-b');
 
@@ -182,6 +182,23 @@ function asideHTML(c){
    '<textarea id="charNotes" rows="4" style="width:100%;resize:vertical" placeholder="внешность, привязанности, цели, шрамы души…">'+esc(c.notes)+'</textarea></div>'+
   '</aside>';}
 
+/* ── баннер создания и кошелёк опыта ── */
+function creationBannerHTML(c){
+ return '<div class="pregen-banner panel"><span class="pb-tag">Создание</span>'+
+  '<span style="flex:1;min-width:220px;font:italic 14px/1.5 Spectral,serif;color:var(--dim)">Распределите очки: по 5 на качества, навыки и знания (поднятие значения до 2 стоит двух очков), добродетели — из 6 очков, силы — из 5. Пока баннер виден, всё бесплатно.</span>'+
+  '<button class="btn btn-primary" data-act="create-done">Завершить создание</button></div>';}
+function xpWalletHTML(c){
+ const rows=[['Качество',5],['Навык / Знание',4],['Добродетель',2],['Проклятье',5],['Видовая сила',7],['Сторонняя сила',8]];
+ return '<div class="panel"><div class="xp-balance" style="margin:0 0 6px">'+
+  '<span class="xp-num" style="font-size:40px">'+c.xp+'</span>'+
+  '<span class="xp-cap">'+plural(c.xp,'очко','очка','очков')+' опыта доступно</span>'+
+  '<button class="btn btn-ghost" data-act="view" data-view="xp" style="margin-left:auto">летопись</button></div>'+
+  '<div class="mini-table">'+rows.map(r=>'<span><b>'+r[0]+'</b> · '+r[1]+' × ур.</span>').join('')+'</div>'+
+  (c.creating
+   ?'<p class="empty" style="margin:6px 0 0">Режим создания: повышения бесплатны, пока не нажато «Завершить создание».</p>'
+   :'<p class="empty" style="margin:6px 0 0">Повышение списывает множитель × новый уровень (Скрытность до 3 = 12). Понижение — бесплатно, на случай промаха.</p>')+
+  '</div>';}
+
 function personaHTML(c){
  const viceOpts=['<option value="">— род людской —</option>'].concat(Object.entries(VICES).map(([id,v])=>
   '<option value="'+id+'" '+(c.vice===id?'selected':'')+'>'+esc(v.name)+' · '+esc(v.being)+'</option>')).join('');
@@ -326,7 +343,8 @@ function abilitiesHTML(c){
   return '<span class="tag">'+esc(sk?sk.name:'—')+' · '+esc(sp.specializationName)+
    '<button class="ibtn" data-act="spec-del" data-id="'+sp.id+'">'+icon('x',10)+'</button></span>'}).join('')
   ||'<span class="empty">Граней мастерства пока нет — откроются с уровня 3 умения</span>';
- return '<div class="panel"><div class="sec-title"><h2>'+icon('sword',15)+' Качества</h2><span class="ln"></span><span class="note">'+GROUPS.qualities.note+'</span></div>'+
+ return xpWalletHTML(c)+
+  '<div class="panel"><div class="sec-title"><h2>'+icon('sword',15)+' Качества</h2><span class="ln"></span><span class="note">'+GROUPS.qualities.note+'</span></div>'+
   QUALITIES.map(d=>statRow('qualities',d,c.qualities[d.id])).join('')+'</div>'+
   '<div class="two-col"><div class="panel"><div class="sec-title"><h2>'+icon('sword',15)+' Навыки</h2><span class="ln"></span><span class="note">'+GROUPS.skills.note+'</span></div>'+
   SKILLS.map(d=>statRow('skills',d,c.skills[d.id])).join('')+'</div>'+
@@ -390,7 +408,9 @@ function pregenBannerHTML(c){
 function renderSheet(){
  const c=char();
  if(!c){$('#view-sheet').innerHTML='<p class="empty">Скитальцев нет.</p>';return}
- $('#view-sheet').innerHTML=(editingPregen?pregenBannerHTML(c):charStripHTML())+
+ const strip=editingPregen?pregenBannerHTML(c):charStripHTML();
+ $('#view-sheet').innerHTML=strip+
+  (c.creating?creationBannerHTML(c):'')+
   '<div class="sheet-grid">'+asideHTML(c)+'<div class="sheet-main">'+
   personaHTML(c)+rollPanelHTML()+abilitiesHTML(c)+powersHTML(c)+equipHTML(c)+'</div></div>';
  renderDiceField();updatePoolPreview();}
