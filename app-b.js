@@ -1,4 +1,4 @@
-/* ═ Скиталец · app-b.js — лист персонажа: отрисовка и броски ═ */
+/* ═ Скиталец · app-b.js — лист персонажа: отрисовка, броски, портреты ═ */
 'use strict';
 window.__skit.push('app-b');
 
@@ -40,11 +40,114 @@ function woundPanelHTML(c){
   '<div class="wp-thresh">пороги зоны: боль '+Math.floor(L*.1)+' · отключка '+Math.floor(L*.2)+' · смерть '+Math.floor(L*.4)+'</div>'+
   '<div class="wounds-reset"><button class="link-btn" data-act="wounds-reset">заживить все раны</button></div></div>';}
 
+/* ── портреты и токены ── */
+function pickImage(cb){
+ const inp=document.createElement('input');
+ inp.type='file';inp.accept='image/*';
+ inp.onchange=()=>{
+  const f=inp.files[0];if(!f)return;
+  if(!/^image\//.test(f.type)){toast('Это не изображение.',1);return}
+  if(f.size>8*1024*1024){toast('Файл больше 8 МБ — выберите поменьше.',1);return}
+  const rd=new FileReader();
+  rd.onload=()=>cb(String(rd.result));
+  rd.readAsDataURL(f);};
+ inp.click();}
+function shrinkImage(src,maxSide,square){
+ return new Promise(res=>{
+  const im=new Image();
+  im.onload=()=>{
+   let sw=im.naturalWidth,sh=im.naturalHeight,sx=0,sy=0;
+   if(square){const s=Math.min(sw,sh);sx=(sw-s)/2;sy=(sh-s)/2;sw=s;sh=s}
+   const k=Math.min(1,maxSide/Math.max(sw,sh));
+   const cv=document.createElement('canvas');
+   cv.width=Math.max(1,Math.round(sw*k));cv.height=Math.max(1,Math.round(sh*k));
+   cv.getContext('2d').drawImage(im,sx,sy,sw,sh,0,0,cv.width,cv.height);
+   res(cv.toDataURL(square?'image/png':'image/jpeg',.85));};
+  im.onerror=()=>toast('Изображение не читается.',1);
+  im.src=src;});}
+function uploadPortrait(){
+ const c=char();if(!c)return;
+ pickImage(async d=>{
+  c.portrait=await shrinkImage(d,512,false);
+  if(!c.token&&c.portrait)c.token=await shrinkImage(c.portrait,128,true);
+  save();closeModal();renderSheet();toast('Портрет на месте.');});}
+function uploadToken(){
+ const c=char();if(!c)return;
+ pickImage(async d=>{
+  c.token=await shrinkImage(d,128,true);
+  save();closeModal();renderSheet();toast('Токен вырезан.');});}
+function downloadDataURL(name,dataURL){
+ const a=document.createElement('a');a.href=dataURL;a.download=name;a.click();}
+let cropState=null;
+function openCropModal(){
+ const c=char();if(!c||!c.portrait){toast('Сначала загрузите портрет.',1);return}
+ const im=new Image();
+ im.onload=()=>{
+  const disp=240,k=im.naturalWidth/disp;
+  let sq=Math.min(im.naturalWidth,im.naturalHeight)/k;
+  let x=(disp-sq)/2,y=(disp-sq)/2,drag=null;
+  openModal('Токен из портрета',
+   '<p class="empty">Перетащите рамку — в круг обрежется то, что в ней.</p>'+
+   '<div id="cropBox" style="position:relative;width:'+disp+'px;max-width:100%;margin:0 auto;user-select:none">'+
+   '<img src="'+c.portrait+'" style="width:100%;display:block;pointer-events:none" alt="">'+
+   '<div id="cropSel" style="position:absolute;border:2px solid var(--gold);box-shadow:0 0 0 9999px rgba(0,0,0,.45);cursor:move;touch-action:none"></div></div>'+
+   '<div class="modal-actions"><button class="btn btn-primary" data-act="crop-done">Вырезать токен</button></div>');
+  const box=$('#cropBox'),sel=$('#cropSel');
+  const draw=()=>{sel.style.left=x+'px';sel.style.top=y+'px';sel.style.width=sq+'px';sel.style.height=sq+'px'};
+  draw();
+  const pos=e=>{const r=box.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top}};
+  sel.addEventListener('pointerdown',e=>{
+   sel.setPointerCapture(e.pointerId);
+   const p=pos(e);drag={ox:p.x-x,oy:p.y-y};e.preventDefault();});
+  sel.addEventListener('pointermove',e=>{
+   if(!drag)return;
+   const p=pos(e);
+   x=clamp(p.x-drag.ox,0,disp-sq);y=clamp(p.y-drag.oy,0,disp-sq);
+   draw();e.preventDefault();});
+  sel.addEventListener('pointerup',()=>drag=null);
+  cropState={c,k,getX:()=>x,getY:()=>y,getS:()=>sq};};
+ im.src=c.portrait;}
+function doCrop(){
+ if(!cropState)return;
+ const {c,k}=cropState;
+ const im=new Image();
+ im.onload=()=>{
+  const cv=document.createElement('canvas');cv.width=cv.height=128;
+  cv.getContext('2d').drawImage(im,cropState.getX()*k,cropState.getY()*k,cropState.getS()*k,cropState.getS()*k,0,0,128,128);
+  c.token=cv.toDataURL('image/png');
+  save();closeModal();renderSheet();toast('Токен вырезан — годен для виртуального стола.');};
+ im.src=c.portrait;}
+function openPortraitModal(){
+ const c=char();if(!c)return;
+ const body='<div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">'+
+  (c.portrait?'<img class="portrait" src="'+c.portrait+'" style="cursor:default" alt="портрет">':'<div class="portrait-ph" style="display:flex;align-items:center;justify-content:center;text-align:center">портрета ещё нет</div>')+
+  '<div style="display:flex;flex-direction:column;gap:8px;align-items:center">'+
+  (c.token?'<img class="tok" src="'+c.token+'" style="cursor:default" alt="токен">':'<div class="tok-ph" style="display:flex;align-items:center;justify-content:center">нет</div>')+
+  '<span class="cat-tag" style="margin:0">токен 1×1</span></div></div>'+
+  '<div class="modal-actions" style="justify-content:flex-start">'+
+  '<button class="btn" data-act="img-up-land">'+icon('plus',13)+' Портрет из файла</button>'+
+  (c.portrait?'<button class="btn" data-act="img-crop">Токен из портрета</button>':'')+
+  '<button class="btn" data-act="img-up-tok">'+icon('plus',13)+' Токен из файла</button>'+
+  (c.token?'<button class="btn" data-act="img-dl-tok">Скачать PNG</button>':'')+
+  '</div>'+
+  ((c.portrait||c.token)?'<div class="modal-actions" style="justify-content:flex-end">'+
+  (c.portrait?'<button class="btn btn-danger" data-act="img-del-land">Убрать портрет</button>':'')+
+  (c.token?'<button class="btn btn-danger" data-act="img-del-tok">Убрать токен</button>':'')+'</div>':'');
+ openModal('Портрет и токен — '+esc(c.name),body);}
+
 function asideHTML(c){
  const D=damnation(c),MB=maxBlood(c),R=resilience(c),L=c.woundLimit;
  const tier=STRESS_TIERS[Math.min(c.stress,10)]||'';
  return '<aside class="sheet-aside">'+
-  '<div class="panel name-plate"><input id="charName" value="'+esc(c.name)+'" maxlength="40" placeholder="Безымянный" aria-label="Имя скитальца"></div>'+
+  '<div class="panel"><div class="portrait-box">'+
+  (c.portrait?'<img class="portrait" src="'+c.portrait+'" data-act="portrait-open" title="Портрет и токен" alt="портрет">'
+   :'<button class="portrait-ph" data-act="portrait-open">+ портрет<br>и токен</button>')+
+  '<div style="display:flex;flex-direction:column;gap:8px;align-items:center">'+
+  (c.token?'<img class="tok" src="'+c.token+'" data-act="portrait-open" title="Портрет и токен" alt="токен">'
+   :'<button class="tok-ph" data-act="portrait-open">токен</button>')+
+  '</div></div>'+
+  '<input id="charName" value="'+esc(c.name)+'" maxlength="40" placeholder="Безымянный" aria-label="Имя скитальца" style="width:100%;background:transparent;border:none;border-bottom:1px solid transparent;font:600 24px \'Cormorant SC\',serif;color:var(--ink2);padding:2px 0 6px">'+
+  '</div>'+
   '<div class="panel">'+
    '<div class="counter"><span class="c-label">'+icon('eye',14)+' Человечность</span>'+sunsHTML(c)+'</div>'+
    '<div class="hum-note">Праведность <b>'+(10-D)+'</b> · Проклятье <b>'+D+'</b> · крови не больше <b>'+MB+'</b></div>'+
@@ -269,6 +372,7 @@ function charStripHTML(){
   '<button class="char-tab" data-act="import">'+icon('dl',14)+' Из JSON</button></div>';
  return '<div class="char-strip">'+chars.map(c=>
   '<button class="char-tab '+(c.id===state.activeCharId?'active':'')+'" data-act="char-select" data-id="'+c.id+'">'+
+  (c.token?'<img class="ct-tok" src="'+c.token+'" alt="">':'')+
   '<span>'+esc(c.name)+'</span><span class="ct-xp">'+icon('gem',11)+c.xp+'</span>'+
   (c.id===state.activeCharId?'<span class="ibtn ct-del" data-act="char-del" data-id="'+c.id+'" role="button">'+icon('x',11)+'</span>':'')+
   '</button>').join('')+
