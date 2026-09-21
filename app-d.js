@@ -72,13 +72,17 @@ const locOpen=new Set();
 function locToggle(id){
  if(locOpen.has(id))locOpen.delete(id);else locOpen.add(id);
  renderGM();}
+const locName=id=>{const l=state.locations.find(x=>x.id===id);return l?l.name:''};
 function mobRow(m){
- return '<div class="gm-row">'+
+ const locOpts=['<option value="" '+(!m.locId?'selected':'')+'>— без места —</option>']
+  .concat(state.locations.map(l=>'<option value="'+l.id+'" '+(m.locId===l.id?'selected':'')+'>'+esc(l.name)+'</option>')).join('');
+ return '<div class="gm-row" style="flex-wrap:wrap;row-gap:4px">'+
   '<span class="tbadge '+esc(m.type)+'">'+(({monster:'Чудовище',enemy:'Враг',npc:'NPC'})[m.type]||'NPC')+'</span>'+
-  '<b>'+esc(m.name)+'</b>'+
+  '<b style="min-width:0;max-width:38%;overflow:hidden;text-overflow:ellipsis">'+esc(m.name)+'</b>'+
   '<span class="gm-meta">КУ '+mobKU(m)+' · раны '+m.woundLimit+' · '+esc(m.attacks[0]?m.attacks[0].name:'без атак')+'</span>'+
+  '<select data-mobsel="'+m.id+'" title="Где обитает — можно сменить прямо здесь" style="flex:none;max-width:170px;font-size:12.5px;padding:3px 6px">'+locOpts+'</select>'+
   '<button class="ibtn" data-act="mob-open" data-id="'+m.id+'" title="Карточка">'+icon('eye',13)+'</button>'+
-  '<button class="ibtn" data-act="mob-dup" data-id="'+m.id+'" title="Дублировать">'+icon('plus',13)+'</button>'+
+  '<button class="ibtn" data-act="mob-pack" data-id="'+m.id+'" title="Создать копии: стая волков, деревенский сход…">'+icon('plus',13)+'</button>'+
   '<button class="ibtn" data-act="mob-del" data-id="'+m.id+'" title="Удалить">'+icon('trash',12)+'</button></div>';}
 function locHead(loc,count){
  const open=locOpen.has(loc.id);
@@ -92,7 +96,7 @@ function locHead(loc,count){
   '</div>';}
 function locBody(loc,mobs){
  const note=loc.note?'<p class="empty" style="padding:2px 0 6px">'+esc(loc.note)+'</p>':'';
- return '<div class="loc-body">'+note+(mobs.length?mobs.map(mobRow).join(''):'<p class="empty">Пока никого. В карточке твари выберите эту локацию.</p>')+'</div>';}
+ return '<div class="loc-body">'+note+(mobs.length?mobs.map(mobRow).join(''):'<p class="empty">Пока никого. Выберите эту локацию в строке твари или в её карточке.</p>')+'</div>';}
 function locsPanel(){
  const mobs=state.bestiary;
  const addRow='<div class="locs-add">'+
@@ -129,6 +133,17 @@ function openLocEditModal(id){
  $('#locNameE').focus();}
 
 /* ── твари ── */
+function openPackModal(id){
+ const src=state.bestiary.find(m=>m.id===id);if(!src)return;
+ const locOpts=['<option value="">— как у оригинала ('+(src.locId?esc(locName(src.locId)):'без места')+') —</option>']
+  .concat(state.locations.map(l=>'<option value="'+l.id+'">'+esc(l.name)+'</option>')).join('');
+ openModal('Стая — '+esc(src.name),
+  '<div class="form-row"><label for="packCount">Сколько копий создать</label>'+
+  '<input type="number" id="packCount" min="1" max="20" value="3"></div>'+
+  '<div class="form-row"><label for="packLoc">Куда поселить копии</label>'+
+  '<select id="packLoc">'+locOpts+'</select></div>'+
+  '<p class="empty">Копии получат имена «'+esc(src.name)+' 2», «'+esc(src.name)+' 3»… — со всеми атаками, умениями, повадками и пределом ран оригинала. Годится и для NPC: деревенский сход, дружина, нищие у церкви.</p>'+
+  '<div class="modal-actions"><button class="btn btn-primary" data-act="mob-pack-do" data-id="'+src.id+'">Размножить</button></div>');}
 function setMobField(path,val){
  const d=mobUI.draft;
  if(path.startsWith('q.'))d.quals[path.slice(2)]=clamp(parseInt(val)||0,0,12);
@@ -245,7 +260,7 @@ function importAdd(){
  pendingImport.locations.forEach(l=>{
   const ex=state.locations.find(x=>x.id===l.id||x.name===l.name);
   if(ex)locMap[l.id]=ex.id;
-  else{const nl={id:l.id===state.locations.some(x=>x.id===l.id)?uid('loc'):l.id,name:l.name,note:l.note};
+  else{const nl={id:state.locations.some(x=>x.id===l.id)?uid('loc'):l.id,name:l.name,note:l.note};
    state.locations.push(nl);locMap[l.id]=nl.id;}});
  pendingImport.bestiary.forEach(m=>{m.id=uid('mob');if(m.locId&&locMap[m.locId])m.locId=locMap[m.locId];else m.locId='';state.bestiary.push(m)});
  pendingImport.chars.forEach(c=>{
