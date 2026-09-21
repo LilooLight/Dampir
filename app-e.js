@@ -45,13 +45,19 @@ function buildIndex(){
  state.locations.forEach(l=>ix.push({type:'loc',id:l.id,title:l.name,meta:'локация',hay:norm(l.name+' '+l.note)}));
  state.bestiary.forEach(m=>{
   const loc=state.locations.find(l=>l.id===m.locId);
-  ix.push({type:'mob',id:m.id,title:m.name,meta:(({monster:'чудовище',enemy:'враг',npc:'NPC'})[m.type]||'тварь')+(loc?' · '+loc.name:''),
-   hay:norm(m.name+' '+m.being+' '+m.desc+' '+m.tactics+' '+m.abilities.join(' ')+' '+m.attacks.map(a=>a.name).join(' ')+' '+(loc?loc.name:'')))});});
+  ix.push({
+   type:'mob',id:m.id,title:m.name,
+   meta:(({monster:'чудовище',enemy:'враг',npc:'NPC'})[m.type]||'тварь')+(loc?' · '+loc.name:''),
+   hay:norm(m.name+' '+m.being+' '+m.desc+' '+m.tactics+' '+m.abilities.join(' ')+' '+m.attacks.map(a=>a.name).join(' ')+' '+(loc?loc.name:''))
+  });
+ });
  const pn=id=>{const p=state.profiles.find(x=>x.id===id);return p?p.name:'—'};
  state.characters.forEach(c=>ix.push({type:'char',id:c.id,title:c.name,meta:pn(c.profileId),hay:norm(c.name+' '+c.notes+' '+(VICES[c.vice]?VICES[c.vice].name+' '+VICES[c.vice].being:'')+' '+c.essence+' '+c.mask)}));
  state.pregens.forEach(c=>ix.push({type:'pregen',id:c.id,title:c.name,meta:c.pregenNote||'преген',hay:norm(c.name+' '+c.pregenNote+' '+(VICES[c.vice]?VICES[c.vice].being:''))}));
- HELP.forEach(s=>{const hay=norm(s.title+' '+(s.items?s.items.map(i=>i[0]+' '+i[1]).join(' '):'')+(s.keys?s.keys.map(k=>k[0]+' '+k[1]).join(' '):''));
-  ix.push({type:'help',id:s.id,title:s.title,meta:'справка',hay})});
+ HELP.forEach(s=>{
+  const hay=norm(s.title+' '+(s.items?s.items.map(i=>i[0]+' '+i[1]).join(' '):'')+(s.keys?s.keys.map(k=>k[0]+' '+k[1]).join(' '):''));
+  ix.push({type:'help',id:s.id,title:s.title,meta:'справка',hay});
+ });
  return ix;}
 function runSearch(qraw){
  const q=norm(String(qraw||'').trim()),res=[];
