@@ -159,6 +159,57 @@ document.addEventListener('click',e=>{
    state.bestiary.forEach(m=>{if(m.locId===id)m.locId=''});
    locOpen.delete(id);
    save();renderGM();toast('Локация стёрта — её жители остались в «Без места».');break}
+  /* твари: стая и дубли */
+  case 'mob-pack':openPackModal(t.dataset.id);break;
+  case 'mob-pack-do':{
+   const src=state.bestiary.find(m=>m.id===t.dataset.id);if(!src)break;
+   const cnt=clamp(Math.floor(+($('#packCount')?.value||1))||1,1,20);
+   const locV=$('#packLoc')?$('#packLoc').value:'';
+   for(let i=2;i<=cnt+1;i++){
+    const cp=JSON.parse(JSON.stringify(src));
+    cp.id=uid('mob');
+    cp.name=(src.name+' '+i).slice(0,60);
+    cp.attacks=cp.attacks.map(a=>({...a,id:uid('atk')}));
+    cp.locId=locV!==''?locV:(src.locId||'');
+    state.bestiary.push(cp);}
+   locOpen.add(src.locId||'__none');
+   save();closeModal();renderGM();
+   toast('Стая готова: '+cnt+' '+plural(cnt,'копия','копии','копий')+' «'+src.name+'» разбужены.');break}
+  case 'mob-dup':{
+   const src=state.bestiary.find(m=>m.id===t.dataset.id);if(!src)break;
+   const copy=JSON.parse(JSON.stringify(src));
+   copy.id=uid('mob');copy.name=src.name+' (копия)';
+   copy.attacks=copy.attacks.map(a=>({...a,id:uid('atk')}));
+   state.bestiary.push(copy);save();renderGM();
+   toast('Тварь размножилась — как они это любят.');break}
+  case 'mob-del':
+   if(!armButton(t))return;
+   state.bestiary=state.bestiary.filter(m=>m.id!==t.dataset.id);
+   if(mobUI&&mobUI.draft.id===t.dataset.id)closeModal();
+   save();renderGM();toast('Тварь изгнана из кодекса.');break;
+  case 'mob-save':{
+   if(!mobUI)break;
+   const dft=mobUI.draft;
+   if(!String(dft.name||'').trim()){toast('У твари должно быть имя.',1);break}
+   const m=normalizeMob(dft);
+   if(mobUI.isNew)state.bestiary.push(m);
+   else{const i=state.bestiary.findIndex(x=>x.id===m.id);if(i>=0)state.bestiary[i]=m;else state.bestiary.push(m)}
+   save();closeModal();if(view==='gm')renderGM();
+   toast('«'+m.name+'» — в кодексе тварей.');break}
+  case 'mob-cancel':closeModal();break;
+  case 'mob-atk-add':
+   mobUI.draft.attacks.push({id:uid('atk'),name:'Атака',pool:3,damage:'к10',notes:''});
+   renderMobEditor();break;
+  case 'mob-atk-del':mobUI.draft.attacks.splice(+t.dataset.i,1);renderMobEditor();break;
+  case 'mob-atk-roll':{
+   const a=mobUI.draft.attacks[+t.dataset.i];if(!a)break;
+   const n=clamp(a.pool,1,20),d=Array.from({length:n},r10);
+   let s=0;d.forEach(x=>{if(x===10)s+=2;else if(x>=6)s++});
+   $('#mobRoll').innerHTML='«'+esc(a.name)+'»: '+d.join(' · ')+' → <b>'+s+'</b> '+plural(s,'успех','успеха','успехов')+' (сложность 6) против КУ цели.';break}
+  case 'mob-abl-add':{
+   const v=($('#ablIn')?.value||'').trim();if(!v)break;
+   mobUI.draft.abilities.push(v);renderMobEditor();break}
+  case 'mob-abl-del':mobUI.draft.abilities.splice(+t.dataset.i,1);renderMobEditor();break;
   /* персонажи */
   case 'char-modal':{
    const vo=['<option value="">— род людской (смертный) —</option>'].concat(Object.entries(VICES).map(([id,v])=>'<option value="'+id+'">'+esc(v.name)+' · '+esc(v.being)+'</option>')).join('');
@@ -352,41 +403,6 @@ document.addEventListener('click',e=>{
   case 'pg-done':editingPregen=null;switchView('gm');break;
   case 'mob-new':openMobModal(null);break;
   case 'mob-open':openMobModal(t.dataset.id);break;
-  case 'mob-dup':{
-   const src=state.bestiary.find(m=>m.id===t.dataset.id);if(!src)break;
-   const copy=JSON.parse(JSON.stringify(src));
-   copy.id=uid('mob');copy.name=src.name+' (копия)';
-   copy.attacks=copy.attacks.map(a=>({...a,id:uid('atk')}));
-   state.bestiary.push(copy);save();renderGM();
-   toast('Тварь размножилась — как они это любят.');break}
-  case 'mob-del':
-   if(!armButton(t))return;
-   state.bestiary=state.bestiary.filter(m=>m.id!==t.dataset.id);
-   if(mobUI&&mobUI.draft.id===t.dataset.id)closeModal();
-   save();renderGM();toast('Тварь изгнана из кодекса.');break;
-  case 'mob-save':{
-   if(!mobUI)break;
-   const dft=mobUI.draft;
-   if(!String(dft.name||'').trim()){toast('У твари должно быть имя.',1);break}
-   const m=normalizeMob(dft);
-   if(mobUI.isNew)state.bestiary.push(m);
-   else{const i=state.bestiary.findIndex(x=>x.id===m.id);if(i>=0)state.bestiary[i]=m;else state.bestiary.push(m)}
-   save();closeModal();if(view==='gm')renderGM();
-   toast('«'+m.name+'» — в кодексе тварей.');break}
-  case 'mob-cancel':closeModal();break;
-  case 'mob-atk-add':
-   mobUI.draft.attacks.push({id:uid('atk'),name:'Атака',pool:3,damage:'к10',notes:''});
-   renderMobEditor();break;
-  case 'mob-atk-del':mobUI.draft.attacks.splice(+t.dataset.i,1);renderMobEditor();break;
-  case 'mob-atk-roll':{
-   const a=mobUI.draft.attacks[+t.dataset.i];if(!a)break;
-   const n=clamp(a.pool,1,20),d=Array.from({length:n},r10);
-   let s=0;d.forEach(x=>{if(x===10)s+=2;else if(x>=6)s++});
-   $('#mobRoll').innerHTML='«'+esc(a.name)+'»: '+d.join(' · ')+' → <b>'+s+'</b> '+plural(s,'успех','успеха','успехов')+' (сложность 6) против КУ цели.';break}
-  case 'mob-abl-add':{
-   const v=($('#ablIn')?.value||'').trim();if(!v)break;
-   mobUI.draft.abilities.push(v);renderMobEditor();break}
-  case 'mob-abl-del':mobUI.draft.abilities.splice(+t.dataset.i,1);renderMobEditor();break;
   case 'imp-replace':importReplace();break;
   case 'imp-add':importAdd();break;
   case 'export':doExportAll();break;
@@ -428,6 +444,10 @@ document.addEventListener('input',e=>{
 document.addEventListener('change',e=>{
  const t=e.target;
  if(t.id==='profSel'){switchProfile(t.value);return}
+ if(t.dataset&&t.dataset.mobsel){
+  const m=state.bestiary.find(x=>x.id===t.dataset.mobsel);
+  if(m){m.locId=t.value;save();renderGM()}
+  return}
  if(t.dataset&&t.dataset.persona){
   const c=char();if(!c)return;
   const k=t.dataset.persona;
@@ -462,6 +482,7 @@ document.addEventListener('keydown',e=>{
   else if(t.id==='ablIn'){e.preventDefault();document.querySelector('[data-act="mob-abl-add"]')?.click()}
   else if(t.id==='locNameIn'){e.preventDefault();document.querySelector('[data-act="loc-add"]')?.click()}
   else if(t.id==='locNameE'){e.preventDefault();document.querySelector('[data-act="loc-save"]')?.click()}
+  else if(t.id==='packCount'){e.preventDefault();document.querySelector('[data-act="mob-pack-do"]')?.click()}
   else if(t.closest&&t.closest('.codex-row')){openCodexArticle(t.closest('.codex-row').dataset.id)}
   return}
  if(inField(t))return;
