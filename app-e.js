@@ -35,14 +35,18 @@ function addSpec(){
  save();renderSheet();}
 
 /* ── сквозной поиск ── */
-const GCHIPS=['Попадание','КУ','Урон','Инициатива','Сложность','Провал','Предел ран','Стресс','Чёрная кровь','Волколак','Преген'];
+const GCHIPS=['Попадание','КУ','Урон','Сложность','Провал','Предел ран','Стресс','Волколак','Локация','Преген'];
 function buildIndex(){
  const ix=[];
  CODEX.forEach((a,i)=>ix.push({type:'codex',id:String(i),title:a.title,meta:catName(a.cat),hay:norm(a.title+' '+a.summary+' '+a.body.join(' '))}));
  TOOLS.forEach(t=>ix.push({type:'tool',id:t.id,title:t.title,meta:'формула под рукой',hay:norm(t.title+' '+t.keys)}));
  Object.entries(POWERS).forEach(([id,p])=>ix.push({type:'power',id,title:p.name,meta:'проклятая сила',hay:norm(p.name+' '+p.flavor+' '+p.manif.map(m=>m[1]+' '+m[2]).join(' '))}));
  Object.entries(VICES).forEach(([id,v])=>ix.push({type:'vice',id,title:v.name+' · '+v.being,meta:'порок',hay:norm(v.name+' '+v.being+' '+v.adv+' '+v.dis)}));
- state.bestiary.forEach(m=>ix.push({type:'mob',id:m.id,title:m.name,meta:(({monster:'чудовище',enemy:'враг',npc:'NPC'})[m.type]||'тварь'),hay:norm(m.name+' '+m.being+' '+m.desc+' '+m.tactics+' '+m.abilities.join(' ')+' '+m.attacks.map(a=>a.name).join(' '))}));
+ state.locations.forEach(l=>ix.push({type:'loc',id:l.id,title:l.name,meta:'локация',hay:norm(l.name+' '+l.note)}));
+ state.bestiary.forEach(m=>{
+  const loc=state.locations.find(l=>l.id===m.locId);
+  ix.push({type:'mob',id:m.id,title:m.name,meta:(({monster:'чудовище',enemy:'враг',npc:'NPC'})[m.type]||'тварь')+(loc?' · '+loc.name:''),
+   hay:norm(m.name+' '+m.being+' '+m.desc+' '+m.tactics+' '+m.abilities.join(' ')+' '+m.attacks.map(a=>a.name).join(' ')+' '+(loc?loc.name:'')))});});
  const pn=id=>{const p=state.profiles.find(x=>x.id===id);return p?p.name:'—'};
  state.characters.forEach(c=>ix.push({type:'char',id:c.id,title:c.name,meta:pn(c.profileId),hay:norm(c.name+' '+c.notes+' '+(VICES[c.vice]?VICES[c.vice].name+' '+VICES[c.vice].being:'')+' '+c.essence+' '+c.mask)}));
  state.pregens.forEach(c=>ix.push({type:'pregen',id:c.id,title:c.name,meta:c.pregenNote||'преген',hay:norm(c.name+' '+c.pregenNote+' '+(VICES[c.vice]?VICES[c.vice].being:''))}));
@@ -63,7 +67,8 @@ function renderGDrop(res,q){
  const d=$('#gdrop');if(!d)return;
  if(!q){d.innerHTML='<div class="g-hint">'+GCHIPS.map(c=>'<span class="g-chip" data-act="chip" data-q="'+esc(c)+'">'+c+'</span>').join('')+'</div>';d.hidden=false;return}
  const groups={};res.forEach(r=>{(groups[r.type]=groups[r.type]||[]).push(r)});
- const order=[['tool','Инструменты','die'],['codex','Кодекс','book'],['power','Проклятые силы','drop'],['vice','Пороки','flame'],['mob','Твари и NPC','flame'],['char','Персонажи','heart'],['pregen','Прегены','hourglass'],['help','Справка','info']];
+ const order=[['tool','Инструменты','die'],['codex','Кодекс','book'],['power','Проклятые силы','drop'],['vice','Пороки','flame'],
+  ['loc','Локации','hourglass'],['mob','Твари и NPC','flame'],['char','Персонажи','heart'],['pregen','Прегены','hourglass'],['help','Справка','info']];
  let html='',total=0;
  order.forEach(([type,label,ic])=>{
   const arr=groups[type];if(!arr)return;
@@ -97,6 +102,9 @@ document.addEventListener('click',e=>{
      '<p><b style="color:var(--ink2)">Достоинство.</b> '+esc(v.adv)+'</p>'+
      '<p><b style="color:var(--ink2)">Недостаток.</b> '+esc(v.dis)+'</p>'+
      '<p><b style="color:var(--ink2)">Начальные силы.</b> '+v.start.map(id=>esc(POWERS[id].name)).join(', ')+'.</p>');}
+   else if(ty==='loc'){
+    locOpen.add(gid);
+    if(view!=='gm')switchView('gm');else renderGM();}
    else if(ty==='mob')openMobModal(gid);
    else if(ty==='help'){switchView('help');setTimeout(()=>{const el=$('#help-'+gid);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})},80)}
    else if(ty==='char'){
@@ -107,6 +115,45 @@ document.addEventListener('click',e=>{
    else if(ty==='pregen'){if(state.pregens.some(p=>p.id===gid)){editingPregen=gid;switchView('sheet')}}
    break}
   case 'troll':renderToolOut(true);break;
+  /* портреты и токены */
+  case 'portrait-open':openPortraitModal();break;
+  case 'img-up-land':uploadPortrait();break;
+  case 'img-up-tok':uploadToken();break;
+  case 'img-crop':openCropModal();break;
+  case 'crop-done':doCrop();break;
+  case 'img-dl-tok':{
+   const cc=char();if(cc&&cc.token)downloadDataURL('token-'+cc.name.replace(/[^\wа-яёА-ЯЁ-]+/g,'-')+'.png',cc.token);break}
+  case 'img-del-land':{
+   const cc=char();if(!cc)break;
+   if(!armButton(t))break;
+   cc.portrait='';save();closeModal();renderSheet();toast('Портрет убран.');break}
+  case 'img-del-tok':{
+   const cc=char();if(!cc)break;
+   if(!armButton(t))break;
+   cc.token='';save();closeModal();renderSheet();toast('Токен убран.');break}
+  /* локации */
+  case 'loc-toggle':locToggle(t.dataset.id);break;
+  case 'loc-add':{
+   const nm=($('#locNameIn')?.value||'').trim();
+   if(!nm){toast('Дайте месту имя.',1);break}
+   const loc={id:uid('loc'),name:nm.slice(0,60),note:''};
+   state.locations.push(loc);locOpen.add(loc.id);save();renderGM();
+   toast('Локация «'+loc.name+'» отмечена на карте.');break}
+  case 'loc-edit':openLocEditModal(t.dataset.id);break;
+  case 'loc-save':{
+   const loc=state.locations.find(l=>l.id===t.dataset.id);
+   if(!loc)break;
+   loc.name=($('#locNameE').value||'').trim().slice(0,60)||loc.name;
+   loc.note=($('#locNoteE').value||'').slice(0,200);
+   save();closeModal();renderGM();toast('Локация обновлена.');break}
+  case 'loc-del':{
+   if(!armButton(t))break;
+   const id=t.dataset.id;
+   state.locations=state.locations.filter(l=>l.id!==id);
+   state.bestiary.forEach(m=>{if(m.locId===id)m.locId=''});
+   locOpen.delete(id);
+   save();renderGM();toast('Локация стёрта — её жители остались в «Без места».');break}
+  /* персонажи */
   case 'char-modal':{
    const vo=['<option value="">— род людской (смертный) —</option>'].concat(Object.entries(VICES).map(([id,v])=>'<option value="'+id+'">'+esc(v.name)+' · '+esc(v.being)+'</option>')).join('');
    openModal('Новый скиталец',
@@ -341,7 +388,7 @@ document.addEventListener('click',e=>{
   case 'reset':
    if(!armButton(t))return;
    localStorage.removeItem(STORE_KEY);state=seed();
-   dice={rolling:false,last:null,history:[]};selectedPart='torso';editingPregen=null;
+   dice={rolling:false,last:null,history:[]};selectedPart='torso';editingPregen=null;locOpen.clear();
    render();toast('Летопись стёрта. Всё начинается заново.');break;
  }});
 
@@ -407,6 +454,8 @@ document.addEventListener('keydown',e=>{
   else if(t.id==='specName'){e.preventDefault();addSpec()}
   else if(t.id==='eqName'||t.id==='eqNote'||t.id==='eqQty'){e.preventDefault();document.querySelector('[data-act="equip-create"]')?.click()}
   else if(t.id==='ablIn'){e.preventDefault();document.querySelector('[data-act="mob-abl-add"]')?.click()}
+  else if(t.id==='locNameIn'){e.preventDefault();document.querySelector('[data-act="loc-add"]')?.click()}
+  else if(t.id==='locNameE'){e.preventDefault();document.querySelector('[data-act="loc-save"]')?.click()}
   else if(t.closest&&t.closest('.codex-row')){openCodexArticle(t.closest('.codex-row').dataset.id)}
   return}
  if(inField(t))return;
