@@ -1,4 +1,4 @@
-/* ═ Скиталец · styles-c.css — модалки, кодекс, инструменты ═ */
+/* ═ Скиталец · styles-c.css — модалки, кодекс, инструменты, портреты, локации ═ */
 .mb{position:fixed;inset:0;background:rgba(5,4,2,.74);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;animation:fadeIn .18s}
 html[data-t="l"] .mb{background:rgba(60,48,30,.45)}
 @keyframes fadeIn{from{opacity:0}}
@@ -79,4 +79,30 @@ html[data-t="l"] .modal{box-shadow:0 30px 80px rgba(90,70,40,.35)}
 .derived{font:600 17px 'Cormorant SC',serif;color:var(--gold)}
 .errbox{margin:30px auto;max-width:640px;padding:16px 20px;border:1px solid var(--blood);background:var(--panel);color:var(--ink);font:15px/1.6 Spectral,serif}
 .errbox b{color:var(--blood)}
+
+/* ── портреты и токены ── */
+.portrait-box{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
+.portrait{width:100%;max-width:264px;aspect-ratio:3/4;object-fit:cover;cursor:pointer;border:1px solid var(--line2);display:block}
+.portrait-ph{width:100%;max-width:264px;aspect-ratio:3/4;border:1px dashed var(--line2);background:var(--bg2);color:var(--faint);font:italic 14px/1.6 Spectral,serif;cursor:pointer}
+.portrait-ph:hover{color:var(--gold);border-color:var(--gsoft)}
+.tok{width:56px;height:56px;object-fit:cover;border-radius:50%;border:2px solid var(--gsoft);cursor:pointer;display:block;flex:none}
+.tok-ph{width:56px;height:56px;border-radius:50%;border:1px dashed var(--line2);color:var(--faint);font:600 10px 'Cormorant SC',serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;flex:none;background:var(--bg2)}
+.tok-ph:hover{color:var(--gold);border-color:var(--gsoft)}
+.ct-tok{width:20px;height:20px;border-radius:50%;object-fit:cover;flex:none;border:1px solid var(--line2)}
+
+/* ── локации (аккордеоны кабинета) ── */
+.loc{border-bottom:1px solid var(--line)}
+.loc-head{display:flex;align-items:center;gap:9px;padding:10px 4px;cursor:pointer}
+.loc-head:hover{background:rgba(195,155,74,.05)}
+.loc-chev{color:var(--gsoft);transition:transform .15s;flex:none}
+.loc-open>.loc-head .loc-chev{transform:rotate(90deg)}
+.loc-name{font:600 15px 'Cormorant SC',serif;color:var(--ink2);white-space:nowrap}
+.loc-count{font:600 11px Spectral,serif;color:var(--bg);background:var(--gsoft);padding:1px 7px;border-radius:9px;flex:none}
+html[data-t="l"] .loc-count{color:#fdf6e6}
+.loc-body{padding:0 4px 8px 20px}
+.locs-add{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap}
+
+/* равная ширина колонок кабинета: длинные имена больше не растягивают колонку */
+.gm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.gm-grid .panel{min-width:0}
 /* === КОНЕЦ ФАЙЛА: styles-c.css === */
