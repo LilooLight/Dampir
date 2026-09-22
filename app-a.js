@@ -126,10 +126,9 @@ function normalizeCharacter(src){
  c.notes=String(src.notes||'').slice(0,2000);
  c.profileId=typeof src.profileId==='string'?src.profileId:'';
  c.pregenNote=String(src.pregenNote||'').slice(0,120);
- /* портрет до 512px, токен 128×128 */
  c.portrait=okImg(src.portrait)&&src.portrait.length<400000?src.portrait:'';
  c.token=okImg(src.token)&&src.token.length<120000?src.token:'';
- /* старые сохранения создавались до режима создания — они уже «за созданием» */
+ /* старые сохранения созданы до кошелька — считаем их «за созданием» */
  c.creating=typeof src.creating==='boolean'?src.creating:false;
  recalcTotal(c);return c;}
 
@@ -185,15 +184,15 @@ function normalizeState(d){
  const seen=new Set();
  locations=locations.filter(l=>!seen.has(l.id)&&seen.add(l.id));
  const lids=new Set(locations.map(l=>l.id));
- let characters=(d.characters||[]).map(c=>{const n=normalizeCharacter(c);if(!pids.has(n.profileId))n.profileId=defP;return n});
- if(!characters.length)characters=[normalizeCharacter({name:'Безымянный',profileId:defP})];
+ /* пустая летопись — норма: чистый лист покажет черновик нового персонажа */
+ const characters=(d.characters||[]).map(c=>{const n=normalizeCharacter(c);if(!pids.has(n.profileId))n.profileId=defP;return n});
  const pregens=(d.pregens||[]).map(c=>{const n=normalizeCharacter(c);if(!pids.has(n.profileId))n.profileId=defP;return n});
  const bestiary=(d.bestiary||[]).map(normalizeMob);
  bestiary.forEach(m=>{if(m.locId&&!lids.has(m.locId))m.locId=''});
  const ids=new Set(characters.map(c=>c.id));
  const activeProfile=pids.has(d.activeProfileId)?d.activeProfileId:profiles[0].id;
  const profChars=characters.filter(c=>c.profileId===activeProfile);
- const activeChar=ids.has(d.activeCharId)?d.activeCharId:(profChars[0]&&profChars[0].id)||characters[0].id;
+ const activeChar=ids.has(d.activeCharId)?d.activeCharId:(profChars[0]&&profChars[0].id)||'';
  return {version:3,profiles,activeProfileId:activeProfile,characters,activeCharId:activeChar,pregens,bestiary,locations,
   log:(d.log||[]).map(normalizeLog).filter(l=>l&&ids.has(l.charId))};}
 
@@ -204,26 +203,10 @@ function migrateLegacy(){
   return normalizeState(d);
  }catch(e){return null}}
 
+/* чистая установка: никаких демо-данных — пустой лист и черновик персонажа */
 function seed(){
- const prof={id:'prof_table',name:'Общий стол'};
- const c=defaultCharacter('Фрейя');c.profileId=prof.id;
- c.creating=false;
- c.vice='wrath';c.essence='Защитник';c.mask='Бунтарь';
- Object.assign(c.qualities,{agility:1,accuracy:1,endurance:1,perception:1,intuition:1});
- Object.assign(c.skills,{athletics:1,vigilance:1,survival:1,stealth:1,fencing:1});
- Object.assign(c.lore,{mysticism:2,medicine:1,animals:1});
- c.humanity=6;c.woundLimit=86;c.blood=maxBlood(c);
- c.cursedPowers=[
-  {id:uid('pw'),powerId:'beastStrength',level:1,manifestations:['Недремлющая мощь']},
-  {id:uid('pw'),powerId:'nightbirdWail',level:1,manifestations:['Проклятая быстрота']}];
- c.equipment=[
-  {id:uid('eq'),name:'Длинный меч',qty:1,note:'отцовский — не подведёт'},
-  {id:uid('eq'),name:'Кожаный дублет',qty:1,note:''},
-  {id:uid('eq'),name:'Фляга',qty:2,note:'на чёрный день'}];
- c.wounds.torso.light=1;c.xp=6;recalcTotal(c);
- return {version:3,profiles:[prof],activeProfileId:prof.id,characters:[c],activeCharId:c.id,pregens:[],bestiary:[],locations:[],log:[
-  {id:uid('xp'),charId:c.id,ts:Date.now()-2*864e5,type:'+',amount:6,reason:'За правду о колодце на перепутье'},
-  {id:uid('xp'),charId:c.id,ts:Date.now()-864e5,type:'-',amount:2,reason:'Обучение у старого фехтовальщика'}]};}
+ return {version:3,profiles:[{id:'prof_table',name:'Общий стол'}],activeProfileId:'prof_table',
+  characters:[],activeCharId:'',pregens:[],bestiary:[],locations:[],log:[]};}
 
 let migrated=false;
 function loadState(){
@@ -234,7 +217,7 @@ function loadState(){
    if(mig){migrated=true;return mig}
    return seed();}
   const d=JSON.parse(raw);
-  if(!d||!Array.isArray(d.characters))return seed();
+  if(!d||typeof d!=='object')return seed();
   return normalizeState(d);
  }catch(e){console.warn('Летопись повреждена',e);return seed()}}
 function save(){
@@ -242,11 +225,33 @@ function save(){
  catch(e){toast('Память браузера переполнена — вероятно, портрет слишком велик. Уменьшите его или удалите лишние изображения.',1)}}
 function char(){
  if(editingPregen){const p=state.pregens.find(x=>x.id===editingPregen);if(p)return p;editingPregen=null}
- return state.characters.find(c=>c.id===state.activeCharId);}
+ return state.characters.find(c=>c.id===state.activeCharId)||null;}
 
-/* ── кошелёк опыта: списание за повышения ── */
+/* ── черновик: пустой лист до первого имени ── */
+let draftChar=null;
+function getDraft(){
+ if(!draftChar){
+  draftChar=defaultCharacter('');
+  draftChar.name='';
+  draftChar.xp=40;
+  draftChar.creating=true;
+ }
+ return draftChar;}
+function commitDraft(name){
+ if(!draftChar)return char();
+ const c=draftChar;draftChar=null;
+ c.name=String(name||'').trim().slice(0,40)||'Безымянный';
+ c.profileId=state.activeProfileId;
+ state.characters.push(c);
+ state.activeCharId=c.id;
+ state.log.push({id:uid('xp'),charId:c.id,ts:Date.now(),type:'+',amount:40,reason:'Стартовый кошелёк персонажа'});
+ save();
+ toast('«'+c.name+'» вписан в летопись. Стартовый кошелёк: 40.');
+ return c;}
+
+/* ── кошелёк опыта: списание и возврат ── */
 function chargeXP(c,mult,newVal,label){
- if(!c||c.creating)return true;
+ if(!c)return false;
  const cost=Math.max(1,Math.round(mult))*Math.max(1,newVal);
  if(c.xp<cost){
   toast('Не хватает опыта: нужно '+cost+' '+plural(cost,'очко','очка','очков')+' ('+esc(label)+' до '+newVal+'), доступно '+c.xp+'. Сказитель выдаст в конце сцены — вкладка «Опыт».',1);
@@ -256,8 +261,15 @@ function chargeXP(c,mult,newVal,label){
  save();
  toast('−'+cost+' XP: '+label+' до '+newVal+'. Осталось: '+c.xp+'.');
  return true;}
+function refundXP(c,mult,oldVal,label){
+ if(!c||!(oldVal>0))return;
+ const back=Math.max(1,Math.round(mult))*oldVal;
+ c.xp+=back;
+ state.log.push({id:uid('xp'),charId:c.id,ts:Date.now(),type:'+',amount:back,reason:label+' — возврат при понижении (был уровень '+oldVal+')'});
+ save();
+ toast('+'+back+' XP возвращено: '+esc(label)+'. В кошельке: '+c.xp+'.');}
 /* видовая сила — из начального списка порока, сторонняя — прочие */
-const powerMult=(c,powerId)=>(c.vice&&VICES[c.vice]&&VICES[c.vice].start.includes(powerId))?XP_MULT.powerKind[1]:XP_MULT.powerSide[1];
+const powerMult=(c,powerId)=>(c.vice&&VICES[c.vice]&&VICES[c.vice].start.includes(powerId))?7:8;
 
 /* ── тема ── */
 function themeIcon(){const b=$('#themeBtn');if(b)b.innerHTML=document.documentElement.getAttribute('data-t')==='l'?'☾':'☀'}
