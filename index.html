@@ -88,9 +88,10 @@
 <script src="app-c.js"></script>
 <script src="app-d.js"></script>
 <script src="app-e.js"></script>
+<script src="app-f.js"></script>
 <script>
 window.addEventListener('load',function(){
-  var need=['data-a','data-b','data-c','data-d','app-a','app-b','app-c','app-d','app-e'];
+  var need=['data-a','data-b','data-c','data-d','app-a','app-b','app-c','app-d','app-e','app-f'];
   var got=window.__skit||[];
   var miss=need.filter(function(n){return got.indexOf(n)<0});
   if(!miss.length)return;
