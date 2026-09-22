@@ -1,4 +1,4 @@
-/* ═ Скиталец · app-b.js — лист персонажа: отрисовка, броски, портреты, кошелёк опыта ═ */
+/* ═ Скиталец · app-b.js — лист персонажа: черновик, отрисовка, броски, портреты ═ */
 'use strict';
 window.__skit.push('app-b');
 
@@ -12,8 +12,8 @@ function statRow(group,def,val){
  return '<div class="stat-row"><span class="stat-name">'+esc(def.name)+'</span>'+
   pipsHTML(group,def.id,val,g.max,group==='virtues')+
   '<span class="stat-ctl">'+
-  '<button class="ibtn" data-act="stat" data-kind="dec" data-group="'+group+'" data-id="'+def.id+'" '+(val<=g.min?'disabled':'')+' title="Убавить">'+icon('minus',11)+'</button>'+
-  '<button class="ibtn" data-act="stat" data-kind="inc" data-group="'+group+'" data-id="'+def.id+'" '+(val>=g.max?'disabled':'')+' title="Прибавить">'+icon('plus',11)+'</button>'+
+  '<button class="ibtn" data-act="stat" data-kind="dec" data-group="'+group+'" data-id="'+def.id+'" '+(val<=g.min?'disabled':'')+' title="Убавить (возврат опыта)">'+icon('minus',11)+'</button>'+
+  '<button class="ibtn" data-act="stat" data-kind="inc" data-group="'+group+'" data-id="'+def.id+'" '+(val>=g.max?'disabled':'')+' title="Прибавить (за опыт)">'+icon('plus',11)+'</button>'+
   '<button class="ibtn" data-act="quick-roll" data-type="'+group+'" data-id="'+def.id+'" title="Бросить: '+esc(def.name)+'">'+icon('die',13)+'</button>'+
   '</span></div>';}
 function defName(group,id){const d=(GROUPS[group]||{list:[]}).list.find(x=>x.id===id);return d?d.name:id}
@@ -146,7 +146,8 @@ function asideHTML(c){
   (c.token?'<img class="tok" src="'+c.token+'" data-act="portrait-open" title="Портрет и токен" alt="токен">'
    :'<button class="tok-ph" data-act="portrait-open">токен</button>')+
   '</div></div>'+
-  '<input id="charName" value="'+esc(c.name)+'" maxlength="40" placeholder="Безымянный" aria-label="Имя скитальца" style="width:100%;background:transparent;border:none;border-bottom:1px solid transparent;font:600 24px \'Cormorant SC\',serif;color:var(--ink2);padding:2px 0 6px">'+
+  '<input id="charName" value="'+esc(c.name)+'" maxlength="40" placeholder="Кто идёт сквозь тьму?" aria-label="Имя скитальца" style="width:100%;background:transparent;border:none;border-bottom:1px solid transparent;font:600 24px \'Cormorant SC\',serif;color:var(--ink2);padding:2px 0 6px">'+
+  (c.name?'':'<span class="empty" style="display:block;padding:4px 0 0">Впишите имя — странник появится в ленте и в поиске.</span>')+
   '</div>'+
   '<div class="panel">'+
    '<div class="counter"><span class="c-label">'+icon('eye',14)+' Человечность</span>'+sunsHTML(c)+'</div>'+
@@ -185,8 +186,8 @@ function asideHTML(c){
 /* ── баннер создания и кошелёк опыта ── */
 function creationBannerHTML(c){
  return '<div class="pregen-banner panel"><span class="pb-tag">Создание</span>'+
-  '<span style="flex:1;min-width:220px;font:italic 14px/1.5 Spectral,serif;color:var(--dim)">Распределите очки: по 5 на качества, навыки и знания (поднятие значения до 2 стоит двух очков), добродетели — из 6 очков, силы — из 5. Пока баннер виден, всё бесплатно.</span>'+
-  '<button class="btn btn-primary" data-act="create-done">Завершить создание</button></div>';}
+  '<span style="flex:1;min-width:220px;font:italic 14px/1.5 Spectral,serif;color:var(--dim)">В кошельке 40 пунктов: качества 5×ур., навыки и знания 4×ур., добродетели 2×ур., силы 7–8×ур. Понижение возвращает очки. Кнопка прячет эту подсказку, когда порядок наведён.</span>'+
+  '<button class="btn btn-primary" data-act="create-done">Порядок наведён</button></div>';}
 function xpWalletHTML(c){
  const rows=[['Качество',5],['Навык / Знание',4],['Добродетель',2],['Проклятье',5],['Видовая сила',7],['Сторонняя сила',8]];
  return '<div class="panel"><div class="xp-balance" style="margin:0 0 6px">'+
@@ -194,9 +195,7 @@ function xpWalletHTML(c){
   '<span class="xp-cap">'+plural(c.xp,'очко','очка','очков')+' опыта доступно</span>'+
   '<button class="btn btn-ghost" data-act="view" data-view="xp" style="margin-left:auto">летопись</button></div>'+
   '<div class="mini-table">'+rows.map(r=>'<span><b>'+r[0]+'</b> · '+r[1]+' × ур.</span>').join('')+'</div>'+
-  (c.creating
-   ?'<p class="empty" style="margin:6px 0 0">Режим создания: повышения бесплатны, пока не нажато «Завершить создание».</p>'
-   :'<p class="empty" style="margin:6px 0 0">Повышение списывает множитель × новый уровень (Скрытность до 3 = 12). Понижение — бесплатно, на случай промаха.</p>')+
+  '<p class="empty" style="margin:6px 0 0">Повышение списывает множитель × новый уровень (Скрытность до 3 = 12). Понижение возвращает столько же. Выдача от Сказителя — на вкладке «Опыт».</p>'+
   '</div>';}
 
 function personaHTML(c){
@@ -385,18 +384,17 @@ function equipHTML(c){
 function charStripHTML(){
  const prof=state.activeProfileId;
  const chars=state.characters.filter(c=>(c.profileId||state.profiles[0].id)===prof);
- if(!chars.length)return '<div class="char-strip"><span class="empty">У этого профиля пока нет персонажей.</span>'+
-  '<button class="char-tab" data-act="char-modal" style="border-style:dashed">'+icon('plus',13)+' Новый странник</button>'+
-  '<button class="char-tab" data-act="import">'+icon('dl',14)+' Из JSON</button></div>';
- return '<div class="char-strip">'+chars.map(c=>
+ const tabs=chars.map(c=>
   '<button class="char-tab '+(c.id===state.activeCharId?'active':'')+'" data-act="char-select" data-id="'+c.id+'">'+
   (c.token?'<img class="ct-tok" src="'+c.token+'" alt="">':'')+
   '<span>'+esc(c.name)+'</span><span class="ct-xp">'+icon('gem',11)+c.xp+'</span>'+
   (c.id===state.activeCharId?'<span class="ibtn ct-del" data-act="char-del" data-id="'+c.id+'" role="button">'+icon('x',11)+'</span>':'')+
-  '</button>').join('')+
+  '</button>').join('');
+ return '<div class="char-strip">'+
+  (tabs||'<span class="empty">Странников пока нет — впишите имя на листе ниже.</span>')+
   '<button class="char-tab" data-act="char-export" title="Выгрузить активного персонажа в JSON">'+icon('dl',14)+' Выгрузить</button>'+
   '<button class="char-tab" data-act="import" title="Добавить персонажа из JSON">'+icon('dl',14)+' Из JSON</button>'+
-  '<button class="char-tab" data-act="char-modal" style="border-style:dashed">'+icon('plus',13)+' Новый странник</button></div>';}
+  '<button class="char-tab" data-act="char-new" style="border-style:dashed" title="Очистить лист до пустого черновика">'+icon('plus',13)+' Новый странник</button></div>';}
 function pregenBannerHTML(c){
  return '<div class="pregen-banner panel"><span class="pb-tag">Преген</span>'+
   '<input type="text" id="pgName" value="'+esc(c.name)+'" maxlength="40" aria-label="Имя прегена">'+
@@ -406,11 +404,15 @@ function pregenBannerHTML(c){
   '<button class="btn btn-ghost" data-act="pg-done">в кабинет</button></div>';}
 
 function renderSheet(){
- const c=char();
- if(!c){$('#view-sheet').innerHTML='<p class="empty">Скитальцев нет.</p>';return}
+ /* черновик: пустой лист до первого имени — или активный персонаж, или преген */
+ const c=(!editingPregen&&draftChar)?draftChar:char();
+ if(!c){
+  $('#view-sheet').innerHTML='<div class="char-strip"><span class="empty">Скитальцев нет.</span>'+
+   '<button class="char-tab" data-act="char-new" style="border-style:dashed">'+icon('plus',13)+' Начать новый лист</button></div>';
+  return;}
  const strip=editingPregen?pregenBannerHTML(c):charStripHTML();
  $('#view-sheet').innerHTML=strip+
-  (c.creating?creationBannerHTML(c):'')+
+  (c.creating&&!editingPregen?creationBannerHTML(c):'')+
   '<div class="sheet-grid">'+asideHTML(c)+'<div class="sheet-main">'+
   personaHTML(c)+rollPanelHTML()+abilitiesHTML(c)+powersHTML(c)+equipHTML(c)+'</div></div>';
  renderDiceField();updatePoolPreview();}
